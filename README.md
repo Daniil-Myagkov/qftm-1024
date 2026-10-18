@@ -44,7 +44,7 @@ Each of the five factors is split into four zones — `0–30`, `31–50`, `51�
 
 1. Open the live demo link above in any modern browser (or download `index.html` and double-click it locally — no server needed).
 2. Take the validated **Big Five / IPIP-NEO** test to get your facet scores:
-   - English: https://bigfive-test.com/
+   - English/International: https://bigfive-test.com/
    - Russian: https://psytests.org/big5/ineoB.html
 3. Enter the 30 facet scores into the **📋 30 scales** tab (or estimate the 5 axis averages in **⚡ Quick**).
 4. Press **Calculate and save** — your QFTM code, cat avatar, and calendar entry appear instantly.
