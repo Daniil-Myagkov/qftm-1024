@@ -2792,6 +2792,12 @@ canvas {
         compatB:'Pareja B',
         compatApply:'Calcular',
         compatSwap:'⇄ Cambiar',
+        compatNameA:'Nombre A',
+        compatNameB:'Nombre B',
+        compatExport:'📥 PNG de la pareja',
+        compatExported:'Tarjeta de pareja descargada.',
+        compatExportFail:'Primero calcula la compatibilidad.',
+        compatCardTitle:'Tarjeta de compatibilidad',
         compatDisclaimerTitle:'ℹ️ Cómo leer estas puntuaciones',
         compatDisclaimer:'QCI es una heurística basada en investigación, no un veredicto clínico. Las cinco fórmulas UF sintetizan hallazgos publicados (Karney-Bradbury, Gottman, Scarr-McCartney, Youyou, Tiedens) — describen condiciones iniciales, no destino. Los resultados de la relación dependen mucho de habilidades, contexto y esfuerzo. Los pesos son visibles para que puedas criticarlos y mejorarlos.',
         compatAxis:'Eje',
@@ -2890,7 +2896,77 @@ canvas {
         pgOwner:'Propietario'
       },
       months: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
-      domains: { E:'Extraversión', O:'Apertura', A:'Amabilidad', C:'Responsabilidad', N:'Neuroticismo' }
+      domains: { E:'Extraversión', O:'Apertura', A:'Amabilidad', C:'Responsabilidad', N:'Neuroticismo' },
+      scaleNames: {
+      E1:'Amistabilidad', E2:'Sociabilidad', E3:'Asertividad', E4:'Actividad', E5:'Búsqueda de emociones', E6:'Alegría',
+      O1:'Imaginación', O2:'Intereses artísticos', O3:'Emotividad', O4:'Aventura', O5:'Intelecto', O6:'Liberalismo',
+      A1:'Confianza', A2:'Moralidad', A3:'Altruismo', A4:'Cooperación', A5:'Modestia', A6:'Compasión',
+      C1:'Autoeficacia', C2:'Orden', C3:'Sentido del deber', C4:'Ambición de logro', C5:'Autodisciplina', C6:'Deliberación',
+      N1:'Ansiedad', N2:'Ira', N3:'Depresión', N4:'Timidez social', N5:'Inmoderación', N6:'Vulnerabilidad'
+      },
+      letterNames: {
+      E: { I:'Introvertido', D:'Reservado', A:'Ambivertido', E:'Extravertido' },
+      O: { S:'Sensor', M:'Materialista', H:'Híbrido', N:'Intuitivo' },
+      A: { T:'Pensador', L:'Lógico', C:'Camaleón', F:'Empático' },
+      C: { W:'Errante', P:'Irracional', U:'Universal', J:'Racional' },
+      N: { B:'Equilibrado', R:'Reactivo', Z:'Sensible', V:'Volátil' }
+      },
+      letterPhrases: {
+      E: {
+      I:'La energía se acumula en soledad. Los rituales sociales agotan.',
+      D:'Reservado, prefiere un círculo estrecho. Comunicación selectiva.',
+      A:'Ambivertido: alterna con flexibilidad entre soledad y comunicación.',
+      E:'Extravertido: energía de la gente, le gusta ser el centro de atención.'
+      },
+      O: {
+      S:'Foco en hechos, tradiciones, lo concreto.',
+      M:'Materialista: valora lo práctico, pero no es ajeno a la novedad.',
+      H:'Híbrido: equilibrio entre lo terrenal y lo abstracto.',
+      N:'Intuitivo: mundo de ideas, imaginación y conceptos.'
+      },
+      A: {
+      T:'Lógico frío, directo, sistémico.',
+      L:'Lógico con empatía: la racionalidad primero, pero sin dureza.',
+      C:'Camaleón: adapta su estilo de comunicación al entorno.',
+      F:'Empático: cuidado sincero, altruismo, armonía.'
+      },
+      C: {
+      W:'Errante: vive fuera de horarios, prefiere libertad y flexibilidad.',
+      P:'Flexible, no ama los marcos, pero no es del todo descuidado.',
+      U:'Universal: puede ser disciplinado y relajado.',
+      J:'Autodisciplina estricta, planes, orden.'
+      },
+      N: {
+      B:'Estable, resistente al estrés.',
+      R:'Reactivo: ansiedad moderada, respuesta adecuada al estrés.',
+      Z:'Sensible: experiencias profundas, reflexión.',
+      V:'Volátil: alta emocionalidad, cambios de humor.'
+      }
+      },
+      familyArch: {
+      ISTJ:'Administrador', ISFJ:'Defensor', ESTJ:'Gerente', ESFJ:'Cónsul',
+      ISTP:'Virtuoso', ISFP:'Artista', ESTP:'Negociante', ESFP:'Animador',
+      INTJ:'Estratega', INTP:'Pensador', ENTJ:'Comandante', ENTP:'Polémico',
+      INFJ:'Consejero', INFP:'Mediador', ENFJ:'Mentor', ENFP:'Campeón'
+      },
+      familyDesc: {
+      ISTJ:'Fiable, metódico, valora el orden, el deber y los hechos probados.',
+      ISFJ:'Guardián cuidadoso: responsable, cálido, protege a las personas y las tradiciones.',
+      ESTJ:'Organizador práctico, impone orden, gestiona con claridad y decisión.',
+      ESFJ:'Sociable y cuidadoso, crea armonía y confort en el grupo.',
+      ISTP:'Práctico sereno, maestro de herramientas, sangre fría en crisis.',
+      ISFP:'Esteta sensible, vive el momento, la belleza y la armonía tranquila.',
+      ESTP:'Enérgico y arriesgado, actúa aquí y ahora, ama el desafío.',
+      ESFP:'Alegre y espontáneo, ama la gente, la fiesta y las sensaciones vivas.',
+      INTJ:'Estratega independiente: ve el panorama completo, construye sistemas a largo plazo.',
+      INTP:'Analista e investigador de ideas, ama la lógica, los modelos y la precisión.',
+      ENTJ:'Líder decidido, organiza personas y recursos para una gran meta.',
+      ENTP:'Polémico inventivo, genera posibilidades y ama el debate intelectual.',
+      INFJ:'Consejero intuitivo profundo, guía a otros hacia el sentido y el crecimiento.',
+      INFP:'Mediador idealista, valora la autenticidad, la profundidad y la armonía interior.',
+      ENFJ:'Mentor carismático, inspira y desarrolla a las personas.',
+      ENFP:'Campeón entusiasta, ve posibilidades y contagia energía.'
+      }
     },
 
     fr: {
@@ -3021,6 +3097,12 @@ canvas {
         compatB:'Partenaire B',
         compatApply:'Calculer',
         compatSwap:'⇄ Échanger',
+        compatNameA:'Nom A',
+        compatNameB:'Nom B',
+        compatExport:'📥 PNG du couple',
+        compatExported:'Carte du couple téléchargée.',
+        compatExportFail:'Calculez d’abord la compatibilité.',
+        compatCardTitle:'Carte de compatibilité',
         compatDisclaimerTitle:'ℹ️ Comment lire ces scores',
         compatDisclaimer:'Le QCI est une heuristique fondée sur la recherche, pas un verdict clinique. Les cinq formules UF synthétisent des résultats publiés (Karney-Bradbury, Gottman, Scarr-McCartney, Youyou, Tiedens) — elles décrivent des conditions de départ, pas un destin. L’issue d’une relation dépend fortement des compétences, du contexte et des efforts. Les poids sont visibles afin que vous puissiez les critiquer et les améliorer.',
         compatAxis:'Axe',
@@ -3119,7 +3201,77 @@ canvas {
         pgOwner:'Propriétaire'
       },
       months: ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'],
-      domains: { E:'Extraversion', O:'Ouverture', A:'Agréabilité', C:'Conscience', N:'Névrosisme' }
+      domains: { E:'Extraversion', O:'Ouverture', A:'Agréabilité', C:'Conscience', N:'Névrosisme' },
+      scaleNames: {
+      E1:'Amicalité', E2:'Sociabilité', E3:'Assertivité', E4:'Activité', E5:'Recherche de sensations', E6:'Gaieté',
+      O1:'Imagination', O2:'Intérêts artistiques', O3:'Émotivité', O4:'Aventurisme', O5:'Intellect', O6:'Libéralisme',
+      A1:'Confiance', A2:'Moralité', A3:'Altruisme', A4:'Coopération', A5:'Modestie', A6:'Sympathie',
+      C1:'Auto-efficacité', C2:'Ordre', C3:'Sens du devoir', C4:'Recherche de réussite', C5:'Autodiscipline', C6:'Délibération',
+      N1:'Anxiété', N2:'Colère', N3:'Dépression', N4:'Conscience de soi', N5:'Immodération', N6:'Vulnérabilité'
+      },
+      letterNames: {
+      E: { I:'Introverti', D:'Réservé', A:'Ambiverti', E:'Extraverti' },
+      O: { S:'Sensoriel', M:'Matérialiste', H:'Hybride', N:'Intuitif' },
+      A: { T:'Penseur', L:'Logicien', C:'Caméléon', F:'Empathique' },
+      C: { W:'Vagabond', P:'Irrationnel', U:'Universel', J:'Rationnel' },
+      N: { B:'Équilibré', R:'Réactif', Z:'Sensible', V:'Volatil' }
+      },
+      letterPhrases: {
+      E: {
+      I:'L’énergie s’accumule dans la solitude. Les rituels sociaux épuisent.',
+      D:'Réservé, préfère un cercle restreint. Communication sélective.',
+      A:'Ambiverti : passe avec souplesse de la solitude à la communication.',
+      E:'Extraverti : énergie tirée des gens, aime être au centre de l’attention.'
+      },
+      O: {
+      S:'Focus sur les faits, les traditions, le concret.',
+      M:'Matérialiste : apprécie le pratique, mais pas étranger à la nouveauté.',
+      H:'Hybride : équilibre entre le terrestre et l’abstrait.',
+      N:'Intuitif : monde des idées, de l’imagination et des concepts.'
+      },
+      A: {
+      T:'Logicien froid, direct, systématique.',
+      L:'Logicien avec empathie : la rationalité d’abord, mais sans dureté.',
+      C:'Caméléon : adapte son style de communication à l’environnement.',
+      F:'Empathique : soin sincère, altruisme, harmonie.'
+      },
+      C: {
+      W:'Vagabond : vit hors des plannings, préfère la liberté et la flexibilité.',
+      P:'Flexible, n’aime pas les cadres, mais pas totalement négligent.',
+      U:'Universel : sait être discipliné et décontracté.',
+      J:'Autodiscipline stricte, plans, ordre.'
+      },
+      N: {
+      B:'Stable, résistant au stress.',
+      R:'Réactif : anxiété modérée, réponse adéquate au stress.',
+      Z:'Sensible : vécu profond, réflexion.',
+      V:'Volatil : forte émotivité, sautes d’humeur.'
+      }
+      },
+      familyArch: {
+      ISTJ:'Administrateur', ISFJ:'Défenseur', ESTJ:'Gestionnaire', ESFJ:'Consul',
+      ISTP:'Virtuose', ISFP:'Artiste', ESTP:'Négociant', ESFP:'Animateur',
+      INTJ:'Stratège', INTP:'Penseur', ENTJ:'Commandant', ENTP:'Polémiste',
+      INFJ:'Conseiller', INFP:'Médiateur', ENFJ:'Mentor', ENFP:'Champion'
+      },
+      familyDesc: {
+      ISTJ:'Fiable, méthodique, valorise l’ordre, le devoir et les faits éprouvés.',
+      ISFJ:'Gardien attentionné : responsable, chaleureux, protège les personnes et les traditions.',
+      ESTJ:'Organisateur pratique, impose l’ordre, mène les affaires avec clarté et décision.',
+      ESFJ:'Sociable et attentionné, crée harmonie et confort dans le groupe.',
+      ISTP:'Praticien calme, maître des outils, sang-froid en crise.',
+      ISFP:'Esthète sensible, vit l’instant, la beauté et l’harmonie tranquille.',
+      ESTP:'Énergique et risqué, agit ici et maintenant, aime le défi.',
+      ESFP:'Joyeux et spontané, aime les gens, la fête et les sensations vives.',
+      INTJ:'Stratège indépendant : voit l’ensemble, construit des systèmes à long terme.',
+      INTP:'Analyste et chercheur d’idées, aime la logique, les modèles et la précision.',
+      ENTJ:'Leader décidé, organise personnes et ressources pour un grand objectif.',
+      ENTP:'Polémiste inventif, génère des possibilités et aime le débat intellectuel.',
+      INFJ:'Conseiller intuitif profond, mène les autres vers le sens et la croissance.',
+      INFP:'Médiateur idéaliste, valorise l’authenticité, la profondeur et l’harmonie intérieure.',
+      ENFJ:'Mentor charismatique, inspire et développe les personnes.',
+      ENFP:'Champion enthousiaste, voit les possibilités et contamine d’énergie.'
+      }
     },
 
     zh: {
@@ -3250,6 +3402,12 @@ canvas {
         compatB:'伴侣 B',
         compatApply:'计算',
         compatSwap:'⇄ 交换',
+        compatNameA:'名字 A',
+        compatNameB:'名字 B',
+        compatExport:'📥 情侣卡片 PNG',
+        compatExported:'情侣卡片已下载。',
+        compatExportFail:'请先计算兼容性。',
+        compatCardTitle:'兼容性卡片',
         compatDisclaimerTitle:'ℹ️ 如何解读这些分数',
         compatDisclaimer:'QCI 是一种基于研究的启发式算法，而非临床诊断。五个 UF 公式综合了已发表的研究成果（Karney-Bradbury、Gottman、Scarr-McCartney、Youyou、Tiedens）——它们描述的是起始条件，而不是命运。关系的结果在很大程度上取决于技能、背景和努力。权重是公开的，以便您可以批评和改进它们。',
         compatAxis:'轴',
@@ -3348,7 +3506,77 @@ canvas {
         pgOwner:'所有者'
       },
       months: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
-      domains: { E:'外向性', O:'开放性', A:'宜人性', C:'尽责性', N:'神经质' }
+      domains: { E:'外向性', O:'开放性', A:'宜人性', C:'尽责性', N:'神经质' },
+      scaleNames: {
+      E1:'友好', E2:'社交性', E3:'果断性', E4:'活跃度', E5:'寻求刺激', E6:'开朗',
+      O1:'想象力', O2:'艺术兴趣', O3:'情感性', O4:'冒险性', O5:'智识', O6:'自由主义',
+      A1:'信任', A2:'道德感', A3:'利他', A4:'合作', A5:'谦逊', A6:'同情',
+      C1:'自我效能', C2:'条理', C3:'尽责', C4:'追求成就', C5:'自律', C6:'审慎',
+      N1:'焦虑', N2:'愤怒', N3:'抑郁', N4:'自我意识', N5:'冲动', N6:'脆弱'
+      },
+      letterNames: {
+      E: { I:'内向', D:'内敛', A:'中间型', E:'外向' },
+      O: { S:'实感', M:'务实', H:'混合', N:'直觉' },
+      A: { T:'思考者', L:'逻辑者', C:'变色龙', F:'共情者' },
+      C: { W:'漫游者', P:'随性', U:'通用', J:'理性' },
+      N: { B:'平稳', R:'反应型', Z:'敏感', V:'易变' }
+      },
+      letterPhrases: {
+      E: {
+      I:'能量在独处中积累。社交仪式令人耗竭。',
+      D:'内敛，偏好小圈子。选择性社交。',
+      A:'中间型：在独处与社交之间灵活切换。',
+      E:'外向：从人群中获得能量，喜欢成为关注中心。'
+      },
+      O: {
+      S:'关注事实、传统与具体事物。',
+      M:'务实：重视实用性，但不排斥新奇。',
+      H:'混合：现实与抽象之间的平衡。',
+      N:'直觉：理念、想象与概念的世界。'
+      },
+      A: {
+      T:'冷静的逻辑者，直接、系统。',
+      L:'带共情的逻辑者：理性优先，但不苛刻。',
+      C:'变色龙：随环境调整沟通风格。',
+      F:'共情者：真诚的关怀、利他、和谐。'
+      },
+      C: {
+      W:'漫游者：生活在计划之外，偏好自由与灵活。',
+      P:'灵活，不喜欢框架，但并非完全散漫。',
+      U:'通用：既能自律也能放松。',
+      J:'严格的自律、计划与秩序。'
+      },
+      N: {
+      B:'稳定，抗压。',
+      R:'反应型：中度焦虑，压力反应适当。',
+      Z:'敏感：体验深刻，善于反思。',
+      V:'易变：情绪性强，心境波动。'
+      }
+      },
+      familyArch: {
+      ISTJ:'管理者', ISFJ:'守护者', ESTJ:'经理', ESFJ:'领事',
+      ISTP:'巧匠', ISFP:'艺术家', ESTP:'行家', ESFP:'娱乐家',
+      INTJ:'战略家', INTP:'思想者', ENTJ:'指挥官', ENTP:'辩论家',
+      INFJ:'顾问', INFP:'调解人', ENFJ:'导师', ENFP:'奋斗者'
+      },
+      familyDesc: {
+      ISTJ:'可靠、有条理，重视秩序、责任与经过验证的事实。',
+      ISFJ:'关怀的守护者：负责、温暖，保护他人与传统。',
+      ESTJ:'务实的组织者，建立秩序，清晰果断地管理事务。',
+      ESFJ:'善于社交且关怀他人，在群体中创造和谐与舒适。',
+      ISTP:'冷静的实践者，工具大师，危机中头脑冷静。',
+      ISFP:'敏感的审美者，活在当下，追求美与安静的和谐。',
+      ESTP:'精力充沛、敢于冒险，此时此地行动，喜欢挑战。',
+      ESFP:'快乐而自发，热爱人群、庆典与鲜明的体验。',
+      INTJ:'独立的战略家：纵观全局，构建长期系统。',
+      INTP:'思想的分析者与研究者，热爱逻辑、模型与精确。',
+      ENTJ:'果断的领导者，为宏大目标组织人与资源。',
+      ENTP:'富有创造力的辩论家，生成可能性，热爱智力辩论。',
+      INFJ:'深邃的直觉顾问，引导他人走向意义与成长。',
+      INFP:'理想主义调解人，重视真实、深度与内在和谐。',
+      ENFJ:'魅力导师，激励并发展他人。',
+      ENFP:'热忱的奋斗者，看见可能性并感染他人能量。'
+      }
     }
   };
 
