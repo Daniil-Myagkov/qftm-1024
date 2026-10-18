@@ -1669,8 +1669,13 @@ canvas {
       <input id="compatAInput" class="cat-in" value="INLW-Z" spellcheck="false" autocomplete="off" maxlength="6">
       <label data-i18n="compatB">Partner B</label>
       <input id="compatBInput" class="cat-in" value="ENFP-R" spellcheck="false" autocomplete="off" maxlength="6">
+      <label data-i18n="compatNameA">Name A</label>
+      <input id="compatNameAInput" class="cat-in" style="width:120px;text-transform:none;" placeholder="Maria" maxlength="18" spellcheck="false" autocomplete="off">
+      <label data-i18n="compatNameB">Name B</label>
+      <input id="compatNameBInput" class="cat-in" style="width:120px;text-transform:none;" placeholder="Alex" maxlength="18" spellcheck="false" autocomplete="off">
       <button class="btn" id="btnCompatCalc" data-i18n="compatApply">Calculate</button>
       <button class="btn btn-outline" id="btnCompatSwap" data-i18n="compatSwap">⇄ Swap</button>
+      <button class="btn btn-outline" id="btnCompatExport" data-i18n="compatExport">📥 Couple card PNG</button>
     </div>
     <div class="compat-cats" id="compatCats"></div>
     <div id="compatBreakdown"></div>
@@ -2084,6 +2089,12 @@ canvas {
         compatB: 'Partner B',
         compatApply: 'Calculate',
         compatSwap: '⇄ Swap',
+        compatNameA: 'Name A',
+        compatNameB: 'Name B',
+        compatExport: '📥 Couple card PNG',
+        compatExported: 'Couple card downloaded.',
+        compatExportFail: 'Calculate compatibility first.',
+        compatCardTitle: 'Compatibility card',
         compatAxis: 'Axis',
         compatValA: 'A value',
         compatValB: 'B value',
@@ -2419,6 +2430,12 @@ canvas {
         compatB: 'Партнёр B',
         compatApply: 'Рассчитать',
         compatSwap: '⇄ Поменять',
+        compatNameA: 'Имя A',
+        compatNameB: 'Имя B',
+        compatExport: '📥 PNG карточки пары',
+        compatExported: 'Карточка пары скачана.',
+        compatExportFail: 'Сначала рассчитайте совместимость.',
+        compatCardTitle: 'Карточка совместимости',
         compatAxis: 'Ось',
         compatValA: 'Значение A',
         compatValB: 'Значение B',
@@ -3350,6 +3367,7 @@ canvas {
   let csHigh = parseInt(LS.get('cs_high') || '0', 10);
   let gamesInitialized = false;
   let activeGame = 'cm';
+  let lastCompat = null;
 
   const CM_TILE_COLORS = [];
   for (let i = 0; i < 12; i++) {
@@ -3948,6 +3966,8 @@ canvas {
     const inB = document.getElementById('compatBInput');
     const codeA = String(inA.value || '').toUpperCase().trim();
     const codeB = String(inB.value || '').toUpperCase().trim();
+    const nameA = String(document.getElementById('compatNameAInput').value || '').slice(0, 18);
+    const nameB = String(document.getElementById('compatNameBInput').value || '').slice(0, 18);
     const catsBox = document.getElementById('compatCats');
     const breakBox = document.getElementById('compatBreakdown');
     const ufBox = document.getElementById('compatUfs');
@@ -3961,12 +3981,12 @@ canvas {
       return;
     }
     const res = computeCompat(codeA, codeB);
+    lastCompat = { codeA: codeA, codeB: codeB, nameA: nameA, nameB: nameB, res: res };
     const colA = getTypeColor(codeA);
     const colB = getTypeColor(codeB);
-
     catsBox.innerHTML =
-      '<div class="cat-wrap"><div class="cat-svg">' + catSVG(codeA, 220, catDisplayName) + '</div><div class="result-family" style="color:' + colA.hslBright + ';">' + codeA + '</div></div>' +
-      '<div class="cat-wrap"><div class="cat-svg">' + catSVG(codeB, 220, catDisplayName) + '</div><div class="result-family" style="color:' + colB.hslBright + ';">' + codeB + '</div></div>';
+    '<div class="cat-wrap"><div class="cat-svg">' + catSVG(codeA, 220, nameA) + '</div><div class="result-family" style="color:' + colA.hslBright + ';">' + escapeHtml(nameA ? nameA + ' • ' : '') + codeA + '</div></div>' +
+    '<div class="cat-wrap"><div class="cat-svg">' + catSVG(codeB, 220, nameB) + '</div><div class="result-family" style="color:' + colB.hslBright + ';">' + escapeHtml(nameB ? nameB + ' • ' : '') + codeB + '</div></div>';
 
     const axes = ['E','O','A','C','N'];
     let rows = '';
@@ -4008,16 +4028,131 @@ canvas {
         '<div class="ranges">' + ui('verdict0') + ' • ' + ui('verdict1') + ' • ' + ui('verdict2') + ' • ' + ui('verdict3') + ' • ' + ui('verdict4') + '</div>' +
       '</div>';
   }
+  function svgToImage(svgText, size) {
+  return new Promise(function(resolve, reject) {
+  const img = new Image();
+  const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  img.onload = function() {
+  URL.revokeObjectURL(url);
+  resolve(img);
+  };
+  img.onerror = function() {
+  URL.revokeObjectURL(url);
+  reject(new Error('SVG image load failed'));
+  };
+  img.src = url;
+  });
+  }
+  async function exportCoupleCard() {
+  if (!lastCompat) {
+  alert(ui('compatExportFail'));
+  return;
+  }
+  const codeA = lastCompat.codeA;
+  const codeB = lastCompat.codeB;
+  const nameA = lastCompat.nameA;
+  const nameB = lastCompat.nameB;
+  const res = lastCompat.res;
+  try {
+  const imgA = await svgToImage(catSVG(codeA, 440, nameA), 440);
+  const imgB = await svgToImage(catSVG(codeB, 440, nameB), 440);
+  const W = 1000;
+  const H = 1000;
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 0, W, H);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 34px "Segoe UI", Inter, system-ui, sans-serif';
+  ctx.fillText('QFTM-1024 • ' + ui('compatCardTitle'), W / 2, 56);
+  ctx.drawImage(imgA, 40, 90, 440, 440);
+  ctx.drawImage(imgB, 520, 90, 440, 440);
+  ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
+  ctx.fillStyle = getTypeColor(codeA).hslBright;
+  ctx.fillText((nameA ? nameA + ' • ' : '') + codeA, 260, 570);
+  ctx.fillStyle = getTypeColor(codeB).hslBright;
+  ctx.fillText((nameB ? nameB + ' • ' : '') + codeB, 740, 570);
+  const oColor = ufBarColor(res.overall);
+  ctx.fillStyle = oColor;
+  ctx.font = '900 84px "Segoe UI", Inter, system-ui, sans-serif';
+  ctx.fillText(res.overall.toFixed(1), W / 2, 690);
+  ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
+  ctx.fillText(ui('compatVerdict') + ': ' + ui('verdict' + res.verdictIndex), W / 2, 730);
+  let y = 790;
+  for (let i = 0; i < 5; i++) {
+  const s = res.uf[i];
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#bbbbbb';
+  ctx.font = '600 18px "Segoe UI", Inter, system-ui, sans-serif';
+  ctx.fillText('UF-' + (i + 1), 60, y);
+  ctx.fillStyle = '#222222';
+  ctx.fillRect(140, y - 15, 690, 15);
+  ctx.fillStyle = ufBarColor(s);
+  ctx.fillRect(140, y - 15, 690 * (s / 100), 15);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(s.toFixed(1), 940, y);
+  y += 36;
+  }
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#666666';
+  ctx.font = '600 16px "Segoe UI", Inter, system-ui, sans-serif';
+  ctx.fillText('© ' + AUTHOR + ' • QFTM-1024 v' + VERSION, W / 2, H - 24);
+  canvas.toBlob(function(blob) {
+  if (blob) {
+  downloadBlob(blob, 'QFTM-1024-couple-' + codeA + '-' + codeB + '.png');
+  alert(ui('compatExported'));
+  }
+  }, 'image/png');
+  } catch (e) {
+  alert(ui('importError') + e.message);
+  }
+  }
   function initCompat() {
     document.getElementById('btnCompatCalc').addEventListener('click', renderCompat);
     document.getElementById('btnCompatSwap').addEventListener('click', function() {
-      const inA = document.getElementById('compatAInput');
-      const inB = document.getElementById('compatBInput');
-      const tmp = inA.value;
-      inA.value = inB.value;
-      inB.value = tmp;
-      renderCompat();
+    const inA = document.getElementById('compatAInput');
+    const inB = document.getElementById('compatBInput');
+    const tmp = inA.value;
+    inA.value = inB.value;
+    inB.value = tmp;
+    const nA = document.getElementById('compatNameAInput');
+    const nB = document.getElementById('compatNameBInput');
+    const tn = nA.value;
+    nA.value = nB.value;
+    nB.value = tn;
+    renderCompat();
     });
+document.getElementById('btnCompatExport').addEventListener('click', exportCoupleCard);
+['compatNameAInput', 'compatNameBInput'].forEach(function(id) {
+document.getElementById(id).addEventListener('input', function() {
+if (!lastCompat) {
+return;
+}
+const ca = String(document.getElementById('compatAInput').value || '').toUpperCase().trim();
+const cb = String(document.getElementById('compatBInput').value || '').toUpperCase().trim();
+if (isValidType(ca) && isValidType(cb)) {
+renderCompat();
+}
+});
+});
+document.getElementById('btnCompatExport').addEventListener('click', exportCoupleCard);
+['compatNameAInput', 'compatNameBInput'].forEach(function(id) {
+document.getElementById(id).addEventListener('input', function() {
+if (!lastCompat) {
+return;
+}
+const ca = String(document.getElementById('compatAInput').value || '').toUpperCase().trim();
+const cb = String(document.getElementById('compatBInput').value || '').toUpperCase().trim();
+if (isValidType(ca) && isValidType(cb)) {
+renderCompat();
+}
+});
+});
     document.getElementById('compatAInput').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         renderCompat();
