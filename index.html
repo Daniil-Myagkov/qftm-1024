@@ -6066,6 +6066,8 @@ renderCompat();
       if (tab === 'test120') {
         document.getElementById('panel-test120').classList.add('active');
       } else if (tab === 'quick') {
+        document.getElementById('panel-quick').classList.add('active');
+      } else if (tab === 'full') {
         document.getElementById('panel-full').classList.add('active');
       } else if (tab === 'calendar') {
         document.getElementById('panel-calendar').classList.add('active');
@@ -6811,7 +6813,7 @@ function renderTest120() {
 const qs = t120Questions();
 const intro = document.getElementById('test120Intro');
 if (intro) {
-intro.innerHTML = '<strong>' + ui('test120Title') + '</strong><br>' + ui('test120Intro') + '<div class="t120-warn">⚠️ ' + ui('test120Warn') + '</div><span style="color:#888;font-size:0.74rem;">' + ui('test120Source') + '</span><br>...
+intro.innerHTML = '<strong>' + ui('test120Title') + '</strong><br>' + ui('test120Intro') + '<div class="t120-warn">⚠️ ' + ui('test120Warn') + '</div><span style="color:#888;font-size:0.74rem;">' + ui('test120Source') + '</span><br><span style="color:#999;font-size:0.74rem;">1 — ' + ui('likert1') + ' • 2 — ' + ui('likert2') + ' • 3 — ' + ui('likert3') + ' • 4 — ' + ui('likert4') + ' • 5 — ' + ui('likert5') + '</span>';
 }
 const list = document.getElementById('test120List');
 if (!list) {
