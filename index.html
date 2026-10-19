@@ -858,6 +858,21 @@ canvas {
 .cat-name-row input:focus {
   border-color: #fff;
 }
+  /* ===== TEST 120 ===== */
+.t120-intro{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:14px;font-size:0.84rem;color:#bbb;line-height:1.6;}
+.t120-intro strong{color:#fff;}
+.t120-prog{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0;margin-bottom:8px;font-size:0.8rem;color:#aaa;display:flex;gap:10px;align-items:center;}
+.t120-prog .uf-bar{flex:1;margin:0;}
+.t120-row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:8px;}
+.t120-row.done{border-color:#3a6b3a;}
+.t120-q{font-size:0.86rem;color:#e0e0e0;margin-bottom:8px;line-height:1.45;}
+.t120-q .t120-num{color:#888;font-weight:800;margin-right:6px;font-size:0.74rem;}
+.t120-opts{display:flex;gap:6px;flex-wrap:wrap;}
+.t120-opt{flex:1;min-width:52px;text-align:center;background:var(--surface2);border:1px solid var(--border);color:#bbb;border-radius:10px;padding:7px 4px;font-size:0.72rem;cursor:pointer;transition:all .15s;}
+.t120-opt:hover{border-color:#888;color:#fff;}
+.t120-opt.sel{background:#fff;color:#000;border-color:#fff;font-weight:800;}
+.t120-warn{background:#2a1f0e;border:1px solid #8a6b1f;border-left:4px solid #ffb020;color:#ffd98a;padding:10px 14px;margin:10px 0;border-radius:10px;font-size:0.84rem;line-height:1.5;font-weight:600;}
+  
 /* ===== SCHULTE ===== */
 .schulte-controls {
   display: flex;
@@ -1594,10 +1609,6 @@ canvas {
     </div>
 
     <h1>QFTM-1024</h1>
-    <div style="margin:8px 0 4px;font-size:0.95rem;font-weight:800;letter-spacing:0.02em;line-height:1.9;">
-    <a href="https://bigfive-test.com/" target="_blank" rel="noopener noreferrer" style="color:#8fd0f5;text-decoration:underline;margin:0 12px;white-space:nowrap;">🌐 Big Five test (International)</a>
-    <a href="https://psytests.org/big5/ineoB.html" target="_blank" rel="noopener noreferrer" style="color:#8fd0f5;text-decoration:underline;margin:0 12px;white-space:nowrap;">🇷🇺 Тест Big Five (RU)</a>
-    </div>
     <div class="subtitle" data-i18n="subtitle">Profile Calendar • Big Five Dynamics • 16 Families • Cat Avatars • Compatibility • Schulte • Games</div>
     <div class="copyright" data-i18n="copyright">© 2026 QFTM-1024 — Created by Daniil Vasilievich Myagkov. All rights reserved.</div>
 
@@ -1611,7 +1622,8 @@ canvas {
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active" data-tab="quick" data-i18n="tabQuick">⚡ Quick</button>
+    <button class="tab-btn active" data-tab="test120" data-i18n="tabTest">📝 Test 120</button>
+    <button class="tab-btn" data-tab="quick" data-i18n="tabQuick">⚡ Quick</button>
     <button class="tab-btn" data-tab="full" data-i18n="tabFull">📋 30 scales</button>
     <button class="tab-btn" data-tab="calendar" data-i18n="tabCalendar">📅 Calendar</button>
     <button class="tab-btn" data-tab="compat" data-i18n="tabCompat">❤️ Compatibility</button>
@@ -1620,7 +1632,18 @@ canvas {
     <button class="tab-btn" data-tab="playground" data-i18n="tabPlayground">🐾 Cat arena</button>
   </div>
 
-  <div class="panel active" id="panel-quick">
+  <div class="panel active" id="panel-test120">
+  <div class="t120-intro" id="test120Intro"></div>
+  <div class="t120-prog"><span id="test120ProgLbl">0/120</span><div class="uf-bar"><div class="uf-fill" id="test120ProgFill" style="width:0%;background:#6bcb77;"></div></div></div>
+  <div id="test120List"></div>
+  <div style="text-align:center;margin-top:16px;">
+  <button class="btn" id="btnTest120Submit" data-i18n="calc">🔍 Calculate and save</button>
+  <button class="btn btn-outline" id="btnTest120Reset" data-i18n="gmReset">↺ Reset</button>
+  </div>
+  <div class="result-section" id="resultTest"></div>
+  <div id="test120Breakdown"></div>
+  </div>
+  <div class="panel" id="panel-quick">
     <div class="quick-sliders">
       <div class="quick-row"><span class="quick-label">E</span><span class="quick-label small" data-i18n="quickE">Extraversion</span><input type="range" min="0" max="100" value="0" data-domain="E" class="quick-slider"><span class="quick-val">0</span><span class="quick-zone">I</span></div>
       <div class="quick-row"><span class="quick-label">O</span><span class="quick-label small" data-i18n="quickO">Openness</span><input type="range" min="0" max="100" value="0" data-domain="O" class="quick-slider"><span class="quick-val">0</span><span class="quick-zone">N</span></div>
@@ -1984,6 +2007,18 @@ canvas {
         btnCat: '🐱 Cat avatar',
         btnRights: '⚖️ Rights',
         tabQuick: '⚡ Quick',
+        test120Warn: 'Rate yourself as you are RIGHT NOW, not as you would like to be in the future. Honest answers about your current habits and reactions give a valid profile; aspirational ones distort all 30 facets at once.',
+        tabTest: '📝 Test 120',
+        test120Title: 'Built-in Big Five test (IPIP-NEO-120 adaptation, 120 items)',
+        test120Intro: 'Answer all 120 statements (1–5). The test computes 30 facet scales (0–100) and 5 domain scores, then builds your QFTM-1024 profile and cat. If you already know your facet scores, use the “30 scales” or “Quick” tabs instead.',
+        test120Source: 'Items adapted from the IPIP (public domain, ipip.ori.org). Wording © 2026 Daniil Myagkov. Heuristic self-report, not a clinical instrument.',
+        likert1: 'Strongly disagree',
+        likert2: 'Disagree',
+        likert3: 'Neutral',
+        likert4: 'Agree',
+        likert5: 'Strongly agree',
+        test120Incomplete: 'Not all items answered. First unanswered item:',
+        test120Scales: 'Your 30 facet scales and 5 domains',
         tabFull: '📋 30 scales',
         tabCalendar: '📅 Calendar',
         tabCompat: '❤️ Compatibility',
@@ -2029,8 +2064,8 @@ canvas {
         license: 'License',
         rightsIntro: 'QFTM-1024 is the original authorial system of Daniil Vasilievich Myagkov. The authorship notice must not be removed. Unmodified sharing is permitted. Commercial use and derivatives require written permission.',
         licenseText: '© 2026 Daniil Vasilievich Myagkov. All rights reserved. You may host and share this file with intact authorship notice. You may not claim authorship. Commercial use, paid redistribution, and closed derivatives require written permission from the author.',
-        theoryTopNoteBig: '⚠️ BEFORE YOU GET YOUR TYPE — take the original Big Five test IPIP‑NEO (120 or 300 items). QFTM‑1024 reads your scores from that validated instrument; do not invent numbers.',
-        theoryTopNoteSub: 'IPIP‑NEO‑120 / IPIP‑NEO‑300 are the public-domain Big Five inventories. Enter their facet scores into the “30 scales” tab, then calculate.',
+        theoryTopNoteBig: '⚠️ BEFORE YOU GET YOUR TYPE — take the built-in 120-item test (tab “Test 120”), an adaptation of the public-domain IPIP-NEO-120. Or paste facet scores from any IPIP-NEO instrument into “30 scales”.',
+        theoryTopNoteSub: 'The built-in test computes 30 facets and 5 domains with validated keying; do not invent numbers.',
         theoryNameTitle: 'What does QFTM-1024 stand for',
         theoryNameText: 'QFTM-1024 = Quadrotomy Factor Typology Model. “Quadrotomy” means each of the five Big Five factors is cut into four zones (0–30, 31–50, 51–70, 71–100). Five factors with four zones each give 4^5 = 1024 unique profiles.',
         theoryWhat: 'What is QFTM-1024',
@@ -2331,6 +2366,18 @@ canvas {
         btnCat: '🐱 Котик профиля',
         btnRights: '⚖️ Права',
         tabQuick: '⚡ Быстрый',
+        test120Warn: 'Оценивай себя таким, какой ты ЕСТЬ СЕЙЧАС, а не каким хотел бы быть в будущем. Честные ответы про текущие привычки и реакции дают валидный профиль; желаемые — искажают все 30 шкал сразу.',
+        tabTest: '📝 Тест 120',
+        test120Title: 'Встроенный тест Big Five (адаптация IPIP-NEO-120, 120 пунктов)',
+        test120Intro: 'Ответь на все 120 утверждений (1–5). Тест посчитает 30 шкал-фасетов (0–100) и 5 общих факторов, затем построит твой профиль QFTM-1024 и котика. Если знаешь свои баллы — используй вкладки «30 шкал» или «Быстрый».',
+        test120Source: 'Пункты адаптированы из IPIP (общественное достояние, ipip.ori.org). Формулировки © 2026 Мягков Д. В. Эвристика самоотчёта, не клинический инструмент.',
+        likert1: 'Совершенно неверно',
+        likert2: 'Не совсем верно',
+        likert3: 'Ни верно, ни неверно',
+        likert4: 'Отчасти верно',
+        likert5: 'Совершенно верно',
+        test120Incomplete: 'Отвечены не все пункты. Первый пустой:',
+        test120Scales: 'Твои 30 шкал и 5 факторов',
         tabFull: '📋 30 шкал',
         tabCalendar: '📅 Календарь',
         tabCompat: '❤️ Совместимость',
@@ -2376,8 +2423,8 @@ canvas {
         license: 'Лицензия',
         rightsIntro: 'QFTM-1024 — авторская система Мягкова Даниила Васильевича. Уведомление об авторстве нельзя удалять. Размещение неизменённого файла разрешено. Коммерческое использование и производные работы требуют письменного разрешения.',
         licenseText: '© 2026 Мягков Даниил Васильевич. Все права защищены. Вы можете размещать и распространять этот файл с сохранённым уведомлением об авторстве. Присваивать авторство запрещено. Коммерческое использование, платное распространение и закрытые производные версии требуют письменного разрешения автора.',
-        theoryTopNoteBig: '⚠️ ПЕРЕД ПОЛУЧЕНИЕМ ТИПА — пройди оригинальный тест Big Five IPIP‑NEO (120 или 300 пунктов). QFTM‑1024 считывает баллы именно с этого валидированного инструмента; не выдумывай цифры.',
-        theoryTopNoteSub: 'IPIP‑NEO‑120 / IPIP‑NEO‑300 — публичные опросники Big Five. Внеси их баллы по фасетам во вкладку «30 шкал», затем рассчитай профиль.',
+        theoryTopNoteBig: '⚠️ ПЕРЕД ПОЛУЧЕНИЕМ ТИПА — пройди встроенный тест из 120 пунктов (вкладка «Тест 120»): это адаптация публичного IPIP-NEO-120. Или вставь баллы по фасетам из любого IPIP-NEO во вкладку «30 шкал».',
+        theoryTopNoteSub: 'Встроенный тест считает 30 фасетов и 5 факторов по валидированным ключам; не выдумывай цифры.',
         theoryNameTitle: 'Расшифровка QFTM-1024',
         theoryNameText: 'QFTM-1024 = Quadrotomy Factor Typology Model (Модель типологии факторов с четверным делением). «Quadrotomy» означает, что каждый из пяти факторов Big Five разрезан на четыре зоны (0–30, 31–50, 51–70, 71–100). Пять факторов по четыре зоны дают 4^5 = 1024 уникальных профиля.',
         theoryWhat: 'Что такое QFTM-1024',
@@ -2679,6 +2726,18 @@ canvas {
         btnCat:'🐱 Gato',
         btnRights:'⚖️ Derechos',
         tabQuick:'⚡ Rápido',
+        test120Warn:'Evalúate como eres AHORA MISMO, no como te gustaría ser en el futuro. Las respuestas honestas sobre tus hábitos y reacciones actuales dan un perfil válido; las aspiracionales distorsionan las 30 facetas a la vez.',
+        tabTest:'📝 Test 120',
+        test120Title:'Test Big Five integrado (adaptación IPIP-NEO-120, 120 ítems)',
+        test120Intro:'Responde los 120 enunciados (1–5). El test calcula 30 facetas (0–100) y 5 dominios, y crea tu perfil QFTM-1024 y tu gato. Si ya conoces tus puntuaciones, usa «30 escalas» o «Rápido».',
+        test120Source:'Ítems adaptados del IPIP (dominio público, ipip.ori.org). Redacción © 2026 Daniil Myagkov. Heurística de autoinforme, no instrumento clínico.',
+        likert1:'Muy en desacuerdo',
+        likert2:'En desacuerdo',
+        likert3:'Neutral',
+        likert4:'De acuerdo',
+        likert5:'Muy de acuerdo',
+        test120Incomplete:'Faltan respuestas. Primer ítem sin responder:',
+        test120Scales:'Tus 30 facetas y 5 dominios',
         tabFull:'📋 30 escalas',
         tabCalendar:'📅 Calendario',
         tabCompat:'❤️ Compatibilidad',
@@ -2724,8 +2783,8 @@ canvas {
         license:'Licencia',
         rightsIntro:'QFTM-1024 es el sistema original de Daniil Vasilievich Myagkov. No se debe eliminar el aviso de autoría.',
         licenseText:'© 2026 Daniil Vasilievich Myagkov. Todos los derechos reservados.',
-        theoryTopNoteBig:'⚠️ ANTES DE OBTENER TU TIPO — haz el test original Big Five IPIP‑NEO (120 o 300 ítems).',
-        theoryTopNoteSub:'Introduce sus puntuaciones por facetas en «30 escalas» y calcula.',
+        theoryTopNoteBig:'⚠️ ANTES DE OBTENER TU TIPO — haz el test integrado de 120 ítems (pestaña «Test 120»), adaptación del IPIP-NEO-120 de dominio público, o pega tus facetas en «30 escalas».',
+        theoryTopNoteSub:'El test integrado calcula 30 facetas y 5 dominios con claves validadas; no inventes números.',
         theoryNameTitle:'Qué significa QFTM-1024',
         theoryNameText:'QFTM-1024 = Quadrotomy Factor Typology Model: cada uno de los cinco factores Big Five se corta en cuatro zonas (0–30, 31–50, 51–70, 71–100). 4^5 = 1024 perfiles.',
         theoryWhat:'Qué es QFTM-1024',
@@ -2984,6 +3043,18 @@ canvas {
         btnCat:'🐱 Chat',
         btnRights:'⚖️ Droits',
         tabQuick:'⚡ Rapide',
+        test120Warn:'Évaluez-vous tel que vous ÊTES MAINTENANT, pas tel que vous aimeriez être plus tard. Des réponses honnêtes sur vos habitudes et réactions actuelles donnent un profil valide ; des réponses idéalisées faussent les 30 facettes d’un coup.',
+        tabTest:'📝 Test 120',
+        test120Title:'Test Big Five intégré (adaptation IPIP-NEO-120, 120 items)',
+        test120Intro:'Répondez aux 120 énoncés (1–5). Le test calcule 30 facettes (0–100) et 5 domaines, puis crée votre profil QFTM-1024 et votre chat. Si vous connaissez déjà vos scores, utilisez « 30 échelles » ou « Rapide ».',
+        test120Source:'Items adaptés de l’IPIP (domaine public, ipip.ori.org). Formulation © 2026 Daniil Myagkov. Heuristique d’auto-évaluation, pas un instrument clinique.',
+        likert1:'Pas du tout d’accord',
+        likert2:'Plutôt pas d’accord',
+        likert3:'Neutre',
+        likert4:'Plutôt d’accord',
+        likert5:'Tout à fait d’accord',
+        test120Incomplete:'Tous les items ne sont pas répondus. Premier item vide :',
+        test120Scales:'Vos 30 facettes et 5 domaines',
         tabFull:'📋 30 échelles',
         tabCalendar:'📅 Calendrier',
         tabCompat:'❤️ Compatibilité',
@@ -3029,8 +3100,8 @@ canvas {
         license:'Licence',
         rightsIntro:'QFTM-1024 est le système original de Daniil Vasilievich Myagkov. L’avis de paternité ne doit pas être retiré.',
         licenseText:'© 2026 Daniil Vasilievich Myagkov. Tous droits réservés.',
-        theoryTopNoteBig:'⚠️ AVANT D’OBTENIR VOTRE TYPE — passez le test Big Five original IPIP‑NEO (120 ou 300 items).',
-        theoryTopNoteSub:'Saisissez les scores par facette dans « 30 échelles » puis calculez.',
+        theoryTopNoteBig:'⚠️ AVANT D’OBTENIR VOTRE TYPE — passez le test intégré de 120 items (onglet « Test 120 »), adaptation de l’IPIP-NEO-120 du domaine public, ou collez vos facettes dans « 30 échelles ».',
+        theoryTopNoteSub:'Le test intégré calcule 30 facettes et 5 domaines avec des clés validées ; n’inventez pas de nombres.',
         theoryNameTitle:'Signification de QFTM-1024',
         theoryNameText:'QFTM-1024 = Quadrotomy Factor Typology Model : chaque facteur Big Five est coupé en quatre zones (0–30, 31–50, 51–70, 71–100). 4^5 = 1024 profils.',
         theoryWhat:'Qu’est-ce que QFTM-1024',
@@ -3289,6 +3360,18 @@ canvas {
         btnCat:'🐱 猫咪',
         btnRights:'⚖️ 权利',
         tabQuick:'⚡ 快速',
+        test120Warn:'请按您现在的样子评分，而非希望未来的样子。如实反映当下习惯与反应才能得到有效画像；理想化作答会同时扭曲全部 30 个层面。',
+        tabTest:'📝 120 题测试',
+        test120Title:'内置大五测试（IPIP-NEO-120 改编，120 题）',
+        test120Intro:'请回答全部 120 题（1–5）。测试将计算 30 个层面（0–100）与 5 个维度，并生成你的 QFTM-1024 类型与猫咪。若已知层面分数，请使用「30 量表」或「快速」。',
+        test120Source:'题目改编自 IPIP（公共领域，ipip.ori.org）。措辞 © 2026 Daniil Myagkov。自评启发式工具，非临床诊断。',
+        likert1:'非常不同意',
+        likert2:'不同意',
+        likert3:'中立',
+        likert4:'同意',
+        likert5:'非常同意',
+        test120Incomplete:'尚有未答题目。第一个未答：',
+        test120Scales:'你的 30 个层面与 5 个维度',
         tabFull:'📋 30 量表',
         tabCalendar:'📅 日历',
         tabCompat:'❤️ 兼容性',
@@ -3334,8 +3417,8 @@ canvas {
         license:'许可证',
         rightsIntro:'QFTM-1024 是 Daniil Vasilievich Myagkov 的原创作者系统。不得删除作者声明。',
         licenseText:'© 2026 Daniil Vasilievich Myagkov。保留所有权利。',
-        theoryTopNoteBig:'⚠️ 获取类型之前 — 请先完成原版 Big Five 测试 IPIP‑NEO（120 或 300 题）。',
-        theoryTopNoteSub:'将 facet 分数填入「30 量表」然后计算。',
+        theoryTopNoteBig:'⚠️ 获取类型之前 — 请先完成内置 120 题测试（「120 题测试」标签），即公共领域 IPIP-NEO-120 的改编；或将层面分数填入「30 量表」。',
+        theoryTopNoteSub:'内置测试按效度键计算 30 层面与 5 维度；请勿编造数字。',
         theoryNameTitle:'QFTM-1024 的含义',
         theoryNameText:'QFTM-1024 = Quadrotomy Factor Typology Model：每个大五因素被切为四个区域（0–30、31–50、51–70、71–100）。4^5 = 1024 个类型。',
         theoryWhat:'什么是 QFTM-1024',
@@ -5980,9 +6063,9 @@ renderCompat();
       });
       b.classList.add('active');
       const tab = b.dataset.tab;
-      if (tab === 'quick') {
-        document.getElementById('panel-quick').classList.add('active');
-      } else if (tab === 'full') {
+      if (tab === 'test120') {
+        document.getElementById('panel-test120').classList.add('active');
+      } else if (tab === 'quick') {
         document.getElementById('panel-full').classList.add('active');
       } else if (tab === 'calendar') {
         document.getElementById('panel-calendar').classList.add('active');
@@ -6450,6 +6533,7 @@ renderCompat();
     renderTheory();
     renderRights();
     buildFullTestUI();
+    renderTest120();
     renderCalendar();
     if (document.getElementById('typesGrid').children.length > 0) {
       buildAllTypesGrid();
@@ -6475,10 +6559,388 @@ renderCompat();
   document.getElementById('languageSelect').addEventListener('change', function() {
     setLanguage(this.value);
   });
+  // ================= TEST 120 (IPIP-NEO-120 adaptation, public domain) =================
+const T120_W = [0, 6, 12, 19, 25];
+const T120_REV = [9,19,24,30,40,48,51,53,54,60,62,67,68,69,70,73,74,75,78,79,80,81,83,84,85,88,89,90,92,94,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,113,114,115,116,118,119,120];
+function t120Facet(id) {
+const pos = (id - 1) % 30;
+return ['N','E','O','A','C'][pos % 5] + (Math.floor(pos / 5) + 1);
+}
+const T120_Q = {
+ru: [
+'Часто ловлю себя на том, что прокручиваю в голове тревожные мысли о разных сторонах жизни.',
+'Мне не составляет труда познакомиться с новым человеком и быстро перейти на тёплую волну.',
+'Могу ярко представить в уме сцены, которых со мной наяву никогда не происходило.',
+'По умолчанию считаю, что большинство людей вокруг честны и заслуживают доверия.',
+'Когда берусь за задачу, я обычно довожу её до результата, которым доволен сам.',
+'Вспыливаю быстро: достаточно мелочи, чтобы внутри закипело раздражение.',
+'Мне приятно находиться там, где вокруг много людей, шум и общее оживление.',
+'Убеждён, что искусство, музыка и красота занимают важное место в жизни человека.',
+'Бывает, что я добиваюсь своего, играя на чувствах или слабостях других людей.',
+'Мне нравится наводить порядок: раскладывать вещи по местам и очищать пространство вокруг.',
+'Подолгу пребываю в подавленном, грустном настроении без очевидной внешней причины.',
+'В групповой ситуации я естественно беру инициативу и руководство на себя.',
+'Мои эмоциональные реакции сильные и заметные: я глубоко переживаю и радость, и печаль.',
+'Мне искренне приятно делать что-то полезное для других, даже когда это не моя обязанность.',
+'Если я дал слово, я считаю делом чести выполнить его, даже когда это неудобно.',
+'Мне нужно много времени и осторожности, чтобы подпустить человека близко и открыться ему.',
+'Мой день обычно распланирован делами: я постоянно чем-то занят и редко сижу без движения.',
+'Мне интереснее пробовать новые маршруты и способы, чем повторять привычные по кругу.',
+'Мне азартно спорить, соперничать и отстаивать своё в конфликте, а не уступать.',
+'Работая над делом, я выкладываюсь полностью и не жалею сил на качество результата.',
+'Мне трудно удержаться от излишеств — еды, покупок, развлечений: когда хочется, я не знаю меры.',
+'Меня тянет в ситуации с адреналином и сильными впечатлениями, а не на спокойную ровность.',
+'Мне интересно разбирать сложные статьи, книги и идеи, требующие умственного усилия.',
+'В глубине души я считаю себя более способным и значимым, чем большинство окружающих.',
+'Я заранее готовлю всё необходимое, чтобы потом не суетиться и не срываться.',
+'В внезапной неприятности я быстро теряю голову и начинаю паниковать.',
+'Люди вокруг часто замечают, что от меня исходит лёгкость, весёлость и приподнятое настроение.',
+'В общественных вопросах мне ближе прогрессивные, либеральные позиции и открытость переменам.',
+'Вид человека в беде — бездомного, потерявшего всё — отзывается во мне живым сочувствием.',
+'Я часто начинаю действовать раньше, чем успеваю обдумать последствия шага.',
+'Перед любым событием я мысленно готовлюсь к худшему варианту развития сюжета.',
+'В компании незнакомых людей я чувствую себя спокойно и естественно, а не напряжённо.',
+'Мне доставляет удовольствие отпускать воображение в свободный полёт, не ограничивая его рамками.',
+'Я предполагаю, что поступки людей вокруг продиктованы добрыми, а не злыми намерениями.',
+'Дела, за которые берусь, я выполняю отлично, на высоком уровне мастерства.',
+'Мелкие помехи и чужая медлительность быстро выводят меня из равновесия.',
+'На вечеринке я легко переключаюсь между компаниями и заговариваю с самыми разными гостями.',
+'Замечаю красоту в обычных деталях — свете, фактуре, звуке, — мимо которых другие проходят.',
+'Могу схитрить или сказать неправду, если это помогает мне добиться преимущества.',
+'Пользуясь вещами, я нередко оставляю их где попало, вместо того чтобы убрать на место.',
+'Оглядываясь на себя, я чаще вижу недостатки, чем причины для самоуважения.',
+'В группе я естественно стремлюсь задавать направление и распределять роли, а не подчиняться.',
+'Тонко улавливаю, что чувствует собеседник, даже когда он ничего не говорит вслух.',
+'Переживания близких заботят меня настолько, что я думаю о них даже в занятые дни.',
+'Мне важно говорить правду, даже когда ложь была бы удобнее и безопаснее.',
+'Мне тревожно оказываться в центре внимания: хочется стать меньше и незаметнее.',
+'Мне физически трудно долго сидеть без дела: тело требует движения и активности.',
+'Мне спокойнее делать привычное и проверенное, чем экспериментировать с новым.',
+'В раздражении я повышаю голос и могу накричать на человека, даже не желая этого заранее.',
+'Я регулярно выдаю больше, чем от меня формально ждали: сверх плана и сверх нормы.',
+'Мне легко отказываться от соблазнов и держать умеренность в еде, тратах и удовольствиях.',
+'Меня тянет в новые рискованные ситуации и приключения, а не в предсказуемый покой.',
+'Разговоры об абстрактных идеях и смыслах кажутся мне пустой тратой времени.',
+'Я высокого мнения о своих качествах и считаю себя человеком незаурядным.',
+'Запланированное мной обычно действительно выполняется, а не остаётся в списках.',
+'После неудач я надолго остаюсь придавленным случившимся и не могу быстро собраться.',
+'В моей жизни много смеха, шуток и моментов искреннего веселья.',
+'Мне близко мнение, что моральные границы гибки и зависят от контекста, а не абсолютны.',
+'Судьбы людей, которым тяжелее, чем мне, вызывают у меня живое участие и желание помочь.',
+'Решения у меня рождаются мгновенно, порой быстрее, чем я взвесил все аргументы.',
+'В жизни меня сопровождает множество страхов: больших и совсем мелких, но назойливых.',
+'Я сознательно сокращаю общение и уклоняюсь от контактов, когда есть такая возможность.',
+'Могу подолгу находиться в мечтах, и это состояние мне дорого и приятно.',
+'Словам собеседников я склонен верить сразу, не выискивая в них скрытый умысел.',
+'За какую бы задачу я ни взялся, руки и голова работают у меня слаженно и умело.',
+'Вспышки гнева у меня случаются резко: я взрываюсь и теряю самообладание.',
+'Компании я предпочитаю одиночество: наедине с собой мне заметно комфортнее.',
+'Стихи и поэтические образы оставляют меня равнодушным и кажутся ненужными.',
+'Бывает, что чужие усилия и ресурсы становятся для меня просто средством достичь цели.',
+'Моя комната или рабочий стол часто остаются в беспорядке после моего дня.',
+'Подавленность — мой частый фон: настроение опускается без видимого повода.',
+'Мне важно держать процессы под своим контролем и вести их своей рукой.',
+'Я часто не отслеживаю, что именно чувствую в моменте: эмоции проходят мимо сознания.',
+'Чужие переживания не слишком меня трогают: я редко вовлекаюсь эмоционально.',
+'Правила и регламенты я легко переступаю, если они мне мешают.',
+'Расслабленно я чувствую себя лишь в узком кругу близких, а не среди посторонних.',
+'Свободное время у меня заполнено делами и проектами: я редко провожу его впустую.',
+'Перемены в распорядке и обстановке меня скорее напрягают, чем радуют.',
+'В конфликте я могу ударить словом: обидеть или унизить собеседника.',
+'На работе я ограничиваюсь необходимым минимумом, не вкладываясь сверх задачи.',
+'Соблазны меня не сбивают: я спокойно прохожу мимо того, что вредно или излишне.',
+'Мне нравится поступать дерзко и безрассудно, не просчитывая всё заранее.',
+'Абстрактные концепции и теории даются мне тяжело и кажутся туманными.',
+'Я считаю себя человеком выдающимся и стою выше средней планки.',
+'Замечаю, что часы уходят у меня на пустые занятия без пользы и цели.',
+'В нагруженные периоды меня накрывает ощущение, что я не справлюсь с делами.',
+'Я чувствую живой интерес и любовь к жизни как таковой, несмотря на трудности.',
+'В политике мне ближе консервативные позиции: порядок, традиция и жёсткость.',
+'Чужие трудности мне неинтересны: я не вникаю в проблемы окружающих.',
+'Мне трудно ждать естественного хода вещей: я подгоняю сроки и людей.',
+'Даже умеренное давление быстро вводит меня в состояние стресса и напряжения.',
+'Я выстраиваю дистанцию: люди подолгу остаются для меня «на расстоянии вытянутой руки».',
+'Мне приятно углубляться в собственные размышления, следуя за мыслью куда угодно.',
+'Я по умолчанию не доверяю людям и проверяю их мотивы, прежде чем открыться.',
+'Я хорошо понимаю, с какой стороны браться за дела, и уверенно организую процесс.',
+'Оставаться ровным и незлобивым даже при провокациях — моя обычная реакция.',
+'Многолюдных мест я стараюсь избегать: толпа выматывает меня.',
+'Музеи, галереи и выставки не привлекают меня: мне там скучно.',
+'Бывает, что я сознательно мешаю чужим планам, если они противоречат моим.',
+'Мои вещи постоянно оказываются разбросанными: где взял, там и оставил.',
+'В целом я доволен собой таким, какой я есть, и не хочу себя переделывать.',
+'В группе мне удобнее подождать, пока кто-то другой предложит план и поведёт.',
+'Открытые проявления чувств кажутся мне странными: зачем их выставлять наружу?',
+'Я не готов тратить своё время на чужие дела и просьбы без прямой причины.',
+'Данные обещания я нередко забываю или откладываю, не считая это серьёзным.',
+'Неловкие и конфликтные разговоры не выбивают меня из колеи: я держусь уверенно.',
+'Если можно не напрягаться, я выберу лёгкий путь без лишних усилий.',
+'Мне ближе действовать по общепринятым, проверенным схемам, чем изобретать свои.',
+'Обиды я не отпускаю: мне хочется ответить тем же и восстановить счёт.',
+'Работе я отдаю минимум времени и сил, оставляя главное для себя.',
+'Свои желания и порывы я держу под сознательным контролем.',
+'Иногда я совершаю отчаянные, «безумные» поступки ради остроты момента.',
+'Теоретические споры и умозрительные темы не вызывают у меня интереса.',
+'Мне нравится демонстрировать свои успехи и достоинства окружающим.',
+'Начать дело для меня мучительно: я долго раскачиваюсь и откладываю старт.',
+'Под давлением и в аврале я сохраняю холодную голову и ровный пульс.',
+'На жизнь я смотрю с оптимизмом: впереди вижу скорее возможности, чем угрозы.',
+'Мне близко мнение, что с преступностью нужно бороться максимально жёстко и строго.',
+'Темы нужды и страданий других я стараюсь от себя отгонять, чтобы не грузиться.',
+'Сначала делаю, потом думаю: рефлексия приходит уже после поступка.'
+],
+en: [
+'Worry about things.','Make friends easily.','Have a vivid imagination.','Trust others.','Complete tasks successfully.',
+'Get angry easily.','Love large parties.','Believe in the importance of art.','Use others for my own ends.','Like to tidy up.',
+'Often feel blue.','Take charge.','Experience my emotions intensely.','Love to help others.','Keep my promises.',
+'Find it difficult to approach others.','Am always busy.','Prefer variety to routine.','Love a good fight.','Work hard.',
+'Go on binges.','Love excitement.','Love to read challenging material.','Believe that I am better than others.','Am always prepared.',
+'Panic easily.','Radiate joy.','Tend to vote for liberal political candidates.','Sympathize with the homeless.','Jump into things without thinking.',
+'Fear for the worst.','Feel comfortable around people.','Enjoy wild flights of fantasy.','Believe that others have good intentions.','Excel in what I do.',
+'Get irritated easily.','Talk to a lot of different people at parties.','See beauty in things that others might not notice.','Cheat to get ahead.','Often forget to put things back in their proper place.',
+'Dislike myself.','Try to lead others.','Feel others\' emotions.','Am concerned about others.','Tell the truth.',
+'Am afraid to draw attention to myself.','Am always on the go.','Prefer to stick with things that I know.','Yell at people.','Do more than what\'s expected of me.',
+'Rarely overindulge.','Seek adventure.','Avoid difficult reading material.','Think highly of myself.','Carry out my plans.',
+'Become overwhelmed by events.','Have a lot of fun.','Believe that there is no absolute right or wrong.','Feel sympathy for those who are worse off than myself.','Make rash decisions.',
+'Am afraid of many things.','Avoid contacts with others.','Love to daydream.','Trust what people say.','Handle tasks smoothly.',
+'Lose my temper.','Prefer to be alone.','Do not like poetry.','Take advantage of others.','Leave a mess in my room.',
+'Am often down in the dumps.','Take control of things.','Rarely notice my emotional reactions.','Am indifferent to the feelings of others.','Break rules.',
+'Only feel comfortable with friends.','Do a lot in my spare time.','Dislike changes.','Insult people.','Do just enough work to get by.',
+'Easily resist temptations.','Enjoy being reckless.','Have difficulty understanding abstract ideas.','Have a high opinion of myself.','Waste my time.',
+'Feel that I\'m unable to deal with things.','Love life.','Tend to vote for conservative political candidates.','Am not interested in other people\'s problems.','Rush into things.',
+'Get stressed out easily.','Keep others at a distance.','Like to get lost in my thoughts.','Distrust people.','Know how to get things done.',
+'Am not easily annoyed.','Avoid crowds.','Do not enjoy going to art museums.','Obstruct others\' plans.','Leave my belongings around.',
+'Feel comfortable with myself.','Wait for others to lead the way.','Don\'t understand people who get emotional.','Take no time for others.','Break my promises.',
+'Am not bothered by difficult social situations.','Like to take it easy.','Am attached to conventional ways.','Get back at others.','Put little time and effort into my work.',
+'Am able to control my cravings.','Act wild and crazy.','Am not interested in theoretical discussions.','Boast about my virtues.','Have difficulty starting tasks.',
+'Remain calm under pressure.','Look at the bright side of life.','Believe that we should be tough on crime.','Try not to think about the needy.','Act without thinking.'
+],
+es: [
+'Me preocupo por muchas cosas.','Hago amigos con facilidad.','Tengo imaginación vívida.','Confío en los demás.','Completo mis tareas con éxito.',
+'Me enojo fácilmente.','Me gustan las fiestas grandes.','Creo en la importancia del arte.','Uso a los demás para mis fines.','Me gusta ordenar.',
+'A menudo me siento triste.','Tomo el mando.','Vivo mis emociones con intensidad.','Me encanta ayudar a los demás.','Cumplo mis promesas.',
+'Me cuesta acercarme a los demás.','Siempre estoy ocupado.','Prefiero la variedad a la rutina.','Me gusta una buena pelea.','Trabajo duro.',
+'Suelo darme a los excesos.','Amo la emoción.','Me gusta leer material desafiante.','Creo que soy mejor que los demás.','Siempre estoy preparado.',
+'Entro en pánico fácilmente.','Irradio alegría.','Voto por candidatos liberales.','Me compadezco de los sin hogar.','Me lanzo sin pensar.',
+'Espero lo peor.','Me siento a gusto con la gente.','Disfruto vuelos de fantasía.','Creo que otros tienen buenas intenciones.','Sobresalgo en lo que hago.',
+'Me irrito fácilmente.','Hablo con mucha gente en las fiestas.','Veo belleza donde otros no la notan.','Hago trampa para avanzar.','Olvido volver a poner las cosas en su lugar.',
+'No me gusto a mí mismo.','Intento dirigir a los demás.','Percibo las emociones de otros.','Me preocupo por los demás.','Digo la verdad.',
+'Me da miedo llamar la atención.','Siempre estoy en movimiento.','Prefiero lo conocido.','Grito a la gente.','Hago más de lo que se espera de mí.',
+'Rara vez me doy a los excesos.','Busco aventuras.','Evito lecturas difíciles.','Pienso bien de mí.','Llevo a cabo mis planes.',
+'Los acontecimientos me abruman.','Me divierto mucho.','Creo que no hay bien o mal absolutos.','Siento compasión por quienes están peor.','Tomo decisiones precipitadas.',
+'Temo muchas cosas.','Evito el contacto con los demás.','Me gusta soñar despierto.','Creo lo que la gente dice.','Manejo las tareas con destreza.',
+'Pierdo los estribos.','Prefiero estar solo.','No me gusta la poesía.','Me aprovecho de los demás.','Dejo mi cuarto desordenado.',
+'A menudo estoy deprimido.','Tomo el control de las cosas.','Rara vez noto mis reacciones emocionales.','Soy indiferente a los sentimientos de los demás.','Rompo las reglas.',
+'Solo me siento a gusto con amigos.','Hago mucho en mi tiempo libre.','Me disgustan los cambios.','Insulto a la gente.','Hago lo mínimo para cumplir.',
+'Resisto tentaciones con facilidad.','Disfruto ser imprudente.','Me cuestan las ideas abstractas.','Tengo alta opinión de mí.','Pierdo el tiempo.',
+'Siento que no puedo con las cosas.','Amo la vida.','Voto por candidatos conservadores.','No me interesan los problemas ajenos.','Apuro las cosas.',
+'Me estreso con facilidad.','Mantengo a los demás a distancia.','Me gusta perderme en mis pensamientos.','Desconfío de la gente.','Sé cómo sacar adelante las cosas.',
+'No me molesto fácilmente.','Evito las multitudes.','No disfruto los museos de arte.','Obstaculizo los planes de otros.','Dejo mis cosas tiradas.',
+'Me siento a gusto conmigo mismo.','Espero que otros lideren.','No entiendo a quien se deja llevar por emociones.','No dedico tiempo a los demás.','Rompo mis promesas.',
+'Las situaciones sociales difíciles no me alteran.','Prefiero tomármelo con calma.','Me atengo a lo convencional.','Me desquito con los demás.','Pongo poco tiempo y esfuerzo en mi trabajo.',
+'Controlo mis antojos.','Actúo de forma alocada.','No me interesan debates teóricos.','Alardeo de mis virtudes.','Me cuesta empezar tareas.',
+'Mantengo la calma bajo presión.','Veo el lado bueno de la vida.','Creo que hay que ser duro con el crimen.','Procuro no pensar en los necesitados.','Actúo sin pensar.'
+],
+fr: [
+'Je me soucie de beaucoup de choses.','Je me fais facilement des amis.','J\'ai une imagination vive.','Je fais confiance aux autres.','Je mène mes tâches à bien.',
+'Je me mets facilement en colère.','J\'aime les grandes fêtes.','Je crois à l\'importance de l\'art.','J\'utilise les autres à mes fins.','J\'aime ranger.',
+'Je suis souvent triste.','Je prends les commandes.','Je vis mes émotions intensément.','J\'aime aider les autres.','Je tiens mes promesses.',
+'J\'ai du mal à aborder les autres.','Je suis toujours occupé.','Je préfère la variété à la routine.','J\'aime une bonne bagarre.','Je travaille dur.',
+'Je me laisse aller aux excès.','J\'aime l\'intensité.','J\'aime lire des textes exigeants.','Je me crois meilleur que les autres.','Je suis toujours prêt.',
+'Je panique facilement.','J\'irradie de joie.','Je vote pour des candidats libéraux.','J\'ai de la compassion pour les sans-abri.','Je me lance sans réfléchir.',
+'Je m\'attends au pire.','Je suis à l\'aise avec les gens.','J\'aime les vols d\'imagination.','Je crois que les autres ont de bonnes intentions.','J\'excelle dans ce que je fais.',
+'Je m\'irrite facilement.','Je parle à beaucoup de monde en soirée.','Je vois la beauté là où d\'autres ne la voient pas.','Je triche pour avancer.','J\'oublie de ranger les choses à leur place.',
+'Je ne m\'aime pas.','J\'essaie de diriger les autres.','Je ressens les émotions des autres.','Je me soucie des autres.','Je dis la vérité.',
+'J\'ai peur d\'attirer l\'attention.','Je suis toujours en mouvement.','Je préfère mes habitudes.','Je crie sur les gens.','Je fais plus que ce qu\'on attend de moi.',
+'Je cède rarement aux excès.','Je cherche l\'aventure.','J\'évite les lectures difficiles.','J\'ai une haute opinion de moi.','Je mène mes plans à terme.',
+'Les événements me submergent.','Je m\'amuse beaucoup.','Je crois qu\'il n\'y a ni bien ni mal absolu.','J\'ai de la compassion pour plus malheureux que moi.','Je prends des décisions hâtives.',
+'J\'ai peur de beaucoup de choses.','J\'évite le contact avec les autres.','J\'aime rêvasser.','Je crois ce que les gens disent.','Je mène les tâches avec habileté.',
+'Je perds mon sang-froid.','Je préfère être seul.','Je n\'aime pas la poésie.','Je profite des autres.','Je laisse ma chambre en désordre.',
+'Je suis souvent déprimé.','Je prends le contrôle des choses.','Je remarque rarement mes réactions émotionnelles.','Je suis indifférent aux sentiments des autres.','J\'enfreins les règles.',
+'Je ne suis à l\'aise qu\'avec mes amis.','Je fais beaucoup pendant mon temps libre.','Je n\'aime pas le changement.','J\'insulte les gens.','Je fais le minimum de travail.',
+'Je résiste facilement aux tentations.','J\'aime être imprudent.','J\'ai du mal avec les idées abstraites.','J\'ai une grande estime de moi.','Je perds mon temps.',
+'Je me sens incapable de faire face.','J\'aime la vie.','Je vote pour des candidats conservateurs.','Je ne m\'intéresse pas aux problèmes des autres.','Je précipite les choses.',
+'Je stresse facilement.','Je garde les autres à distance.','J\'aime me perdre dans mes pensées.','Je me méfie des gens.','Je sais comment m\'y prendre.',
+'Je ne m\'énerve pas facilement.','J\'évite les foules.','Je n\'aime pas les musées d\'art.','Je fais obstacle aux plans des autres.','Je laisse traîner mes affaires.',
+'Je suis bien avec moi-même.','J\'attends que les autres montrent la voie.','Je ne comprends pas les gens émotifs.','Je ne consacre pas de temps aux autres.','Je ne tiens pas mes promesses.',
+'Les situations sociales difficiles ne me troublent pas.','Je préfère ne pas me fatiguer.','Je m\'en tiens aux façons conventionnelles.','Je rends la pareille aux autres.','Je consacre peu de temps et d\'effort à mon travail.',
+'Je sais contrôler mes pulsions.','J\'agis de façon folle.','Les discussions théoriques ne m\'intéressent pas.','Je vante mes mérites.','J\'ai du mal à me mettre aux tâches.',
+'Je reste calme sous pression.','Je vois la vie du bon côté.','Je crois qu\'il faut être sévère avec le crime.','J\'essaie de ne pas penser aux démunis.','J\'agis sans réfléchir.'
+],
+zh: [
+'我为很多事情担心。','我很容易交到朋友。','我的想象力生动。','我信任他人。','我能成功完成任务。',
+'我很容易生气。','我喜欢大型聚会。','我相信艺术的重要性。','我为达目的利用他人。','我喜欢整理。',
+'我常常感到沮丧。','我主动领导。','我的情绪体验强烈。','我乐于帮助他人。','我信守承诺。',
+'我很难接近他人。','我总是很忙。','我喜欢变化而非例行。','我喜欢争强好胜。','我努力工作。',
+'我常常放纵自己。','我喜欢刺激。','我喜欢阅读有难度的材料。','我认为自己比别人强。','我总是做好准备。',
+'我很容易恐慌。','我洋溢快乐。','我倾向投给自由派候选人。','我同情无家可归者。','我做事不先思考。',
+'我预期最坏结果。','我在人群中自在。','我喜欢天马行空的幻想。','我相信他人出于好意。','我做得出色。',
+'我很容易烦躁。','聚会上我和很多人交谈。','我能看到别人忽略的美。','我为出人头地而欺骗。','我常忘记把东西放回原处。',
+'我不喜欢自己。','我试图领导他人。','我能感受到他人的情绪。','我关心他人。','我说真话。',
+'我害怕引人注目。','我总是忙个不停。','我偏好熟悉的事物。','我对人吼叫。','我做得比期望更多。',
+'我很少放纵。','我寻求冒险。','我回避难读的材料。','我自我评价很高。','我落实自己的计划。',
+'事件让我感到不堪重负。','我玩得很开心。','我认为没有绝对的对错。','我同情处境更差的人。','我做决定草率。',
+'我害怕很多东西。','我回避与人接触。','我喜欢做白日梦。','我相信别人说的话。','我熟练地处理任务。',
+'我发脾气。','我更喜欢独处。','我不喜欢诗。','我利用他人。','我把房间弄得一团糟。',
+'我常常情绪低落。','我掌控事情。','我很少注意到自己的情绪反应。','我对他人的感受漠不关心。','我违反规则。',
+'我只和朋友在一起才自在。','我在空闲时间做很多事。','我不喜欢改变。','我侮辱他人。','我只做最低限度的工作。',
+'我容易抵制诱惑。','我喜欢冒险放肆。','我难以理解抽象概念。','我对自己评价过高。','我浪费时间。',
+'我觉得自己无法应对。','我热爱生活。','我倾向投给保守派候选人。','我对别人的问题不感兴趣。','我催促事情进展。',
+'我很容易感到压力。','我与他人保持距离。','我喜欢沉浸在自己的思绪中。','我不信任他人。','我知道如何把事情办成。',
+'我不易被惹恼。','我回避人群。','我不喜欢去美术馆。','我阻碍他人的计划。','我乱放自己的东西。',
+'我对自己感到满意。','我等别人带头。','我不理解情绪化的人。','我不为他人花时间。','我违背诺言。',
+'复杂的社交场合不会让我困扰。','我喜欢轻松不费力。','我遵循传统方式。','我报复他人。','我在工作上花的时间和精力很少。',
+'我能控制自己的欲望。','我行为疯狂。','我对理论讨论不感兴趣。','我夸耀自己的优点。','我难以开始任务。',
+'我在压力下保持冷静。','我看到生活光明的一面。','我认为应严厉打击犯罪。','我尽量不去想那些需要帮助的人。','我行动而不思考。'
+]
+};
+function t120Questions() {
+return T120_Q[currentLang] || T120_Q.en;
+}
+let test120Answers = [];
+try {
+const ta = LS.get('test120_answers');
+if (ta) {
+const p = JSON.parse(ta);
+if (Array.isArray(p)) {
+test120Answers = p;
+}
+}
+} catch(e) {}
+function renderTest120() {
+const qs = t120Questions();
+const intro = document.getElementById('test120Intro');
+if (intro) {
+intro.innerHTML = '<strong>' + ui('test120Title') + '</strong><br>' + ui('test120Intro') + '<div class="t120-warn">⚠️ ' + ui('test120Warn') + '</div><span style="color:#888;font-size:0.74rem;">' + ui('test120Source') + '</span><br>...
+}
+const list = document.getElementById('test120List');
+if (!list) {
+return;
+}
+list.innerHTML = '';
+for (let i = 1; i <= 120; i++) {
+const row = document.createElement('div');
+row.className = 't120-row' + (test120Answers[i-1] ? ' done' : '');
+row.id = 't120row' + i;
+let opts = '';
+for (let v = 1; v <= 5; v++) {
+opts += '<button type="button" class="t120-opt' + (test120Answers[i-1] === v ? ' sel' : '') + '" data-i="' + i + '" data-v="' + v + '">' + v + '</button>';
+}
+row.innerHTML = '<div class="t120-q"><span class="t120-num">' + i + '.</span>' + escapeHtml(qs[i-1] || T120_Q.en[i-1]) + '</div><div class="t120-opts">' + opts + '</div>';
+list.appendChild(row);
+}
+updateTest120Prog();
+}
+function updateTest120Prog() {
+let n = 0;
+for (let i = 0; i < 120; i++) {
+if (test120Answers[i]) {
+n++;
+}
+}
+const lbl = document.getElementById('test120ProgLbl');
+const fill = document.getElementById('test120ProgFill');
+if (lbl) {
+lbl.textContent = n + '/120';
+}
+if (fill) {
+fill.style.width = (n / 120 * 100) + '%';
+}
+}
+function initTest120() {
+const list = document.getElementById('test120List');
+if (!list) {
+return;
+}
+list.addEventListener('click', function(e) {
+const b = e.target.closest('.t120-opt');
+if (!b) {
+return;
+}
+const i = parseInt(b.dataset.i, 10);
+const v = parseInt(b.dataset.v, 10);
+test120Answers[i-1] = v;
+LS.set('test120_answers', JSON.stringify(test120Answers));
+const row = document.getElementById('t120row' + i);
+if (row) {
+row.classList.add('done');
+row.querySelectorAll('.t120-opt').forEach(function(x) {
+x.classList.remove('sel');
+});
+}
+b.classList.add('sel');
+updateTest120Prog();
+});
+document.getElementById('btnTest120Submit').addEventListener('click', submitTest120);
+document.getElementById('btnTest120Reset').addEventListener('click', function() {
+test120Answers = [];
+LS.set('test120_answers', '[]');
+document.getElementById('resultTest').innerHTML = '';
+document.getElementById('test120Breakdown').innerHTML = '';
+renderTest120();
+});
+}
+function submitTest120() {
+for (let i = 0; i < 120; i++) {
+if (!test120Answers[i]) {
+alert(ui('test120Incomplete') + ' ' + (i + 1));
+const row = document.getElementById('t120row' + (i + 1));
+if (row) {
+row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+return;
+}
+}
+const sums = {};
+const cnt = {};
+for (let i = 1; i <= 120; i++) {
+const a = test120Answers[i-1];
+const f = t120Facet(i);
+const rev = T120_REV.indexOf(i) !== -1;
+const pts = T120_W[rev ? (5 - a) : (a - 1)];
+sums[f] = (sums[f] || 0) + pts;
+cnt[f] = (cnt[f] || 0) + 1;
+}
+const scales = {};
+fullScales.forEach(function(s) {
+const c = cnt[s.id] || 1;
+scales[s.id] = Math.round((sums[s.id] || 0) / c * 4);
+});
+const avgs = calcAverages(scales);
+const code = getTypeCode(avgs.E, avgs.O, avgs.A, avgs.C, avgs.N);
+const now = new Date();
+saveMonthData(now.getFullYear(), now.getMonth() + 1, code, scales);
+displayResult('resultTest', code);
+lastCatCode = code;
+LS.set('last_cat', code);
+calYear = now.getFullYear();
+renderCalendar();
+renderPlayground();
+renderTest120Breakdown(scales, avgs);
+}
+function renderTest120Breakdown(scales, avgs) {
+const box = document.getElementById('test120Breakdown');
+if (!box) {
+return;
+}
+let html = '<h3 style="color:#fff;margin:14px 0 8px;">' + ui('test120Scales') + '</h3>';
+['E','O','A','C','N'].forEach(function(d) {
+html += '<div class="domain-block"><div class="domain-name">' + getDomainName(d) + ' (' + d + '): <span style="color:#fff;">' + avgs[d] + '</span></div><div class="domain-items">';
+fullScales.filter(function(s) {
+return s.domain === d;
+}).forEach(function(s) {
+const v = scales[s.id];
+html += '<div class="scale-row"><span class="scale-label">' + getScaleName(s.id) + '</span><div class="uf-bar" style="flex:1;"><div class="uf-fill" style="width:' + v + '%;background:' + ufBarColor(v) + ';"></div></div><span class="scale-val">' + v + '</span></div>';
+});
+html += '</div></div>';
+});
+box.innerHTML = html;
+}
 
   initSchulte();
   initGames();
   initCompat();
+  initTest120();
   setLanguage(currentLang);
   renderPlayground();
 
