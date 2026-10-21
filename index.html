@@ -1725,6 +1725,8 @@ canvas {
       <input id="schulteCatInput" class="cat-in" value="INLW-Z" spellcheck="false" autocomplete="off" maxlength="6">
       <button class="btn btn-outline" id="btnSchulteRandomCat" data-i18n="schulteRandomCat">🎲 Random cat</button>
       <button class="btn btn-outline" id="btnSchulteApplyCat" data-i18n="schulteApply">Apply</button>
+      <label data-i18n="gmName">Player name</label>
+      <input id="schulteNameInput" data-i18n-ph="gmNamePh" placeholder="Your name" maxlength="24" spellcheck="false" autocomplete="off" style="background:#111;color:#fff;border:1px solid #444;border-radius:10px;padding:7px 10px;font-size:0.85rem;outline:none;width:120px;">
       <label><input type="checkbox" id="schulteDotCheck"> <span data-i18n="schulteDot">Center dot</span></label>
       <label data-i18n="schulteDotSize">Dot size</label>
       <input type="range" id="schulteDotSizeInput" min="4" max="28" value="10">
@@ -4497,19 +4499,6 @@ renderCompat();
 }
 });
 });
-document.getElementById('btnCompatExport').addEventListener('click', exportCoupleCard);
-['compatNameAInput', 'compatNameBInput'].forEach(function(id) {
-document.getElementById(id).addEventListener('input', function() {
-if (!lastCompat) {
-return;
-}
-const ca = String(document.getElementById('compatAInput').value || '').toUpperCase().trim();
-const cb = String(document.getElementById('compatBInput').value || '').toUpperCase().trim();
-if (isValidType(ca) && isValidType(cb)) {
-renderCompat();
-}
-});
-});
     document.getElementById('compatAInput').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         renderCompat();
@@ -4799,15 +4788,18 @@ renderCompat();
         renderSchulteLeaderboards();
       });
     }
-    const catInput = document.getElementById('schulteCatInput');
-    if (catInput) {
-      catInput.value = schulteCat;
-      catInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-          applySchulteCat(catInput.value);
-        }
-      });
-    }
+    const nameInput = document.getElementById('schulteNameInput');
+    if (nameInput) {
+      nameInput.value = playerName;
+      nameInput.addEventListener('input', function() {
+      playerName = nameInput.value;
+      LS.set('player_name', playerName);
+    const gn = document.getElementById('playerNameInput');
+    if (gn) {
+      gn.value = playerName;
+   }
+   });
+   }
     const dotCheck = document.getElementById('schulteDotCheck');
     if (dotCheck) {
       dotCheck.checked = schulteDotOn;
@@ -5428,11 +5420,15 @@ renderCompat();
     gamesInitialized = true;
     const pn = document.getElementById('playerNameInput');
     if (pn) {
-      pn.value = playerName;
-      pn.addEventListener('input', function() {
+        pn.value = playerName;
+        pn.addEventListener('input', function() {
         playerName = pn.value;
         LS.set('player_name', playerName);
-      });
+    const sn = document.getElementById('schulteNameInput');
+    if (sn) {
+        sn.value = playerName;
+    }
+    });
     }
     document.querySelectorAll('.gsub').forEach(function(b) {
       b.addEventListener('click', function() {
