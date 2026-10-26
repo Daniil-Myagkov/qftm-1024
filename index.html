@@ -6966,10 +6966,11 @@ box.innerHTML = html;
 </script>
 <script>
 /* ============================================================
-   QFTM-1024 :: EDC-2 (Energy Direction Coefficient) — 10 DOMAINS
+   QFTM-1024 :: EDC-2 (10 domains) — CONTINUOUS UF-6, v6
    45 pairs × 2 rounds = 90 forced choices (6 options, IPIP weights),
    commitment round (joys/griefs), sacrifice round for "both unpleasant",
-   5 zone tiers (dark-green core → red enemy), UF-6 zone-matrix compat.
+   lie-index, 5 zone tiers for DISPLAY only.
+   UF-6: continuous signed-energy product per domain, CH ×2.5, 3-decimal output.
    © 2026 Daniil Vasilievich Myagkov. Heuristic, not clinical.
    ============================================================ */
 (function(){
@@ -7017,10 +7018,10 @@ var GRIEF={
 BD:{en:'pain, fatigue, illness, fear of losing shape',ru:'боль, усталость, болезни и страх потерять форму',es:'dolor, fatiga, enfermedad, miedo a perder forma',fr:'douleur, fatigue, maladie, peur de perdre la forme',zh:'疼痛、疲劳、疾病、怕失去状态'},
 CA:{en:'burnout, deadlines, life passing by the office',ru:'выгорание, дедлайны, жизнь мимо офиса',es:'burnout, plazos, vida junto a la oficina',fr:'burnout, échéances, vie à côté du bureau',zh:'倦怠、截止日、错过生活'},
 MN:{en:'fear of loss, inflation, endless income race',ru:'страх потери, инфляция, вечная гонка за доходом',es:'miedo a perder, inflación, carrera sin fin',fr:'peur de perdre, inflation, course sans fin',zh:'失去的恐惧、通胀、无尽收入赛跑'},
-SP:{en:'quarrels will come, compromises, fear of loss',ru:'ссоры будут, компромиссы, страх потери',es:'llegarán peleas, compromisos, miedo a perder',fr:'disputes à venir, compromis, peur de perdre',zh:'争吵难免、妥协、失去的恐惧'},
+SP:{en:'night calls for help and price of shared time; loyalty dramas; quarrels will come',ru:'ночные просьбы о помощи и цена общего времени; драмы верности; ссоры будут',es:'llamadas nocturnas y precio del tiempo compartido; dramas de lealtad; llegarán peleas',fr:'appels nocturnes et prix du temps partagé ; drames de loyauté ; disputes à venir',zh:'深夜求助与共处时间代价；忠诚剧码；争吵难免'},
 PA:{en:'pressure, criticism, old wounds',ru:'давление, критика, старые обиды',es:'presión, crítica, heridas viejas',fr:'pression, critique, vieilles blessures',zh:'压力、批评、旧伤'},
 CH:{en:'years of fatigue, lost freedom, constant worry',ru:'годы усталости, потеря свободы, постоянное беспокойство',es:'años de fatiga, libertad perdida, preocupación constante',fr:'années de fatigue, liberté perdue, inquiétude constante',zh:'多年疲惫、失去自由、持续担忧'},
-FR:{en:'betrayal risk, carrying others’ crises, blurred boundaries',ru:'риск предательства, груз чужих проблем, потеря границ',es:'riesgo de traición, cargas ajenas, límites difusos',fr:'risque de trahison, fardeaux d’autrui, frontières floues',zh:'背叛风险、他人危机负担、边界模糊'},
+FR:{en:'betrayal hits harder the closer the person; carrying friends’ crises to burnout; blurred boundaries',ru:'риск предательства: чем ближе человек, тем больнее бьёт обман; груз чужих проблем до выгорания; потеря границ',es:'la traición duele más cuanto más cerca; cargar crisis ajenas hasta el burnout; límites difusos',fr:'la trahison blesse d’autant plus que la personne est proche ; fardeaux d’autrui jusqu’au burnout ; frontières floues',zh:'越亲近的人背叛越痛；承载朋友危机直到倦怠；边界模糊'},
 ST:{en:'small-talk hangover, crowd fatigue, shallow ties',ru:'болтовня ни о чём, толпа выматывает, поверхностные связи',es:'charla trivial, fatiga de multitudes, lazos superficiales',fr:'small talk, fatigue des foules, liens superficiels',zh:'闲聊宿醉、人群疲劳、浅层关系'},
 HO:{en:'guilt over rest, procrastination, “useless” doubts',ru:'вина за отдых, прокрастинация, сомнения «это бесполезно»',es:'culpa por descansar, procrastinación, dudas',fr:'culpabilité du repos, procrastination, doutes',zh:'休息内疚、拖延、“无用”怀疑'},
 GR:{en:'painful insights, long trauma work, loneliness of the path',ru:'больные инсайты, долгая работа с травмами, одиночество пути',es:'insights dolorosos, trabajo largo con heridas, soledad',fr:'insights douloureux, long travail des blessures, solitude',zh:'痛苦洞察、漫长创伤工作、孤独'}};
@@ -7030,9 +7031,9 @@ r2:{en:'If next year you could keep only one: {A} or {B}?',ru:'Если в сл�
 var TK={ui:{
 btn:{en:'🧭 EDC',ru:'🧭 EDC',es:'🧭 EDC',fr:'🧭 EDC',zh:'🧭 EDC'},
 title:{en:'EDC-2 · Where your life energy goes (10 domains, experimental)',ru:'EDC-2 · Куда течёт твоя жизненная энергия (10 доменов, эксперимент)',es:'EDC-2 · A dónde va tu energía vital (10 dominios, experimental)',fr:'EDC-2 · Où va ton énergie vitale (10 domaines, expérimental)',zh:'EDC-2 · 生命能量流向（10 领域，实验）'},
-sub:{en:'90 forced choices · 10 domains · 5 zone tiers · weights ±25/±12',ru:'90 принудительных выбора · 10 доменов · 5 ярусов зон · веса ±25/±12',es:'90 elecciones forzadas · 10 dominios · 5 niveles de zona · pesos ±25/±12',fr:'90 choix forcés · 10 domaines · 5 niveaux de zone · poids ±25/±12',zh:'90 项强制选择 · 10 领域 · 5 个区域层 · 权重 ±25/±12'},
-warn:{en:'Answer instinctively, as you ARE now. Each pair is asked twice in different framings; contradictions raise the Lie-Index. Points are hidden on purpose.',ru:'Отвечай инстинктивно, как ты ЕСТЬ сейчас. Каждая пара спрашивается дважды в разных рамках; противоречия поднимают Индекс Лжи. Очки скрыты намеренно.',es:'Responde por instinto, como ERES ahora. Cada par se pregunta dos veces con marcos distintos; las contradicciones suben el Índice de Mentira. Puntos ocultos a propósito.',fr:'Réponds par instinct, tel que tu ES. Chaque paire est posée deux fois sous des cadrages différents ; les contradictions montent l’Indice de Mensonge. Points cachés exprès.',zh:'凭直觉按当下作答。每对以两种框架问两次；矛盾抬高谎言指数。分数故意隐藏。'},
-theory:{en:'EDC-2 measures where finite energy flows across 10 life domains: Body, Career, Money, Partner, Parents, Children, Friends, Social, Hobby, Growth. The stack sorts them into 5 zone tiers, colored like the QCI bands: ranks 1–3 dark-green CORE, rank 4 green, ranks 5–6 yellow (neutral), ranks 7–9 orange (friction), rank 10 red (main enemy). UF-6 compares two stacks zone-by-zone with a symmetric contribution matrix; Children mismatches carry the heaviest minus.',ru:'EDC-2 меряет, куда течёт конечная энергия по 10 доменам жизни: Тело, Карьера, Деньги, Партнёр, Родители, Дети, Друзья, Социум, Хобби, Рост. Стек раскладывает их по 5 ярусам зон, окрашенным как полосы QCI: места 1–3 — тёмно-зелёное ЯДРО, место 4 — зелёная, места 5–6 — жёлтые (нейтраль), места 7–9 — оранжевые (трение), место 10 — красная (главный враг). UF-6 сравнивает два стека позонно симметричной матрицей вкладов; несовпадение по Детям несёт самый тяжёлый минус.',es:'EDC-2 mide a dónde fluye la energía finita en 10 dominios: Cuerpo, Carrera, Dinero, Pareja, Padres, Hijos, Amigos, Social, Aficiones, Crecimiento. La pila los ordena en 5 niveles de zona con los colores del QCI: 1–3 núcleo verde oscuro, 4 verde, 5–6 amarillos (neutros), 7–9 naranjas (fricción), 10 rojo (enemigo principal). UF-6 compara dos pilas zona a zona con una matriz simétrica; el desajuste de Hijos lleva el menos más pesado.',fr:'EDC-2 mesure où coule l’énergie finie sur 10 domaines : Corps, Carrière, Argent, Partenaire, Parents, Enfants, Amis, Social, Loisirs, Croissance. La pile les classe en 5 niveaux de zone aux couleurs du QCI : 1–3 noyau vert foncé, 4 vert, 5–6 jaunes (neutres), 7–9 oranges (friction), 10 rouge (ennemi principal). UF-6 compare deux piles zone par zone via une matrice symétrique ; le décalage Enfants porte le minus le plus lourd.',zh:'EDC-2 测量有限能量在 10 个生活领域的流向：身体、事业、金钱、伴侣、父母、孩子、朋友、社交、爱好、成长。栈将其排入 5 个区域层，颜色与 QCI 带一致：1–3 深绿核心，4 绿，5–6 黄（中性），7–9 橙（摩擦），10 红（主要敌人）。UF-6 用对称贡献矩阵逐区比较两个栈；孩子的错配承载最重的减分。'},
+sub:{en:'90 forced choices · 10 domains · 5 zone tiers · continuous UF-6',ru:'90 принудительных выбора · 10 доменов · 5 ярусов зон · непрерывный UF-6',es:'90 elecciones forzadas · 10 dominios · 5 niveles · UF-6 continuo',fr:'90 choix forcés · 10 domaines · 5 niveaux · UF-6 continu',zh:'90 项强制选择 · 10 领域 · 5 区层 · 连续 UF-6'},
+warn:{en:'Answer instinctively, as you ARE now. Each pair is asked twice in different framings; contradictions raise the Lie-Index. Points are hidden on purpose.',ru:'Отвечай инстинктивно, как ты ЕСТЬ сейчас. Каждая пара спрашивается дважды в разных рамках; противоречия поднимают Индекс Лжи. Очки скрыты намеренно.',es:'Responde por instinto, como ERES ahora. Cada par se pregunta dos veces; las contradicciones suben el Índice de Mentira. Puntos ocultos a propósito.',fr:'Réponds par instinct, tel que tu ES. Chaque paire est posée deux fois ; les contradictions montent l’Indice de Mensonge. Points cachés exprès.',zh:'凭直觉按当下作答。每对问两次；矛盾抬高谎言指数。分数故意隐藏。'},
+theory:{en:'EDC-2 measures where finite energy flows across 10 domains. The stack sorts them into 5 display tiers (1–3 dark-green core, 4 green, 5–6 yellow, 7–9 orange, 10 red enemy). UF-6 is CONTINUOUS: every domain carries signed energy e = 4.5 − rank; pair contribution = e(A)×e(B), children ×2.5. Any single-position shift changes the score.',ru:'EDC-2 меряет, куда течёт конечная энергия по 10 доменам. Стек раскладывает их по 5 отображаемым ярусам (1–3 тёмно-зелёное ядро, 4 зелёный, 5–6 жёлтые, 7–9 оранжевые, 10 красный враг). UF-6 НЕПРЕРЫВЕН: у каждого домена знаковая энергия e = 4.5 − ранг; вклад пары = e(A)×e(B), дети ×2.5. Любой сдвиг на одну позицию меняет счёт.',es:'EDC-2 mide a dónde fluye la energía en 10 dominios. La pila ordena en 5 niveles de muestra. UF-6 es CONTINUO: e = 4.5 − rango; aporte = e(A)×e(B), hijos ×2.5. Cualquier cambio de posición altera el score.',fr:'EDC-2 mesure où coule l’énergie sur 10 domaines. UF-6 est CONTINU : e = 4.5 − rang ; contribution = e(A)×e(B), enfants ×2.5. Tout décalage d’une position change le score.',zh:'EDC-2 测量 10 领域能量流向。UF-6 连续：e = 4.5 − 名次；贡献 = e(A)×e(B)，孩子 ×2.5。任何位置变动都改变分数。'},
 gg:{en:'Joys & griefs of each path (read before answering)',ru:'Радости и горести каждого пути (прочти перед ответами)',es:'Alegrías y penas de cada camino (lee antes)',fr:'Joies et peines de chaque voie (lis avant)',zh:'每条路的喜与悲（作答前阅读）'},
 s1:{en:'Round 1 · Forced choices (90)',ru:'Раунд 1 · Принудительный выбор (90)',es:'Ronda 1 · Elecciones forzadas (90)',fr:'Tour 1 · Choix forcés (90)',zh:'第 1 轮 · 强制选择（90）'},
 s2:{en:'Round 2 · Commitment: joys vs griefs',ru:'Раунд 2 · Преданность: радости против горестей',es:'Ronda 2 · Compromiso: alegrías contra penas',fr:'Tour 2 · Engagement : joies contre peines',zh:'第 2 轮 · 承诺：喜与悲'},
@@ -7064,25 +7065,25 @@ z3:{en:'Mid (yellow, neutral)',ru:'Середина (жёлтая, нейтра�
 z4:{en:'Far (orange, friction)',ru:'Дальнее (оранжевая, трение)',es:'Lejano (naranja, fricción)',fr:'Lointain (orange, friction)',zh:'遥远（橙，摩擦）'},
 z5:{en:'Main enemy (red)',ru:'Главный враг (красная)',es:'Enemigo principal (rojo)',fr:'Ennemi principal (rouge)',zh:'主要敌人（红）'},
 chk:{en:'🧪 UF-6 · Energy alignment (experimental, weight = 2× a standard UF)',ru:'🧪 UF-6 · Согласование энергии (эксперимент, вес = 2× обычной UF)',es:'🧪 UF-6 · Alineación energética (experimental, peso = 2× UF estándar)',fr:'🧪 UF-6 · Alignement énergétique (expérimental, poids = 2× UF standard)',zh:'🧪 UF-6 · 能量对齐（实验，权重 = 2× 标准 UF）'},
-chkNote:{en:'Off by default. When on: full 10-code stacks A/B are compared zone-by-zone; UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental.',ru:'По умолчанию выкл. Когда вкл: полные стеки A/B из 10 кодов сравниваются позонно; UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально».',es:'Desactivado por defecto. Al activar: pilas completas A/B de 10 códigos se comparan zona a zona; UF-6 se une a las cinco UF y el QCI se recalcula como (QCI + 0.5·UF-6)/1.5, marcado experimental.',fr:'Désactivé par défaut. Activé : piles complètes A/B de 10 codes comparées zone par zone ; UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, étiqueté expérimental.',zh:'默认关闭。开启后：A/B 完整 10 码栈逐区比较；UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算并标注实验性。'},
+chkNote:{en:'Off by default. When on: full 10-code stacks A/B are compared with a CONTINUOUS formula; UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental, 3-decimal precision.',ru:'По умолчанию выкл. Когда вкл: полные стеки A/B из 10 кодов сравниваются НЕПРЕРЫВНОЙ формулой; UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально», точность 3 знака.',es:'Desactivado por defecto. Al activar: pilas completas A/B comparadas con fórmula CONTINUA; UF-6 se une a las cinco UF y el QCI se recalcula (QCI + 0.5·UF-6)/1.5, experimental, 3 decimales.',fr:'Désactivé par défaut. Activé : piles complètes A/B comparées par formule CONTINUE ; UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, expérimental, 3 décimales.',zh:'默认关闭。开启后：A/B 完整 10 码栈以连续公式比较；UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算，实验性，3 位小数。'},
 stA:{en:'Stack A (all 10, in order)',ru:'Стек A (все 10, по порядку)',es:'Pila A (las 10, en orden)',fr:'Pile A (les 10, en ordre)',zh:'栈 A（全 10，按序）'},
 stB:{en:'Stack B (all 10, in order)',ru:'Стек B (все 10, по порядку)',es:'Pila B (las 10, en orden)',fr:'Pile B (les 10, en ordre)',zh:'栈 B（全 10，按序）'},
 stPh:{en:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',ru:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',es:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',fr:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',zh:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH'},
 stErr:{en:'Enter exactly 10 unique codes: BD CA MN SP PA CH FR ST HO GR',ru:'Введи ровно 10 уникальных кодов: BD CA MN SP PA CH FR ST HO GR',es:'Introduce exactamente 10 códigos únicos: BD CA MN SP PA CH FR ST HO GR',fr:'Saisis exactement 10 codes uniques : BD CA MN SP PA CH FR ST HO GR',zh:'请输入 10 个唯一代码：BD CA MN SP PA CH FR ST HO GR'},
 need:{en:'Calculate compatibility first (Calculate button above).',ru:'Сначала рассчитай совместимость (кнопка «Рассчитать» выше).',es:'Calcula primero la compatibilidad (botón Calcular arriba).',fr:'Calcule d’abord la compatibilité (bouton Calculer ci-dessus).',zh:'先计算兼容性（上方“计算”按钮）。'},
-uf6name:{en:'UF-6 — Energy alignment (EDC-2 zones)',ru:'UF-6 — Согласование энергии (зоны EDC-2)',es:'UF-6 — Alineación energética (zonas EDC-2)',fr:'UF-6 — Alignement énergétique (zones EDC-2)',zh:'UF-6 — 能量对齐（EDC-2 区）'},
-uf6ref:{en:'Zone matrix: core+core and red+red add, core+red subtracts hardest, yellow is neutral; Children core-vs-red carries ×2.5 and a fatal flag.',ru:'Матрица зон: ядро+ядро и красный+красный добавляют, ядро+красный вычитает сильнее всего, жёлтый нейтрален; Дети ядро-против-красного дают ×2.5 и фатальный флаг.',es:'Matriz de zonas: núcleo+núcleo y rojo+rojo suman, núcleo+rojo resta más fuerte, amarillo neutro; Hijos núcleo contra rojo lleva ×2.5 y bandera fatal.',fr:'Matrice des zones : noyau+noyau et rouge+rouge ajoutent, noyau+rouge soustrait le plus fort, jaune neutre ; Enfants noyau contre rouge = ×2.5 et drapeau fatal.',zh:'区域矩阵：核心+核心与红+红加分，核心+红减分最重，黄为中性；孩子核心对红 ×2.5 并触发致命标记。'},
+uf6name:{en:'UF-6 — Energy alignment (continuous)',ru:'UF-6 — Согласование энергии (непрерывное)',es:'UF-6 — Alineación energética (continua)',fr:'UF-6 — Alignement énergétique (continu)',zh:'UF-6 — 能量对齐（连续）'},
+uf6ref:{en:'Continuous math: e = 4.5 − rank; contribution = e(A)×e(B); Children ×2.5. Top+top and bottom+bottom add, top-vs-bottom subtracts deeper the further the rank. Every position shift moves the score.',ru:'Непрерывная математика: e = 4.5 − ранг; вклад = e(A)×e(B); Дети ×2.5. Верх+верх и низ+низ добавляют, верх-против-низа вычитает тем глубже, чем дальше ранг. Любой сдвиг позиции двигает счёт.',es:'Matemática continua: e = 4.5 − rango; aporte = e(A)×e(B); Hijos ×2.5. Cada cambio de posición mueve el score.',fr:'Math continue : e = 4.5 − rang ; contribution = e(A)×e(B); Enfants ×2.5. Chaque décalage de position bouge le score.',zh:'连续数学：e = 4.5 − 名次；贡献 = e(A)×e(B);孩子 ×2.5。任何位置变动都移动分数。'},
 v0:{en:'Resonant pair (80–100)',ru:'Резонансная пара (80–100)',es:'Pareja resonante (80–100)',fr:'Pair résonant (80–100)',zh:'共振伴侣（80–100）'},
 v1:{en:'Harmonic, with work (65–79)',ru:'Гармоничная, с работой (65–79)',es:'Armónica, con trabajo (65–79)',fr:'Harmonieux, avec travail (65–79)',zh:'和谐、需经营（65–79）'},
 v2:{en:'Neutral, effort-based (50–64)',ru:'Нейтральная, на усилиях (50–64)',es:'Neutra, basada en esfuerzo (50–64)',fr:'Neutre, basée sur l’effort (50–64)',zh:'中性、靠努力（50–64）'},
 v3:{en:'Friction zone (35–49)',ru:'Зона трения (35–49)',es:'Zona de fricción (35–49)',fr:'Zone de friction (35–49)',zh:'摩擦区（35–49）'},
 v4:{en:'Polar profiles (0–34)',ru:'Полярные профили (0–34)',es:'Perfiles polares (0–34)',fr:'Profils polaires (0–34)',zh:'极性剖面（0–34）'},
-chWarn:{en:'CHILDREN CLASH: one puts kids in core/green, the other in red — the heaviest minus of the model.',ru:'КОНФЛИКТ ДЕТЕЙ: у одного дети в ядре/зелёной, у другого в красной — самый тяжёлый минус модели.',es:'CHOQUE DE HIJOS: uno pone hijos en núcleo/verde, el otro en rojo — el menos más pesado del modelo.',fr:'CONFLIT ENFANTS : l’un met les enfants en noyau/vert, l’autre en rouge — le minus le plus lourd du modèle.',zh:'孩子冲突：一方孩子在核心/绿，另一方在红——模型中最重的减分。'},
-tblZone:{en:'Zone table (A vs B)',ru:'Таблица зон (A против B)',es:'Tabla de zonas (A vs B)',fr:'Table des zones (A vs B)',zh:'区域表（A 对 B）'},
+chWarn:{en:'CHILDREN CLASH: one puts kids in core/green, the other in red — the heaviest minus of the model (×2.5).',ru:'КОНФЛИКТ ДЕТЕЙ: у одного дети в ядре/зелёной, у другого в красной — самый тяжёлый минус модели (×2.5).',es:'CHOQUE DE HIJOS: uno en núcleo/verde, el otro en rojo — el menos más pesado (×2.5).',fr:'CONFLIT ENFANTS : l’un en noyau/vert, l’autre en rouge — le minus le plus lourd (×2.5).',zh:'孩子冲突：一方核心/绿，另一方红——最重减分（×2.5）。'},
+tblZone:{en:'Zone & energy table (A vs B)',ru:'Таблица зон и энергий (A против B)',es:'Tabla de zonas y energías (A vs B)',fr:'Table des zones et énergies (A vs B)',zh:'区域与能量表（A 对 B）'},
 tblContrib:{en:'contribution',ru:'вклад',es:'aporte',fr:'contribution',zh:'贡献'},
 expTitle:{en:'Overall synthesis (QCI) — EXPERIMENTAL, includes UF-6',ru:'Общий синтез (QCI) — ЭКСПЕРИМЕНТАЛЬНО, с UF-6',es:'Síntesis global (QCI) — EXPERIMENTAL, con UF-6',fr:'Synthèse globale (QCI) — EXPÉRIMENTAL, avec UF-6',zh:'总体合成（QCI）——实验性，含 UF-6'},
 expBase:{en:'Base QCI without UF-6:',ru:'Базовый QCI без UF-6:',es:'QCI base sin UF-6:',fr:'QCI de base sans UF-6:',zh:'不含 UF-6 的基础 QCI：'},
-expNote:{en:'UF-6 weight = 0.50 (2× a standard UF). Experimental heuristic, not a clinical verdict.',ru:'Вес UF-6 = 0.50 (2× обычной UF). Экспериментальная эвристика, не клинический вердикт.',es:'Peso UF-6 = 0.50 (2× UF estándar). Heurística experimental, no veredicto clínico.',fr:'Poids UF-6 = 0.50 (2× UF standard). Heuristique expérimentale, pas un verdict clinique.',zh:'UF-6 权重 = 0.50（2× 标准 UF）。实验性启发式，非临床结论。'},
+expNote:{en:'UF-6 weight = 0.50 (2× a standard UF). Experimental heuristic, not a clinical verdict. Precision: 3 decimals.',ru:'Вес UF-6 = 0.50 (2× обычной UF). Экспериментальная эвристика, не клинический вердикт. Точность: 3 знака.',es:'Peso UF-6 = 0.50 (2× UF estándar). Heurística experimental. Precisión: 3 decimales.',fr:'Poids UF-6 = 0.50 (2× UF standard). Heuristique expérimentale. Précision : 3 décimales.',zh:'UF-6 权重 = 0.50（2× 标准 UF）。实验性启发式。精度：3 位小数。'},
 verdict:{en:'Verdict',ru:'Вердикт',es:'Veredicto',fr:'Verdict',zh:'判定'},
 optP1:{en:'Definitely: ',ru:'Определённо: ',es:'Definitivamente: ',fr:'Certainement : ',zh:'确定：'},
 optP2:{en:'Rather: ',ru:'Скорее: ',es:'Más bien: ',fr:'Plutôt : ',zh:'较倾向：'},
@@ -7129,27 +7130,28 @@ return {sc:sc,fin:fin,stack:stack,lie:lie};
 }
 function tierOf(rank){return rank<3?1:rank===3?2:rank<6?3:rank<9?4:5;}
 var TIERCOL={1:'#2e9e4f',2:'#6bcb77',3:'#ffd93d',4:'#ff9f43',5:'#ff6b6b'};
-var MZ={};MZ['1,1']=6;MZ['1,2']=5;MZ['2,2']=4;MZ['1,3']=0;MZ['2,3']=0;MZ['3,3']=0;MZ['3,4']=0;MZ['3,5']=0;MZ['4,4']=2;MZ['5,5']=3;MZ['1,4']=-3;MZ['2,4']=-2;MZ['1,5']=-6;MZ['2,5']=-4;MZ['4,5']=-1;
-function mval(ta,tb){var k=Math.min(ta,tb)+','+Math.max(ta,tb);return MZ[k]||0;}
+function eRank(r){return 4.5 - r;}
 function parseStack10(s){
 var toks=String(s||'').toUpperCase().split(/[^A-Z]+/).filter(function(x){return DOMS.indexOf(x)>=0;});
 var seen={},ord=[];toks.forEach(function(x){if(!seen[x]){seen[x]=1;ord.push(x);}});
 return ord.length===10?ord:null;
 }
 function uf6(oa,ob){
-var rows=[],sum=0,chClash=false;
+var rows=[],S=0,chClash=false;
 DOMS.forEach(function(d){
 var ra=oa.indexOf(d),rb=ob.indexOf(d);
+var ea=eRank(ra),eb=eRank(rb);
+var mult=(d==='CH')?2.5:1;
+var c=mult*ea*eb;
+S+=c;
 var ta=tierOf(ra),tb=tierOf(rb);
-var c=mval(ta,tb);
-if(c<0&&d==='CH')c*=2.5;
 if(d==='CH'&&((ta<=2&&tb===5)||(tb<=2&&ta===5)))chClash=true;
-sum+=c;rows.push({d:d,ta:ta,tb:tb,c:c});
+rows.push({d:d,ta:ta,tb:tb,ea:ea,eb:eb,c:c});
 });
-var score=Math.max(0,Math.min(100,Math.round(50+1.6*sum)));
+var score=Math.max(0,Math.min(100,50+S/2));
 var vi=score>=80?0:score>=65?1:score>=50?2:score>=35?3:4;
 var ov=oa.slice(0,3).filter(function(x){return ob.indexOf(x)>=0&&ob.indexOf(x)<3;}).length;
-return {score:score,rows:rows,chClash:chClash,vi:vi,overlap:ov};
+return {score:score,rows:rows,chClash:chClash,vi:vi,overlap:ov,S:S};
 }
 function barColor(s){return s>=80?'#2e9e4f':s>=65?'#6bcb77':s>=50?'#ffd93d':s>=35?'#ff9f43':'#ff6b6b';}
 var LET={E:'IDAE',O:'SMHN',A:'TLCF',C:'WPUJ',N:'BRZV'};
@@ -7167,7 +7169,7 @@ var uf2=cl100(0.25*compE+0.15*compC+0.15*sim.A+0.15*sim.N+0.10*sim.O+0.20*balanc
 var load=100-((a.N+b.N)/2),buffer=(a.A+b.A)/2,cap=((a.A+a.C)+(b.A+b.C))/4,growth=(a.O+b.O)/2;
 var repair=((a.A*b.C)+(b.A*a.C))/(2*85*85)*100;
 var uf3=cl100(0.30*load+0.15*buffer+0.25*cap+0.10*growth+0.20*repair);
-var meanE=(a.E+b.E)/2,meanN=((100-a.N)+(100-b.N))/2,pool=(meanE*meanN)/(85*85)*100;
+var meanE=(a.E+b.E)/2,meanInvN=((100-a.N)+(100-b.N))/2,pool=(meanE*meanInvN)/(85*85)*100;
 var uf4=cl100(0.30*pool+0.25*Math.min(a.A,b.A)+0.20*sim.N+0.25*((a.C+b.C)/2));
 var strat=0.40*sim.C+0.30*sim.O+0.30*sim.E,weak=Math.min(sim.E,sim.O,sim.A,sim.C,sim.N);
 var uf5=cl100(0.70*strat+0.30*weak);
@@ -7229,7 +7231,6 @@ answers[idx]=v;LSs('edc2_answers',JSON.stringify(answers));
 var row=document.getElementById('edcRow'+idx);
 row.querySelectorAll('[data-edc]').forEach(function(x){x.classList.toggle('sel',+x.getAttribute('data-v')===v);});
 row.classList.add('done');
-render();
 });});
 document.getElementById('edcBody').querySelectorAll('[data-com]').forEach(function(b){
 b.addEventListener('click',function(){
@@ -7275,7 +7276,7 @@ function showResult(r){
 var lieC=r.lie<15?'#6bcb77':(r.lie<35?'#ffd93d':'#ff6b6b');
 var lieT=r.lie<15?t('lieL'):(r.lie<35?t('lieM'):t('lieH'));
 var h='<div class="compat-overall"><div style="color:#888;font-size:0.8rem;">'+esc(t('res'))+'</div>'+
-'<div class="qci" style="color:#fff;text-shadow:0 0 14px #8b5cff;font-size:clamp(1.4rem,5vw,2.4rem);">'+esc(r.stack.join('/'))+'</div>'+
+'<div class="qci" style="color:#fff;text-shadow:0 0 14px #8b5cff;font-size:clamp(1.1rem,4vw,2rem);">'+esc(r.stack.join('/'))+'</div>'+
 '<div style="font-size:0.78rem;color:#888;margin-top:4px;">'+esc(t('stack'))+' • '+esc(t('enemy'))+': <strong style="color:#ff6b6b;">'+esc(r.stack[9])+'</strong></div>'+
 '<div style="font-size:0.74rem;margin-top:6px;">'+
 '<span style="color:#2e9e4f;">●</span> '+esc(t('z1'))+' • <span style="color:#6bcb77;">●</span> '+esc(t('z2'))+' • <span style="color:#ffd93d;">●</span> '+esc(t('z3'))+' • <span style="color:#ff9f43;">●</span> '+esc(t('z4'))+' • <span style="color:#ff6b6b;">●</span> '+esc(t('z5'))+'</div>'+
@@ -7326,15 +7327,15 @@ var r=uf6(oa,ob);
 var col=barColor(r.score);
 var card=document.createElement('div');
 card.className='uf-card';card.id='edcUf6Card';
-var tbl='<table class="compat-table" style="margin-top:8px;"><tr><th>'+esc(t('cDom'))+'</th><th>A</th><th>B</th><th>'+esc(t('tblContrib'))+'</th></tr>';
+var tbl='<table class="compat-table" style="margin-top:8px;"><tr><th>'+esc(t('cDom'))+'</th><th>A e</th><th>B e</th><th>'+esc(t('tblContrib'))+'</th></tr>';
 r.rows.forEach(function(row){
 var cs=row.c>0?'#6bcb77':row.c<0?'#ff6b6b':'#888';
-tbl+='<tr><td>'+esc(ds(row.d))+'</td><td style="color:'+TIERCOL[row.ta]+';font-weight:800;">'+row.ta+'</td><td style="color:'+TIERCOL[row.tb]+';font-weight:800;">'+row.tb+'</td><td style="color:'+cs+';font-weight:800;">'+(row.c>0?'+':'')+row.c.toFixed(1)+'</td></tr>';
+tbl+='<tr><td style="color:'+TIERCOL[row.ta]+';font-weight:800;">● '+esc(ds(row.d))+'</td><td>'+row.ea.toFixed(1)+'</td><td>'+row.eb.toFixed(1)+'</td><td style="color:'+cs+';font-weight:800;">'+(row.c>0?'+':'')+row.c.toFixed(3)+'</td></tr>';
 });
 tbl+='</table>';
-card.innerHTML='<div class="uf-head"><span class="uf-name">'+esc(t('uf6name'))+'</span><span class="uf-score" style="color:'+col+';">'+r.score+'</span></div>'+
-'<div class="uf-bar"><div class="uf-fill" style="width:'+r.score+'%;background:'+col+';"></div></div>'+
-'<div class="uf-ref">'+esc(t('v'+r.vi))+' • '+r.overlap+'/3 • '+esc(t('tblZone'))+'</div>'+tbl+
+card.innerHTML='<div class="uf-head"><span class="uf-name">'+esc(t('uf6name'))+'</span><span class="uf-score" style="color:'+col+';">'+r.score.toFixed(3)+'</span></div>'+
+'<div class="uf-bar"><div class="uf-fill" style="width:'+r.score.toFixed(3)+'%;background:'+col+';"></div></div>'+
+'<div class="uf-ref">'+esc(t('v'+r.vi))+' • '+r.overlap+'/3 • S = '+r.S.toFixed(3)+' • '+esc(t('tblZone'))+'</div>'+tbl+
 '<div class="uf-ref">'+esc(t('uf6ref'))+'</div>'+
 (r.chClash?'<div style="color:#ff6b6b;font-weight:800;font-size:0.78rem;margin-top:6px;">⛔ '+esc(t('chWarn'))+'</div>':'');
 if(ufBox)ufBox.appendChild(card);
@@ -7348,9 +7349,9 @@ var vi=exp>=80?0:exp>=65?1:exp>=50?2:exp>=35?3:4;
 ovBox.dataset.edcExp='1';
 ovBox.innerHTML='<div class="compat-overall">'+
 '<div style="color:#c9b6ff;font-size:0.8rem;font-weight:800;">🧪 '+esc(t('expTitle'))+'</div>'+
-'<div class="qci" style="color:'+ec+';text-shadow:0 0 14px '+ec+';">'+exp.toFixed(1)+'</div>'+
+'<div class="qci" style="color:'+ec+';text-shadow:0 0 14px '+ec+';">'+exp.toFixed(3)+'</div>'+
 '<div class="verdict" style="color:'+ec+';">'+esc(t('verdict'))+': '+esc(t('v'+vi))+'</div>'+
-'<div class="ranges" style="margin-top:8px;">'+esc(t('expBase'))+' <strong style="color:#fff;">'+u.base.toFixed(1)+'</strong> • UF-6 = <strong style="color:'+col+';">'+r.score+'</strong></div>'+
+'<div class="ranges" style="margin-top:8px;">'+esc(t('expBase'))+' <strong style="color:#fff;">'+u.base.toFixed(3)+'</strong> • UF-6 = <strong style="color:'+col+';">'+r.score.toFixed(3)+'</strong></div>'+
 '<div class="ranges" style="margin-top:4px;">'+esc(t('expNote'))+'</div>'+
 '<div class="ranges">'+esc(t('v0'))+' • '+esc(t('v1'))+' • '+esc(t('v2'))+' • '+esc(t('v3'))+' • '+esc(t('v4'))+'</div>'+
 '</div>';
