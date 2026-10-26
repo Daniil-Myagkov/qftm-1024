@@ -4191,7 +4191,7 @@ canvas {
     }
   }
 
-  // ================= COMPATIBILITY (UF-1 .. UF-5) =================
+    // ================= COMPATIBILITY (UF-1 .. UF-5) =================
   function axisValuesFromCode(code) {
     const p = parseTypeCode(code);
     return {
@@ -4205,14 +4205,8 @@ canvas {
   function clamp100(x) {
     return Math.max(0, Math.min(100, x));
   }
+  function neuroTerm(aN,bN){var meanN=(aN+bN)/2,maxN=Math.max(aN,bN);var exA=Math.max(0,aN-50),exB=Math.max(0,bN-50);var interact=(exA*exB)/100;return clamp100(100-(0.5*meanN+0.35*maxN+2*interact));}
   function computeCompat(codeA, codeB) {
-    function neuroTerm(aN,bN){
-var meanN=(aN+bN)/2,maxN=Math.max(aN,bN);
-var exA=Math.max(0,aN-50),exB=Math.max(0,bN-50);
-var interact=(exA*exB)/100;
-return clamp100(100-(0.5*meanN+0.35*maxN+2*interact));
-}
-function computeCompat(codeA, codeB) {
 const a = axisValuesFromCode(codeA);
 const b = axisValuesFromCode(codeB);
 const axes = ['E','O','A','C','N'];
