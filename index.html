@@ -6966,227 +6966,587 @@ box.innerHTML = html;
 </script>
 <script>
 /* ============================================================
-   QFTM-1024 :: EDC-1 (Energy Direction Coefficient) — FINAL
-   Экспериментальный модуль: 21 пара × 2 раунда = 42 вопроса
-   принудительного выбора, веса IPIP [0,6,12,19,25].
-   Изолирован: модалка, свой localStorage, не трогает роутер.
+   QFTM-1024 :: EDC-1 v2 (Energy Direction Coefficient)
+   FINAL PATCH FOR LINE 6967
+   49 items (42 forced-choice + 7 worst-case) · Random order
+   6-option scale incl. "Both bad" trap · UF-6 integration
    © 2026 Daniil Vasilievich Myagkov. All rights reserved.
    ============================================================ */
 (function () {
 'use strict';
-function LSg(k){ try { return localStorage.getItem('qftm1024_' + k); } catch(e){ return null; } }
-function LSs(k,v){ try { localStorage.setItem('qftm1024_' + k, v); } catch(e){} }
-function LSd(k){ try { localStorage.removeItem('qftm1024_' + k); } catch(e){} }
-function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-var W = [0,6,12,19,25];
-var DOM_ORDER = ['ST','FR','SP','HO','PA','CH','CA'];
-var DOM_L = {
-ST:{en:'Strangers / Parties',ru:'Чужие / Вечеринки',es:'Extraños / Fiestas',fr:'Inconnus / Soirées',zh:'陌生人/派对'},
-FR:{en:'Close friends',ru:'Близкие друзья',es:'Amigos cercanos',fr:'Amis proches',zh:'密友'},
-SP:{en:'Partner / Spouse',ru:'Партнёр / Супруг',es:'Pareja / Cónyuge',fr:'Partenaire / Conjoint',zh:'伴侣/配偶'},
-HO:{en:'Hobbies / Me-time',ru:'Хобби / Личное время',es:'Aficiones / Tiempo propio',fr:'Loisirs / Temps pour soi',zh:'爱好/个人时间'},
-PA:{en:'Parents',ru:'Родители',es:'Padres',fr:'Parents',zh:'父母'},
-CH:{en:'Children',ru:'Дети',es:'Hijos',fr:'Enfants',zh:'孩子'},
-CA:{en:'Career / Study',ru:'Карьера / Учёба',es:'Carrera / Estudio',fr:'Carrière / Études',zh:'事业/学业'}
+
+// --- Storage & Utils ---
+const LS_KEY_ANSWERS = 'qftm1024_edc_v2_ans';
+const LS_KEY_STACK = 'qftm1024_edc_v2_stack';
+const LS_KEY_LIE = 'qftm1024_edc_v2_lie';
+function lsGet(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
+function lsSet(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+function lsDel(k){ try{localStorage.removeItem(k);}catch(e){} }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function shuffle(a){ let x=a.slice(); for(let i=x.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];} return x; }
+
+// --- Constants ---
+const DOMAINS = ['ST','FR','SP','HO','PA','CH','CA'];
+const OPT_WEIGHTS = [[25,-25],[12,-12],[12,12],[-12,12],[-25,25],[-25,-25]]; // [A_score, B_score]
+const OPT_LABELS = {
+ en:['Definitely FIRST','Preferably FIRST','Both equally good','Preferably SECOND','Definitely SECOND','Both unpleasant/bad'],
+ ru:['Определённо ПЕРВОЕ','Скорее ПЕРВОЕ','И то и другое хорошо','Скорее ВТОРОЕ','Определённо ВТОРОЕ','Оба неприятны/плохи'],
+ es:['Definitivamente PRIMERO','Preferiblemente PRIMERO','Ambos igualmente buenos','Preferiblemente SEGUNDO','Definitivamente SEGUNDO','Ambos desagradables/malos'],
+ fr:['Certainement PREMIER','Préférablement PREMIER','Les deux également bons','Préférablement SECOND','Certainement SECOND','Les deux désagréables/mauvais'],
+ zh:['绝对首选第一个','较喜欢第一个','两者同样好','较喜欢第二个','绝对首选第二个','两者都不愉快/糟糕']
 };
-var SCALE = {
-en:['Totally prefer the FIRST','Prefer the FIRST','Both equally','Prefer the SECOND','Totally prefer the SECOND'],
-ru:['Совершенно важнее ПЕРВОЕ','Важнее ПЕРВОЕ','И то и другое','Важнее ВТОРОЕ','Совершенно важнее ВТОРОЕ'],
-es:['Prefiero totalmente el PRIMERO','Prefiero el PRIMERO','Ambos por igual','Prefiero el SEGUNDO','Prefiero totalmente el SEGUNDO'],
-fr:['Je préfère totalement le PREMIER','Je préfère le PREMIER','Les deux également','Je préfère le SECOND','Je préfère totalement le SECOND'],
-zh:['完全首选第一个','更首选第一个','两者相当','更首选第二个','完全首选第二个']
+const DOMAIN_NAMES = {
+ ST:{en:'Strangers / Parties',ru:'Чужие / Вечеринки',es:'Extraños / Fiestas',fr:'Inconnus / Soirées',zh:'陌生人/派对'},
+ FR:{en:'Close Friends',ru:'Близкие друзья',es:'Amigos cercanos',fr:'Amis proches',zh:'密友'},
+ SP:{en:'Partner / Spouse',ru:'Партнёр / Супруг',es:'Pareja / Cónyuge',fr:'Partenaire / Conjoint',zh:'伴侣/配偶'},
+ HO:{en:'Hobbies / Me-time',ru:'Хобби / Личное время',es:'Aficiones / Tiempo propio',fr:'Loisirs / Temps pour soi',zh:'爱好/个人时间'},
+ PA:{en:'Parents',ru:'Родители',es:'Padres',fr:'Parents',zh:'父母'},
+ CH:{en:'Children',ru:'Дети',es:'Hijos',fr:'Enfants',zh:'孩子'},
+ CA:{en:'Career / Study',ru:'Карьера / Учёба',es:'Carrera / Estudio',fr:'Carrière / Études',zh:'事业/学业'}
 };
-var UI = {
-btn:{en:'🧭 EDC',ru:'🧭 EDC',es:'🧭 EDC',fr:'🧭 EDC',zh:'🧭 EDC'},
-title:{en:'EDC-1 · Direction of energy (experimental)',ru:'EDC-1 · Направление энергии (эксперимент)',es:'EDC-1 · Dirección de energía (experimental)',fr:'EDC-1 · Direction de l’énergie (expérimental)',zh:'EDC-1 · 能量方向（实验）'},
-sub:{en:'42 forced-choice comparisons · 7 domains · IPIP weights',ru:'42 принудительных сравнения · 7 доменов · веса IPIP',es:'42 comparaciones forzadas · 7 dominios · pesos IPIP',fr:'42 comparaisons forcées · 7 domaines · poids IPIP',zh:'42 项强制比较 · 7 领域 · IPIP 权重'},
-warn:{en:'Answer instinctively, as you ACTUALLY are now. The two passes of each pair are cross-checked: contradictions raise the Lie-Index.',ru:'Отвечай инстинктивно, каким ты ЕСТЬ СЕЙЧАС. Два прохода каждой пары сверяются: противоречия поднимают Индекс Лжи.',es:'Responde por instinto, tal como ERES AHORA. Los dos pasos de cada par se cotejan: las contradicciones suben el Índice de Mentira.',fr:'Réponds par instinct, tel que TU ES MAINTENANT. Les deux passages de chaque paire sont recoupés : les contradictions augmentent l’Indice de Mensonge.',zh:'凭直觉作答，如你当下所是。每对两次作答会交叉校验：矛盾会抬高谎言指数。'},
-theory:{en:'Big Five measures average traits. EDC-1 measures where your finite life-energy actually flows. Domains: ST strangers/parties · FR close friends · SP partner · HO hobbies/me-time · PA parents · CH children · CA career/study. Top-3 of the stack drive behaviour; bottom-2 are blind spots and couple conflict zones. Heuristic, not a clinical instrument. Wording © 2026 Daniil Vasilievich Myagkov.',ru:'Big Five меряет средние черты. EDC-1 меряет, куда реально течёт твоя конечная жизненная энергия. Домены: ST чужие/вечеринки · FR близкие друзья · SP партнёр · HO хобби/личное время · PA родители · CH дети · CA карьера/учёба. Топ-3 стека определяют поведение; bottom-2 — слепые зоны и зоны конфликта в паре. Эвристика, не клинический инструмент. Формулировки © 2026 Мягков Д. В.',es:'Big Five mide rasgos medios. EDC-1 mide hacia dónde fluye realmente tu energía vital finita. Dominios: ST extraños/fiestas · FR amigos cercanos · SP pareja · HO aficiones/tiempo propio · PA padres · CH hijos · CA carrera/estudio. El top-3 de la pila impulsa la conducta; los dos últimos son puntos ciegos y zonas de conflicto en pareja. Heurística, no instrumento clínico. Redacción © 2026 Daniil Vasilievich Myagkov.',fr:'Le Big Five mesure des traits moyens. EDC-1 mesure où coule réellement ton énergie vitale finie. Domaines : ST inconnus/soirées · FR amis proches · SP partenaire · HO loisirs/temps pour soi · PA parents · CH enfants · CA carrière/études. Le top-3 de la pile pilote le comportement ; les deux derniers sont des angles morts et zones de conflit en couple. Heuristique, pas un instrument clinique. Formulation © 2026 Daniil Vasilievich Myagkov.',zh:'大五测量平均特质。EDC-1 测量你有限的生命能量实际流向。领域：ST 陌生人/派对 · FR 密友 · SP 伴侣 · HO 爱好/个人时间 · PA 父母 · CH 孩子 · CA 事业/学业。栈的前三驱动行为；后二为盲点与伴侣冲突区。启发式工具，非临床仪器。措辞 © 2026 Daniil Vasilievich Myagkov。'},
-compute:{en:'🔍 Compute EDC stack',ru:'🔍 Рассчитать стек EDC',es:'🔍 Calcular pila EDC',fr:'🔍 Calculer la pile EDC',zh:'🔍 计算 EDC 栈'},
-reset:{en:'🗑 Reset EDC',ru:'🗑 Сбросить EDC',es:'🗑 Reiniciar EDC',fr:'🗑 Réinitialiser EDC',zh:'🗑 重置 EDC'},
-incomplete:{en:'Not all 42 items answered. First empty:',ru:'Отвечены не все 42 пункта. Первый пустой:',es:'Faltan respuestas de los 42. Primero vacío:',fr:'Items non répondus sur 42. Premier vide :',zh:'42 项未答完。首个空缺：'},
-result:{en:'Your energy stack',ru:'Твой стек энергии',es:'Tu pila de energía',fr:'Ta pile d’énergie',zh:'你的能量栈'},
-top3:{en:'Dominant stack (top-3 drive behaviour)',ru:'Доминантный стек (топ-3 определяют поведение)',es:'Pila dominante (el top-3 impulsa la conducta)',fr:'Pile dominante (le top-3 pilote le comportement)',zh:'主导栈（前三驱动行为）'},
-blind:{en:'Blind spots (bottom-2 = couple conflict zones)',ru:'Слепые зоны (bottom-2 = зоны конфликта в паре)',es:'Puntos ciegos (bottom-2 = zonas de conflicto)',fr:'Angles morts (bottom-2 = zones de conflit en couple)',zh:'盲点（后二 = 伴侣冲突区）'},
-share:{en:'share of energy',ru:'доля энергии',es:'parte de energía',fr:'part d’énergie',zh:'能量占比'},
-lie:{en:'Lie-Index (internal consistency)',ru:'Индекс Лжи (внутренняя консистентность)',es:'Índice de Mentira (consistencia interna)',fr:'Indice de Mensonge (cohérence interne)',zh:'谎言指数（内部一致性）'},
-lieLow:{en:'consistent — values are stable',ru:'консистентно — ценности устойчивы',es:'consistente — valores estables',fr:'cohérent — valeurs stables',zh:'一致——价值观稳定'},
-lieMid:{en:'mixed — some declared values are not lived',ru:'смешанно — часть деклараций не проживается',es:'mixto — algunos valores declarados no se viven',fr:'mitigé — certaines valeurs déclarées ne sont pas vécues',zh:'混合——部分宣称未践行'},
-lieHigh:{en:'contradictory — retake when calm',ru:'противоречиво — перепройти в спокойствии',es:'contradictorio — repítelo en calma',fr:'contradictoire — repasse-le au calme',zh:'矛盾——平静时重测'},
-saved:{en:'Saved independently of IPIP-120.',ru:'Сохранено независимо от IPIP-120.',es:'Guardado de forma independiente del IPIP-120.',fr:'Enregistré indépendamment de l’IPIP-120.',zh:'独立于 IPIP-120 保存。'},
-uf6t:{en:'❤️ UF-6 · Energy alignment (experimental, not inside QCI)',ru:'❤️ UF-6 · Согласование энергии (эксперимент, вне QCI)',es:'❤️ UF-6 · Alineación energética (experimental, fuera del QCI)',fr:'❤️ UF-6 · Alignement énergétique (expérimental, hors QCI)',zh:'❤️ UF-6 · 能量对齐（实验，不计入 QCI）'},
-uf6need:{en:'Compute your EDC stack first.',ru:'Сначала рассчитай свой стек EDC.',es:'Calcula primero tu pila EDC.',fr:'Calcule d’abord ta pile EDC.',zh:'先计算你的 EDC 栈。'},
-uf6p:{en:'Partner stack (3 codes, e.g. SP/PA/HO):',ru:'Стек партнёра (3 кода, напр. SP/PA/HO):',es:'Pila de la pareja (3 códigos, ej. SP/PA/HO):',fr:'Pile du partenaire (3 codes, ex. SP/PA/HO) :',zh:'伴侣栈（3 个代码，例 SP/PA/HO）：'},
-uf6go:{en:'Compute UF-6',ru:'Рассчитать UF-6',es:'Calcular UF-6',fr:'Calculer UF-6',zh:'计算 UF-6'},
-uf6m:{en:'shared top priorities',ru:'общие топ-приоритеты',es:'prioridades top compartidas',fr:'priorités top partagées',zh:'共享顶层优先级'},
-uf6c:{en:'CHILD CONFLICT: opposite stances on kids — fatal for a long union.',ru:'КОНФЛИКТ ДЕТЕЙ: противоположные позиции по детям — фатально для долгого союза.',es:'CONFLICTO DE HIJOS: posturas opuestas — fatal para una unión larga.',fr:'CONFLIT ENFANTS : positions opposées — fatal pour une union longue.',zh:'孩子冲突：立场相反——对长期结合致命。'},
-uf6ok:{en:'energy goals align — you build the same life.',ru:'цели совпадают — вы строите одну жизнь.',es:'las metas coinciden — construís la misma vida.',fr:'objectifs alignés — vous bâtissez la même vie.',zh:'目标一致——你们在建设同一种生活。'}
-};
-function L(){ var l = LSg('lang'); return (l && UI.btn[l]) ? l : 'en'; }
-function t(k){ var o = UI[k]; return (o && o[L()]) || o.en; }
-function dl(c){ var o = DOM_L[c]; return (o && o[L()]) || o.en; }
-var ITEMS = [
-{a:'ST',b:'FR',r1:{o:['ST','FR'],en:"What is closer to you: a loud party full of new people where you're the centre of attention, or a quiet evening with two or three old friends you trust completely?",ru:'Что тебе ближе: шумная вечеринка с кучей новых людей, где ты в центре внимания, или тихий вечер с двумя-тремя старыми друзьями, которым ты доверяешь полностью?',es:'¿Qué te resulta más cercano: una fiesta ruidosa llena de gente nueva donde eres el centro de atención, o una tarde tranquila con dos o tres viejos amigos en quienes confías por completo?',fr:"Ce qui te ressemble le plus : une soirée bruyante pleine de nouveaux venus dont tu es le centre, ou une soirée calme avec deux ou trois vieux amis en qui tu as une confiance totale ?",zh:'什么更贴近你：挤满新人、你是焦点的喧闹派对，还是与两三位你完全信任的老朋友的安静夜晚？'},r2:{o:['FR','ST'],en:"If you had only one free evening a month, would you spend it meeting old friends (FR) or going somewhere full of strangers where you could make new contacts (ST)?",ru:'Если бы у тебя был всего один свободный вечер в месяц, ты бы потратил его на встречу со старыми друзьями (FR) или на место, где много незнакомцев и можно завести новые знакомства (ST)?',es:'Si solo tuvieras una noche libre al mes, ¿la gastarías viendo a viejos amigos (FR) o yendo a un lugar lleno de desconocidos donde hacer nuevos contactos (ST)?',fr:"Si tu n'avais qu'une seule soirée libre par mois, la passerais-tu avec de vieux amis (FR) ou dans un lieu plein d'inconnus où nouer de nouveaux contacts (ST) ?",zh:'如果每月只有一个空闲夜晚，你会用来见老朋友（FR），还是去满是陌生人、能结识新人的地方（ST）？'}},
-{a:'ST',b:'SP',r1:{o:['ST','SP'],en:'Which matters more: the admiring looks and attention of strangers at an event, or a deep intimate conversation with your partner at home in silence?',ru:'Что для тебя важнее: восхищённые взгляды и внимание незнакомых людей на мероприятии или глубокий интимный разговор с твоим партнёром дома, в тишине?',es:'¿Qué importa más: las miradas admirativas y la atención de desconocidos en un evento, o una conversación íntima profunda con tu pareja en casa, en silencio?',fr:"Ce qui compte le plus : les regards admiratifs et l'attention d'inconnus lors d'un événement, ou une conversation intime profonde avec ton partenaire à la maison, dans le silence ?",zh:'哪个更重要：活动中陌生人的倾慕目光与关注，还是在家与伴侣在寂静中的深度亲密对话？'},r2:{o:['ST','SP'],en:"You're offered a public award before a thousand strangers (ST), but at the same hour your partner is in crisis and waits for your presence (SP). Where do you go?",ru:'Тебе предлагают публичную награду перед тысячей незнакомцев (ST), но в тот же час твой партнёр переживает кризис и ждёт твоего присутствия (SP). Куда ты поедешь?',es:'Te ofrecen un premio público ante mil desconocidos (ST), pero a la misma hora tu pareja está en crisis y espera tu presencia (SP). ¿Adónde vas?',fr:"On t'offre une récompense publique devant mille inconnus (ST), mais à la même heure ton partenaire est en crise et attend ta présence (SP). Où vas-tu ?",zh:'有人于千人前给你颁奖（ST），但同一时刻伴侣正处危机等待你在场（SP）。你去哪？'}},
-{a:'ST',b:'HO',r1:{o:['ST','HO'],en:'Which is more valuable: being the soul of a noisy company of strangers, or diving headfirst into your hobby or game in complete solitude?',ru:'Что ценнее: быть душой шумной компании незнакомых людей или погрузиться с головой в своё хобби или игру в полном одиночестве?',es:'¿Qué vale más: ser el alma de una compañía ruidosa de desconocidos, o sumergirte de lleno en tu afición o juego en soledad total?',fr:"Ce qui a plus de valeur : être l'âme d'une compagnie bruyante d'inconnus, ou plonger à corps perdu dans ton loisir ou ton jeu en solitude totale ?",zh:'哪个更有价值：成为喧闹陌生人群体的灵魂，还是全然独处地沉浸于你的爱好或游戏？'},r2:{o:['ST','HO'],en:'Saturday morning: you are invited to a networking event with a crowd of new faces (ST), or nobody touches you for four hours with your project/game (HO). Where does your energy go?',ru:'Суббота утра: зовут на нетворкинг-событие с толпой новых лиц (ST) или никто не тронет тебя четыре часа с твоим проектом/игрой (HO). Куда пойдёт твоя энергия?',es:'Sábado por la mañana: te invitan a un evento de networking con multitud de caras nuevas (ST), o nadie te molesta durante cuatro horas con tu proyecto/juego (HO). ¿Adónde va tu energía?',fr:"Samedi matin : on t'invite à un événement de networking avec une foule de nouveaux visages (ST), ou personne ne te dérange pendant quatre heures avec ton projet/jeu (HO). Où va ton énergie ?",zh:'周六早晨：被邀参加挤满新面孔的社交活动（ST），或四小时无人打扰地做你的项目/游戏（HO）。精力流向哪？'}},
-{a:'ST',b:'PA',r1:{o:['ST','PA'],en:'Which matters more: recognition and status in a wide circle of strangers, or the approval and pride of your parents?',ru:'Что важнее: признание и статус в широком круге чужих людей или одобрение и гордость твоих родителей?',es:'¿Qué importa más: el reconocimiento y estatus en un amplio círculo de desconocidos, o la aprobación y orgullo de tus padres?',fr:"Ce qui compte le plus : la reconnaissance et le statut dans un large cercle d'inconnus, ou l'approbation et la fierté de tes parents ?",zh:'哪个更重要：在广大陌生人圈子里的认可与地位，还是父母的赞许与骄傲？'},r2:{o:['ST','PA'],en:'Choose: an important public speech that raises you in the eyes of strangers (ST), or a visit to parents who have long been waiting for you (PA)?',ru:'Выбери: важное публичное выступление, которое поднимет тебя в глазах незнакомцев (ST), или визит к родителям, которые давно тебя ждут (PA)?',es:'Elige: un discurso público importante que te eleva ante desconocidos (ST), o una visita a unos padres que te esperan desde hace tiempo (PA)?',fr:"Choisis : un discours public important qui t'élève aux yeux d'inconnus (ST), ou une visite à des parents qui t'attendent depuis longtemps (PA) ?",zh:'二选一：让你在陌生人眼中提升的重要公开演讲（ST），还是探望等候你已久的父母（PA）？'}},
-{a:'ST',b:'CH',r1:{o:['ST','CH'],en:'Which is more valuable: the energy of a party and new acquaintances, or time spent with children — games, reading, walks?',ru:'Что ценнее: энергия вечеринки и новые знакомства или время, проведённое с детьми — игры, чтение, прогулки?',es:'¿Qué vale más: la energía de una fiesta y nuevos conocidos, o el tiempo pasado con los niños: juegos, lectura, paseos?',fr:"Ce qui a plus de valeur : l'énergie d'une fête et de nouvelles connaissances, ou le temps passé avec les enfants : jeux, lecture, promenades ?",zh:'哪个更有价值：派对的能量与新相识，还是与孩子共度的时光——游戏、阅读、散步？'},r2:{o:['CH','ST'],en:'A free hour: a child asks you to play with him (CH), or the company calls you to a place full of strangers (ST). To whom do you give this hour?',ru:'Свободный час: ребёнок просит поиграть с ним (CH) или компания зовёт в место, полное незнакомых людей (ST). Кому ты отдашь этот час?',es:'Una hora libre: un niño te pide jugar con él (CH), o la compañía te llama a un lugar lleno de desconocidos (ST). ¿A quién das esta hora?',fr:"Une heure libre : un enfant te demande de jouer avec lui (CH), ou la compagnie t'appelle dans un lieu plein d'inconnus (ST). À qui donnes-tu cette heure ?",zh:'空闲一小时：孩子要你陪玩（CH），或同伴叫你去满是陌生人的地方（ST）。这一小时给谁？'}},
-{a:'ST',b:'CA',r1:{o:['ST','CA'],en:'Which matters more: a wide network of contacts and social life, or deep professional growth and career?',ru:'Что важнее: широкая сеть знакомств и светская жизнь или глубокий профессиональный рост и карьера?',es:'¿Qué importa más: una amplia red de contactos y vida social, o un crecimiento profesional profundo y carrera?',fr:"Ce qui compte le plus : un large réseau de contacts et la vie sociale, ou une croissance professionnelle profonde et une carrière ?",zh:'哪个更重要：广泛的人脉与社交生活，还是深度的职业成长与事业？'},r2:{o:['ST','CA'],en:'Evening before a deadline: an industry party with networking (ST), or quiet work on your qualification and portfolio (CA)?',ru:'Вечер перед дедлайном: отраслевая вечеринка с нетворкингом (ST) или тихая работа над своей квалификацией и портфолио (CA)?',es:'Noche antes de un plazo: una fiesta del sector con networking (ST), o trabajo tranquilo en tu cualificación y portafolio (CA)?',fr:"Veille d'échéance : une soirée du secteur avec networking (ST), ou un travail tranquille sur ta qualification et ton portfolio (CA) ?",zh:'截止前夜：带社交的行业派对（ST），还是安静打磨你的资质与作品集（CA）？'}},
-{a:'FR',b:'SP',r1:{o:['FR','SP'],en:'Which matters more: the interests and support of close friends, or the feelings and needs of your partner?',ru:'Что важнее: интересы и поддержка близких друзей или чувства и потребности твоего партнёра?',es:'¿Qué importa más: los intereses y el apoyo de amigos cercanos, o los sentimientos y necesidades de tu pareja?',fr:"Ce qui compte le plus : les intérêts et le soutien d'amis proches, ou les sentiments et besoins de ton partenaire ?",zh:'哪个更重要：密友的利益与支持，还是伴侣的感受与需求？'},r2:{o:['FR','SP'],en:'A friend asks you to come urgently in the middle of the night (FR), but your partner at home waits for your warmth and attention (SP). To whom do you give priority?',ru:'Друг просит срочно приехать среди ночи (FR), но партнёр дома ждёт твоего тепла и внимания (SP). Кому ты отдашь приоритет?',es:'Un amigo te pide ir urgente en plena noche (FR), pero tu pareja en casa espera tu calor y atención (SP). ¿A quién das prioridad?',fr:"Un ami te demande de venir d'urgence en pleine nuit (FR), mais ton partenaire à la maison attend ta chaleur et ton attention (SP). À qui donnes-tu la priorité ?",zh:'朋友半夜急召（FR），但伴侣在家等你的温度与关注（SP）。优先给谁？'}},
-{a:'FR',b:'HO',r1:{o:['FR','HO'],en:'Which is more valuable: an evening in the company of friends, or an evening absorbed by your hobby in solitude?',ru:'Что ценнее: вечер в компании друзей или вечер, поглощённый своим хобби в одиночестве?',es:'¿Qué vale más: una tarde en compañía de amigos, o una tarde absorbida por tu afición en soledad?',fr:"Ce qui a plus de valeur : une soirée en compagnie d'amis, ou une soirée absorbée par ton loisir en solitaire ?",zh:'哪个更有价值：与朋友共度的夜晚，还是独处沉浸于爱好的夜晚？'},r2:{o:['FR','HO'],en:'Friends gathered to meet (FR), and you are in the middle of an important stage of your game/project (HO). What do you sacrifice?',ru:'Друзья собрались встретиться (FR), а ты на середине важного этапа своей игры/проекта (HO). Чем ты пожертвуешь?',es:'Los amigos se reunieron para verse (FR), y tú estás a mitad de una etapa importante de tu juego/proyecto (HO). ¿Qué sacrificas?',fr:"Les amis se sont réunis pour se voir (FR), et tu es à mi-chemin d'une étape importante de ton jeu/projet (HO). Que sacrifies-tu ?",zh:'朋友们聚好相见（FR），而你正处游戏/项目关键阶段中途（HO）。你牺牲哪个？'}},
-{a:'FR',b:'PA',r1:{o:['FR','PA'],en:"Whose opinion is more authoritative to you: close friends' or parents'?",ru:'Чьё мнение для тебя авторитетнее: близких друзей или родителей?',es:'¿De quién es más autorizada la opinión para ti: de amigos cercanos o de padres?',fr:"L'opinion de qui est la plus autoritaire pour toi : amis proches ou parents ?",zh:'谁的意见对你更具权威：密友还是父母？'},r2:{o:['FR','PA'],en:'If friends and parents demand opposite decisions from you, whose side do you take: friends (FR) or family of origin (PA)?',ru:'Если друзья и родители требуют от тебя противоположных решений, чью сторону ты примешь: друзей (FR) или семью происхождения (PA)?',es:'Si amigos y padres te exigen decisiones opuestas, ¿de qué lado te pones: amigos (FR) o familia de origen (PA)?',fr:"Si amis et parents t'exigent des décisions opposées, de quel côté te ranges-tu : amis (FR) ou famille d'origine (PA) ?",zh:'若朋友与父母要求相反决定，你站哪边：朋友（FR）还是原生家庭（PA）？'}},
-{a:'FR',b:'CH',r1:{o:['FR','CH'],en:'Which matters more: time with friends or time with children?',ru:'Что важнее: время с друзьями или время с детьми?',es:'¿Qué importa más: tiempo con amigos o tiempo con los niños?',fr:"Ce qui compte le plus : du temps avec des amis ou du temps avec les enfants ?",zh:'哪个更重要：与朋友的时间，还是与孩子的时间？'},r2:{o:['FR','CH'],en:'On one day are scheduled a long-awaited meeting of friends (FR) and a children matinee where your child waits for you (CH). Where do you go?',ru:'В один день назначены долгожданная встреча друзей (FR) и детский утренник, где тебя ждёт твой ребёнок (CH). Куда ты пойдёшь?',es:'El mismo día están programadas una ansiada reunión de amigos (FR) y una matinal infantil donde tu hijo te espera (CH). ¿Adónde vas?',fr:"Le même jour sont prévus une réunion d'amis tant attendue (FR) et une matinée enfants où ton enfant t'attend (CH). Où vas-tu ?",zh:'同一天既有期待已久的朋友聚会（FR），又有孩子等你的儿童演出（CH）。你去哪？'}},
-{a:'FR',b:'CA',r1:{o:['FR','CA'],en:'Which is more valuable: helping friends and being with them, or career and professional growth?',ru:'Что ценнее: помощь друзьям и пребывание с ними или карьера и профессиональный рост?',es:'¿Qué vale más: ayudar a amigos y estar con ellos, o carrera y crecimiento profesional?',fr:"Ce qui a plus de valeur : aider des amis et être avec eux, ou carrière et croissance professionnelle ?",zh:'哪个更有价值：帮助朋友并与他们相伴，还是事业与职业成长？'},r2:{o:['FR','CA'],en:'A friend asks you to give the weekend to his cause (FR), while a chance opens that moves your career (CA). What do you choose?',ru:'Друг просит отдать выходные его делу (FR), одновременно открывается шанс, который двигает твою карьеру (CA). Что выберешь?',es:'Un amigo te pide dedicar el fin de semana a su causa (FR), mientras se abre una oportunidad que impulsa tu carrera (CA). ¿Qué eliges?',fr:"Un ami te demande de consacrer le week-end à sa cause (FR), tandis qu'une opportunité se présente qui fait avancer ta carrière (CA). Que choisis-tu ?",zh:'朋友请你把周末给他的事（FR），同时出现推动你事业的机会（CA）。你选哪个？'}},
-{a:'SP',b:'HO',r1:{o:['SP','HO'],en:'Which matters more: being near your partner — hugging, chatting, staring at the ceiling together — or personal space and a beloved hobby?',ru:'Что важнее: быть рядом с партнёром — обниматься, болтать, вместе смотреть в потолок — или личное пространство и любимое хобби?',es:'¿Qué importa más: estar cerca de tu pareja — abrazaros, charlar, mirar el techo juntos — o espacio personal y una afición querida?',fr:"Ce qui compte le plus : être près de ton partenaire — s'enlacer, discuter, regarder le plafond ensemble — ou espace personnel et loisir favori ?",zh:'哪个更重要：与伴侣相依——拥抱、聊天、一起望天花板——还是个人空间与挚爱爱好？'},r2:{o:['SP','HO'],en:'Partner wants an evening for two watching a series (SP), and you dream of four hours for your game/project (HO). Who gets the evening?',ru:'Партнёр хочет вечер вдвоём за сериалом (SP), а ты мечтаешь о четырёх часах для своей игры/проекта (HO). Кому достанется вечер?',es:'Tu pareja quiere una noche a dos viendo una serie (SP), y tú sueñas con cuatro horas para tu juego/proyecto (HO). ¿Quién se queda la noche?',fr:"Ton partenaire veut une soirée à deux devant une série (SP), et toi tu rêves de quatre heures pour ton jeu/projet (HO). À qui revient la soirée ?",zh:'伴侣想要二人看剧的夜晚（SP），你梦想四小时给自己的游戏/项目（HO）。夜晚归谁？'}},
-{a:'SP',b:'PA',r1:{o:['SP','PA'],en:'Who matters more when making life decisions: your partner or your parents?',ru:'Кто важнее при принятии жизненных решений: твой партнёр или твои родители?',es:'¿Quién importa más al tomar decisiones de vida: tu pareja o tus padres?',fr:"Qui compte le plus pour prendre les décisions de vie : ton partenaire ou tes parents ?",zh:'做人生决定时谁更重要：伴侣还是父母？'},r2:{o:['SP','PA'],en:'If the interests of partner and parents collide head-on, on whose side do you stand: partner (SP) or parents (PA)?',ru:'Если интересы партнёра и родителей столкнутся лоб в лоб, на чьей стороне ты встанешь: партнёра (SP) или родителей (PA)?',es:'Si los intereses de pareja y padres chocan de frente, ¿de qué lado te pones: pareja (SP) o padres (PA)?',fr:"Si les intérêts du partenaire et des parents s'affrontent frontalement, de quel côté te ranges-tu : partenaire (SP) ou parents (PA) ?",zh:'若伴侣与父母利益正面冲突，你站哪边：伴侣（SP）还是父母（PA）？'}},
-{a:'SP',b:'CH',r1:{o:['SP','CH'],en:'Which is more valuable: the relationship with your partner as a couple, or the relationship with children as a parent?',ru:'Что ценнее: отношения с партнёром как с парой или отношения с детьми как с родителем?',es:'¿Qué vale más: la relación con tu pareja como casal, o la relación con los hijos como padre/madre?',fr:"Ce qui a plus de valeur : la relation avec ton partenaire en tant que couple, ou la relation avec les enfants en tant que parent ?",zh:'哪个更有价值：作为伴侣的关系，还是作为父母与孩子的关系？'},r2:{o:['SP','CH'],en:'One whole day you can give to only one: a romantic day with partner (SP) or an adventure day with a child (CH)?',ru:'Один целый день ты можешь подарить только кому-то одному: романтический день с партнёром (SP) или день приключений с ребёнком (CH)?',es:'Un día entero que solo puedes dar a uno: ¿día romántico con la pareja (SP) o día de aventuras con un hijo (CH)?',fr:"Une journée entière que tu ne peux offrir qu'à l'un : journée romantique en couple (SP) ou journée d'aventure avec un enfant (CH) ?",zh:'整整一天只能给一方：与伴侣的浪漫日（SP），还是与孩子的冒险日（CH）？'}},
-{a:'SP',b:'CA',r1:{o:['SP','CA'],en:'Which matters more: love and intimacy with your partner, or career and achievements?',ru:'Что важнее: любовь и близость с партнёром или карьера и достижения?',es:'¿Qué importa más: amor e intimidad con tu pareja, o carrera y logros?',fr:"Ce qui compte le plus : l'amour et l'intimité avec ton partenaire, ou carrière et réussites ?",zh:'哪个更重要：与伴侣的爱与亲密，还是事业与成就？'},r2:{o:['CA','SP'],en:'An offer in another city promises a career leap (CA), but your partner cannot move and intimacy is threatened (SP). What do you sacrifice?',ru:'Оффер в другом городе сулит скачок карьеры (CA), но партнёр не может уехать, и близость под угрозой (SP). Чем пожертвуешь?',es:'Una oferta en otra ciudad promete un salto de carrera (CA), pero tu pareja no puede mudarse y la intimidad amenaza (SP). ¿Qué sacrificas?',fr:"Une offre dans une autre ville promet un bond de carrière (CA), mais ton partenaire ne peut déménager et l'intimité est menacée (SP). Que sacrifies-tu ?",zh:'另一城市的录用承诺事业跃升（CA），但伴侣无法搬迁、亲密受威胁（SP）。你牺牲哪个？'}},
-{a:'HO',b:'PA',r1:{o:['HO','PA'],en:'Which is more valuable: your hobby and personal time, or attention and help to parents?',ru:'Что ценнее: твоё хобби и личное время или внимание и помощь родителям?',es:'¿Qué vale más: tu afición y tiempo personal, o atención y ayuda a los padres?',fr:"Ce qui a plus de valeur : ton loisir et ton temps personnel, ou l'attention et l'aide aux parents ?",zh:'哪个更有价值：你的爱好与个人时间，还是对父母的关注与帮助？'},r2:{o:['PA','HO'],en:'Parents invite you to spend the weekend at theirs (PA), and you have long planned these days for your project/game (HO). What wins?',ru:'Родители зовут провести выходные у них (PA), а ты давно запланировал эти дни под свой проект/игру (HO). Что победит?',es:'Los padres te invitan a pasar el fin de semana con ellos (PA), y llevas tiempo planeando estos días para tu proyecto/juego (HO). ¿Qué gana?',fr:"Les parents t'invitent à passer le week-end chez eux (PA), et tu as depuis longtemps prévu ces jours pour ton projet/jeu (HO). Qui gagne ?",zh:'父母邀你周末去他们那（PA），而你早把这几天留给项目/游戏（HO）。哪个胜出？'}},
-{a:'HO',b:'CH',r1:{o:['HO','CH'],en:'Which matters more: immersion in your hobby or activities with children?',ru:'Что важнее: погружение в своё хобби или занятия с детьми?',es:'¿Qué importa más: sumergirte en tu afición o actividades con los niños?',fr:"Ce qui compte le plus : l'immersion dans ton loisir ou les activités avec les enfants ?",zh:'哪个更重要：沉浸于爱好，还是与孩子互动？'},r2:{o:['CH','HO'],en:'A child asks to play right now (CH), and you are in the flow of your hobby/game (HO). What do you interrupt?',ru:'Ребёнок просит поиграть прямо сейчас (CH), а ты в потоке своего хобби/игры (HO). Что ты прервёшь?',es:'Un niño pide jugar ahora mismo (CH), y tú estás en flujo con tu afición/juego (HO). ¿Qué interrumpes?',fr:"Un enfant demande à jouer tout de suite (CH), et tu es dans le flux de ton loisir/jeu (HO). Qu'interromps-tu ?",zh:'孩子此刻要你陪玩（CH），而你正沉浸于爱好/游戏的心流（HO）。你打断哪个？'}},
-{a:'HO',b:'CA',r1:{o:['HO','CA'],en:'Which is more valuable: a hobby for the soul without money, or career and income?',ru:'Что ценнее: хобби для души без денег или карьера и доход?',es:'¿Qué vale más: una afición para el alma sin dinero, o carrera e ingresos?',fr:"Ce qui a plus de valeur : un loisir pour l'âme sans argent, ou carrière et revenus ?",zh:'哪个更有价值：滋养灵魂却无钱的爱好，还是事业与收入？'},r2:{o:['HO','CA'],en:'A year of free time can be invested in only one: a hobby that gives thrill (HO), or study/growth that gives career (CA)?',ru:'Год свободного времени можно вложить только в одно: хобби, дающее кайф (HO), или учёбу/рост, дающие карьеру (CA)?',es:'Un año de tiempo libre solo puede invertirse en uno: afición que da emoción (HO), o estudio/crecimiento que da carrera (CA)?',fr:"Une année de temps libre ne peut être investie que dans l'un : loisir qui donne du frisson (HO), ou études/croissance qui donnent une carrière (CA) ?",zh:'一年的空闲只能投入一项：带来快感的爱好（HO），或带来事业的学业/成长（CA）？'}},
-{a:'PA',b:'CH',r1:{o:['PA','CH'],en:'Who is dearer to you: your parents or your children?',ru:'Кто тебе дороже: твои родители или твои дети?',es:'¿Quién te es más querido: tus padres o tus hijos?',fr:"Qui t'est le plus cher : tes parents ou tes enfants ?",zh:'谁对你更亲：父母还是孩子？'},r2:{o:['PA','CH'],en:'A scarce resource — time or money — must be split between helping parents (PA) and investing in children (CH). Who gets the larger share?',ru:'Дефицитный ресурс — время или деньги — нужно поделить между помощью родителям (PA) и вложением в детей (CH). Кому достанется большая доля?',es:'Un recurso escaso — tiempo o dinero — debe dividirse entre ayudar a los padres (PA) e invertir en los hijos (CH). ¿Quién recibe la mayor parte?',fr:"Une ressource rare — temps ou argent — doit être partagée entre aider les parents (PA) et investir dans les enfants (CH). Qui reçoit la plus grande part ?",zh:'稀缺资源——时间或金钱——须在帮扶父母（PA）与投入孩子（CH）间分配。谁得更大份额？'}},
-{a:'PA',b:'CA',r1:{o:['PA','CA'],en:'Which matters more: duty and closeness with parents, or career and personal achievements?',ru:'Что важнее: долг и близость с родителями или карьера и личные достижения?',es:'¿Qué importa más: deber y cercanía con los padres, o carrera y logros personales?',fr:"Ce qui compte le plus : le devoir et la proximité avec les parents, ou carrière et réussites personnelles ?",zh:'哪个更重要：对父母的责任与亲近，还是事业与个人成就？'},r2:{o:['CA','PA'],en:'An important business trip/promotion (CA) conflicts with the need to be near parents (PA). What do you choose?',ru:'Важная командировка/повышение (CA) конфликтует с необходимостью быть рядом с родителями (PA). Что выберешь?',es:'Un viaje de negocios/promoción importante (CA) entra en conflicto con la necesidad de estar cerca de los padres (PA). ¿Qué eliges?',fr:"Un déplacement/promotion important (CA) entre en conflit avec le besoin d'être près des parents (PA). Que choisis-tu ?",zh:'重要的出差/晋升（CA）与需陪伴父母（PA）冲突。你选哪个？'}},
-{a:'CH',b:'CA',r1:{o:['CH','CA'],en:'Which is more valuable: children and time with them, or career and professional realization?',ru:'Что ценнее: дети и время с ними или карьера и профессиональная реализация?',es:'¿Qué vale más: los hijos y el tiempo con ellos, o carrera y realización profesional?',fr:"Ce qui a plus de valeur : les enfants et le temps avec eux, ou carrière et réalisation professionnelle ?",zh:'哪个更有价值：孩子与共度的时光，还是事业与职业实现？'},r2:{o:['CA','CH'],en:'A project demanding all your strength for a year promises career growth (CA), but this same year is critical for your children (CH). To whom do you give the year?',ru:'Проект, требующий все силы на год, обещает рост карьеры (CA), но этот же год — критичный для твоих детей (CH). Кому отдашь год?',es:'Un proyecto que exige todas tus fuerzas durante un año promete crecimiento de carrera (CA), pero ese mismo año es crítico para tus hijos (CH). ¿A quién das el año?',fr:"Un projet exigeant toutes tes forces pendant un an promet une croissance de carrière (CA), mais cette même année est critique pour tes enfants (CH). À qui donnes-tu l'année ?",zh:'一个需你全年尽力的项目承诺事业成长（CA），但这同一年对孩子至关重要（CH）。这一年给谁？'}}
+
+// --- Question Bank (21 pairs × 2 rounds + 7 worst-case) ---
+// Note: Texts are designed to clearly separate ST (chaos/novelty) from FR (safety/trust)
+const QUESTIONS_RAW = [
+ // Pair 1: ST vs FR
+ {a:'ST',b:'FR',r1:{o:['ST','FR'],en:"What feels more alive: a loud party full of new faces where everyone talks at once, OR a quiet dinner with two old friends who understand your silence?",ru:'Что ощущается более живым: шумная вечеринка с толпой новых лиц, где все говорят одновременно, ИЛИ тихий ужин с двумя старыми друзьями, которые понимают твоё молчание?',es:'¿Qué se siente más vivo: una fiesta ruidosa llena de caras nuevas donde todos hablan a la vez, O una cena tranquila con dos viejos amigos que entienden tu silencio?',fr:'Qu’est-ce qui semble plus vivant : une soirée bruyante pleine de nouveaux visages où tout le monde parle en même temps, OU un dîner calme avec deux vieux amis qui comprennent ton silence ?',zh:'什么感觉更有活力：挤满新面孔、人人都在说话的喧闹派对，还是与两位懂你沉默的老友的安静晚餐？'},r2:{o:['FR','ST'],en:"Imagine Friday night: do you crave the chaos of meeting strangers (ST), or the comfort of deep conversation with trusted people (FR)?",ru:'Представь пятницу вечером: тебя тянет в хаос встречи с незнакомцами (ST) или в комфорт глубокого разговора с доверенными людьми (FR)?',es:'Imagina el viernes por la noche: ¿anhelas el caos de conocer extraños (ST), o la comodidad de una conversación profunda con personas de confianza (FR)?',fr:'Imagine vendredi soir : as-tu envie du chaos des rencontres inconnues (ST), ou du confort d’une conversation profonde avec des personnes de confiance (FR) ?',zh:'想象周五晚上：你渴望遇见陌生人的混乱（ST），还是与可信赖之人深度交谈的舒适（FR）？'}},
+ // Pair 2: ST vs SP
+ {a:'ST',b:'SP',r1:{o:['ST','SP'],en:'Which matters more: the admiring looks and attention of strangers at an event, or a deep intimate conversation with your partner at home in silence?',ru:'Что важнее: восхищённые взгляды и внимание незнакомых людей на мероприятии или глубокий интимный разговор с твоим партнёром дома, в тишине?',es:'¿Qué importa más: las miradas admirativas y la atención de desconocidos en un evento, o una conversación íntima profunda con tu pareja en casa, en silencio?',fr:"Ce qui compte le plus : les regards admiratifs et l'attention d'inconnus lors d'un événement, ou une conversation intime profonde avec ton partenaire à la maison, dans le silence ?",zh:'哪个更重要：活动中陌生人的倾慕目光与关注，还是在家与伴侣在寂静中的深度亲密对话？'},r2:{o:['ST','SP'],en:"You're offered a public award before a thousand strangers (ST), but at the same hour your partner is in crisis and waits for your presence (SP). Where do you go?",ru:'Тебе предлагают публичную награду перед тысячей незнакомцев (ST), но в тот же час твой партнёр переживает кризис и ждёт твоего присутствия (SP). Куда ты поедешь?',es:'Te ofrecen un premio público ante mil desconocidos (ST), pero a la misma hora tu pareja está en crisis y espera tu presencia (SP). ¿Adónde vas?',fr:"On t'offre une récompense publique devant mille inconnus (ST), mais à la même heure ton partenaire est en crise et attend ta présence (SP). Où vas-tu ?",zh:'有人于千人前给你颁奖（ST），但同一时刻伴侣正处危机等待你在场（SP）。你去哪？'}},
+ // Pair 3: ST vs HO
+ {a:'ST',b:'HO',r1:{o:['ST','HO'],en:'Which is more valuable: being the soul of a noisy company of strangers, or diving headfirst into your hobby or game in complete solitude?',ru:'Что ценнее: быть душой шумной компании незнакомых людей или погрузиться с головой в своё хобби или игру в полном одиночестве?',es:'¿Qué vale más: ser el alma de una compañía ruidosa de desconocidos, o sumergirte de lleno en tu afición o juego en soledad total?',fr:"Ce qui a plus de valeur : être l'âme d'une compagnie bruyante d'inconnus, ou plonger à corps perdu dans ton loisir ou ton jeu en solitude totale ?",zh:'哪个更有价值：成为喧闹陌生人群体的灵魂，还是全然独处地沉浸于你的爱好或游戏？'},r2:{o:['ST','HO'],en:'Saturday morning: you are invited to a networking event with a crowd of new faces (ST), or nobody touches you for four hours with your project/game (HO). Where does your energy go?',ru:'Суббота утра: зовут на нетворкинг-событие с толпой новых лиц (ST) или никто не тронет тебя четыре часа с твоим проектом/игрой (HO). Куда пойдёт твоя энергия?',es:'Sábado por la mañana: te invitan a un evento de networking con multitud de caras nuevas (ST), o nadie te molesta durante cuatro horas con tu proyecto/juego (HO). ¿Adónde va tu energía?',fr:"Samedi matin : on t'invite à un événement de networking avec une foule de nouveaux visages (ST), ou personne ne te dérange pendant quatre heures avec ton projet/jeu (HO). Où va ton énergie ?",zh:'周六早晨：被邀参加挤满新面孔的社交活动（ST），或四小时无人打扰地做你的项目/游戏（HO）。精力流向哪？'}},
+ // Pair 4: ST vs PA
+ {a:'ST',b:'PA',r1:{o:['ST','PA'],en:'Which matters more: recognition and status in a wide circle of strangers, or the approval and pride of your parents?',ru:'Что важнее: признание и статус в широком круге чужих людей или одобрение и гордость твоих родителей?',es:'¿Qué importa más: el reconocimiento y estatus en un amplio círculo de desconocidos, o la aprobación y orgullo de tus padres?',fr:"Ce qui compte le plus : la reconnaissance et le statut dans un large cercle d'inconnus, ou l'approbation et la fierté de tes parents ?",zh:'哪个更重要：在广大陌生人圈子里的认可与地位，还是父母的赞许与骄傲？'},r2:{o:['ST','PA'],en:'Choose: an important public speech that raises you in the eyes of strangers (ST), or a visit to parents who have long been waiting for you (PA)?',ru:'Выбери: важное публичное выступление, которое поднимет тебя в глазах незнакомцев (ST), или визит к родителям, которые давно тебя ждут (PA)?',es:'Elige: un discurso público importante que te eleva ante desconocidos (ST), o una visita a unos padres que te esperan desde hace tiempo (PA)?',fr:"Choisis : un discours public important qui t'élève aux yeux d'inconnus (ST), ou une visite à des parents qui t'attendent depuis longtemps (PA) ?",zh:'二选一：让你在陌生人眼中提升的重要公开演讲（ST），还是探望等候你已久的父母（PA）？'}},
+ // Pair 5: ST vs CH
+ {a:'ST',b:'CH',r1:{o:['ST','CH'],en:'Which is more valuable: the energy of a party and new acquaintances, or time spent with children — games, reading, walks?',ru:'Что ценнее: энергия вечеринки и новые знакомства или время, проведённое с детьми — игры, чтение, прогулки?',es:'¿Qué vale más: la energía de una fiesta y nuevos conocidos, o el tiempo pasado con los niños: juegos, lectura, paseos?',fr:"Ce qui a plus de valeur : l'énergie d'une fête et de nouvelles connaissances, ou le temps passé avec les enfants : jeux, lecture, promenades ?",zh:'哪个更有价值：派对的能量与新相识，还是与孩子共度的时光——游戏、阅读、散步？'},r2:{o:['CH','ST'],en:'A free hour: a child asks you to play with him (CH), or the company calls you to a place full of strangers (ST). To whom do you give this hour?',ru:'Свободный час: ребёнок просит поиграть с ним (CH) или компания зовёт в место, полное незнакомых людей (ST). Кому ты отдашь этот час?',es:'Una hora libre: un niño te pide jugar con él (CH), o la compañía te llama a un lugar lleno de desconocidos (ST). ¿A quién das esta hora?',fr:"Une heure libre : un enfant te demande de jouer avec lui (CH), ou la compagnie t'appelle dans un lieu plein d'inconnus (ST). À qui donnes-tu cette heure ?",zh:'空闲一小时：孩子要你陪玩（CH），或同伴叫你去满是陌生人的地方（ST）。这一小时给谁？'}},
+ // Pair 6: ST vs CA
+ {a:'ST',b:'CA',r1:{o:['ST','CA'],en:'Which matters more: a wide network of contacts and social life, or deep professional growth and career?',ru:'Что важнее: широкая сеть знакомств и светская жизнь или глубокий профессиональный рост и карьера?',es:'¿Qué importa más: una amplia red de contactos y vida social, o un crecimiento profesional profundo y carrera?',fr:"Ce qui compte le plus : un large réseau de contacts et la vie sociale, ou une croissance professionnelle profonde et une carrière ?",zh:'哪个更重要：广泛的人脉与社交生活，还是深度的职业成长与事业？'},r2:{o:['ST','CA'],en:'Evening before a deadline: an industry party with networking (ST), or quiet work on your qualification and portfolio (CA)?',ru:'Вечер перед дедлайном: отраслевая вечеринка с нетворкингом (ST) или тихая работа над своей квалификацией и портфолио (CA)?',es:'Noche antes de un plazo: una fiesta del sector con networking (ST), o trabajo tranquilo en tu cualificación y portafolio (CA)?',fr:"Veille d'échéance : une soirée du secteur avec networking (ST), ou un travail tranquille sur ta qualification et ton portfolio (CA) ?",zh:'截止前夜：带社交的行业派对（ST），还是安静打磨你的资质与作品集（CA）？'}},
+ // Pair 7: FR vs SP
+ {a:'FR',b:'SP',r1:{o:['FR','SP'],en:'Which matters more: the interests and support of close friends, or the feelings and needs of your partner?',ru:'Что важнее: интересы и поддержка близких друзей или чувства и потребности твоего партнёра?',es:'¿Qué importa más: los intereses y el apoyo de amigos cercanos, o los sentimientos y necesidades de tu pareja?',fr:"Ce qui compte le plus : les intérêts et le soutien d'amis proches, ou les sentiments et besoins de ton partenaire ?",zh:'哪个更重要：密友的利益与支持，还是伴侣的感受与需求？'},r2:{o:['FR','SP'],en:'A friend asks you to come urgently in the middle of the night (FR), but your partner at home waits for your warmth and attention (SP). To whom do you give priority?',ru:'Друг просит срочно приехать среди ночи (FR), но партнёр дома ждёт твоего тепла и внимания (SP). Кому ты отдашь приоритет?',es:'Un amigo te pide ir urgente en plena noche (FR), pero tu pareja en casa espera tu calor y atención (SP). ¿A quién das prioridad?',fr:"Un ami te demande de venir d'urgence en pleine nuit (FR), mais ton partenaire à la maison attend ta chaleur et ton attention (SP). À qui donnes-tu la priorité ?",zh:'朋友半夜急召（FR），但伴侣在家等你的温度与关注（SP）。优先给谁？'}},
+ // Pair 8: FR vs HO
+ {a:'FR',b:'HO',r1:{o:['FR','HO'],en:'Which is more valuable: an evening in the company of friends, or an evening absorbed by your hobby in solitude?',ru:'Что ценнее: вечер в компании друзей или вечер, поглощённый своим хобби в одиночестве?',es:'¿Qué vale más: una tarde en compañía de amigos, o una tarde absorbida por tu afición en soledad?',fr:"Ce qui a plus de valeur : une soirée en compagnie d'amis, ou une soirée absorbée par ton loisir en solitaire ?",zh:'哪个更有价值：与朋友共度的夜晚，还是独处沉浸于爱好的夜晚？'},r2:{o:['FR','HO'],en:'Friends gathered to meet (FR), and you are in the middle of an important stage of your game/project (HO). What do you sacrifice?',ru:'Друзья собрались встретиться (FR), а ты на середине важного этапа своей игры/проекта (HO). Чем ты пожертвуешь?',es:'Los amigos se reunieron para verse (FR), y tú estás a mitad de una etapa importante de tu juego/proyecto (HO). ¿Qué sacrificas?',fr:"Les amis se sont réunis pour se voir (FR), et tu es à mi-chemin d'une étape importante de ton jeu/projet (HO). Que sacrifies-tu ?",zh:'朋友们聚好相见（FR），而你正处游戏/项目关键阶段中途（HO）。你牺牲哪个？'}},
+ // Pair 9: FR vs PA
+ {a:'FR',b:'PA',r1:{o:['FR','PA'],en:"Whose opinion is more authoritative to you: close friends' or parents'?",ru:'Чьё мнение для тебя авторитетнее: близких друзей или родителей?',es:'¿De quién es más autorizada la opinión para ti: de amigos cercanos o de padres?',fr:"L'opinion de qui est la plus autoritaire pour toi : amis proches ou parents ?",zh:'谁的意见对你更具权威：密友还是父母？'},r2:{o:['FR','PA'],en:'If friends and parents demand opposite decisions from you, whose side do you take: friends (FR) or family of origin (PA)?',ru:'Если друзья и родители требуют от тебя противоположных решений, чью сторону ты примешь: друзей (FR) или семью происхождения (PA)?',es:'Si amigos y padres te exigen decisiones opuestas, ¿de qué lado te pones: amigos (FR) o familia de origen (PA)?',fr:"Si amis et parents t'exigent des décisions opposées, de quel côté te ranges-tu : amis (FR) ou famille d'origine (PA) ?",zh:'若朋友与父母要求相反决定，你站哪边：朋友（FR）还是原生家庭（PA）？'}},
+ // Pair 10: FR vs CH
+ {a:'FR',b:'CH',r1:{o:['FR','CH'],en:'Which matters more: time with friends or time with children?',ru:'Что важнее: время с друзьями или время с детьми?',es:'¿Qué importa más: tiempo con amigos o tiempo con los niños?',fr:"Ce qui compte le plus : du temps avec des amis ou du temps avec les enfants ?",zh:'哪个更重要：与朋友的时间，还是与孩子的时间？'},r2:{o:['FR','CH'],en:'On one day are scheduled a long-awaited meeting of friends (FR) and a children matinee where your child waits for you (CH). Where do you go?',ru:'В один день назначены долгожданная встреча друзей (FR) и детский утренник, где тебя ждёт твой ребёнок (CH). Куда ты пойдёшь?',es:'El mismo día están programadas una ansiada reunión de amigos (FR) y una matinal infantil donde tu hijo te espera (CH). ¿Adónde vas?',fr:"Le même jour sont prévus une réunion d'amis tant attendue (FR) et une matinée enfants où ton enfant t'attend (CH). Où vas-tu ?",zh:'同一天既有期待已久的朋友聚会（FR），又有孩子等你的儿童演出（CH）。你去哪？'}},
+ // Pair 11: FR vs CA
+ {a:'FR',b:'CA',r1:{o:['FR','CA'],en:'Which is more valuable: helping friends and being with them, or career and professional growth?',ru:'Что ценнее: помощь друзьям и пребывание с ними или карьера и профессиональный рост?',es:'¿Qué vale más: ayudar a amigos y estar con ellos, o carrera y crecimiento profesional?',fr:"Ce qui a plus de valeur : aider des amis et être avec eux, ou carrière et croissance professionnelle ?",zh:'哪个更有价值：帮助朋友并与他们相伴，还是事业与职业成长？'},r2:{o:['FR','CA'],en:'A friend asks you to give the weekend to his cause (FR), while a chance opens that moves your career (CA). What do you choose?',ru:'Друг просит отдать выходные его делу (FR), одновременно открывается шанс, который двигает твою карьеру (CA). Что выберешь?',es:'Un amigo te pide dedicar el fin de semana a su causa (FR), mientras se abre una oportunidad que impulsa tu carrera (CA). ¿Qué eliges?',fr:"Un ami te demande de consacrer le week-end à sa cause (FR), tandis qu'une opportunité se présente qui fait avancer ta carrière (CA). Que choisis-tu ?",zh:'朋友请你把周末给他的事（FR），同时出现推动你事业的机会（CA）。你选哪个？'}},
+ // Pair 12: SP vs HO
+ {a:'SP',b:'HO',r1:{o:['SP','HO'],en:'Which matters more: being near your partner — hugging, chatting, staring at the ceiling together — or personal space and a beloved hobby?',ru:'Что важнее: быть рядом с партнёром — обниматься, болтать, вместе смотреть в потолок — или личное пространство и любимое хобби?',es:'¿Qué importa más: estar cerca de tu pareja — abrazaros, charlar, mirar el techo juntos — o espacio personal y una afición querida?',fr:"Ce qui compte le plus : être près de ton partenaire — s'enlacer, discuter, regarder le plafond ensemble — ou espace personnel et loisir favori ?",zh:'哪个更重要：与伴侣相依——拥抱、聊天、一起望天花板——还是个人空间与挚爱爱好？'},r2:{o:['SP','HO'],en:'Partner wants an evening for two watching a series (SP), and you dream of four hours for your game/project (HO). Who gets the evening?',ru:'Партнёр хочет вечер вдвоём за сериалом (SP), а ты мечтаешь о четырёх часах для своей игры/проекта (HO). Кому достанется вечер?',es:'Tu pareja quiere una noche a dos viendo una serie (SP), y tú sueñas con cuatro horas para tu juego/proyecto (HO). ¿Quién se queda la noche?',fr:"Ton partenaire veut une soirée à deux devant une série (SP), et toi tu rêves de quatre heures pour ton jeu/projet (HO). À qui revient la soirée ?",zh:'伴侣想要二人看剧的夜晚（SP），你梦想四小时给自己的游戏/项目（HO）。夜晚归谁？'}},
+ // Pair 13: SP vs PA
+ {a:'SP',b:'PA',r1:{o:['SP','PA'],en:'Who matters more when making life decisions: your partner or your parents?',ru:'Кто важнее при принятии жизненных решений: твой партнёр или твои родители?',es:'¿Quién importa más al tomar decisiones de vida: tu pareja o tus padres?',fr:"Qui compte le plus pour prendre les décisions de vie : ton partenaire ou tes parents ?",zh:'做人生决定时谁更重要：伴侣还是父母？'},r2:{o:['SP','PA'],en:'If the interests of partner and parents collide head-on, on whose side do you stand: partner (SP) or parents (PA)?',ru:'Если интересы партнёра и родителей столкнутся лоб в лоб, на чьей стороне ты встанешь: партнёра (SP) или родителей (PA)?',es:'Si los intereses de pareja y padres chocan de frente, ¿de qué lado te pones: pareja (SP) o padres (PA)?',fr:"Si les intérêts du partenaire et des parents s'affrontent frontalement, de quel côté te ranges-tu : partenaire (SP) ou parents (PA) ?",zh:'若伴侣与父母利益正面冲突，你站哪边：伴侣（SP）还是父母（PA）？'}},
+ // Pair 14: SP vs CH
+ {a:'SP',b:'CH',r1:{o:['SP','CH'],en:'Which is more valuable: the relationship with your partner as a couple, or the relationship with children as a parent?',ru:'Что ценнее: отношения с партнёром как с парой или отношения с детьми как с родителем?',es:'¿Qué vale más: la relación con tu pareja como casal, o la relación con los hijos como padre/madre?',fr:"Ce qui a plus de valeur : la relation avec ton partenaire en tant que couple, ou la relation avec les enfants en tant que parent ?",zh:'哪个更有价值：作为伴侣的关系，还是作为父母与孩子的关系？'},r2:{o:['SP','CH'],en:'One whole day you can give to only one: a romantic day with partner (SP) or an adventure day with a child (CH)?',ru:'Один целый день ты можешь подарить только кому-то одному: романтический день с партнёром (SP) или день приключений с ребёнком (CH)?',es:'Un día entero que solo puedes dar a uno: ¿día romántico con la pareja (SP) o día de aventuras con un hijo (CH)?',fr:"Une journée entière que tu ne peux offrir qu'à l'un : journée romantique en couple (SP) ou journée d'aventure avec un enfant (CH) ?",zh:'整整一天只能给一方：与伴侣的浪漫日（SP），还是与孩子的冒险日（CH）？'}},
+ // Pair 15: SP vs CA
+ {a:'SP',b:'CA',r1:{o:['SP','CA'],en:'Which matters more: love and intimacy with your partner, or career and achievements?',ru:'Что важнее: любовь и близость с партнёром или карьера и достижения?',es:'¿Qué importa más: amor e intimidad con tu pareja, o carrera y logros?',fr:"Ce qui compte le plus : l'amour et l'intimité avec ton partenaire, ou carrière et réussites ?",zh:'哪个更重要：与伴侣的爱与亲密，还是事业与成就？'},r2:{o:['CA','SP'],en:'An offer in another city promises a career leap (CA), but your partner cannot move and intimacy is threatened (SP). What do you sacrifice?',ru:'Оффер в другом городе сулит скачок карьеры (CA), но партнёр не может уехать, и близость под угрозой (SP). Чем пожертвуешь?',es:'Una oferta en otra ciudad promete un salto de carrera (CA), pero tu pareja no puede mudarse y la intimidad amenaza (SP). ¿Qué sacrificas?',fr:"Une offre dans une autre ville promet un bond de carrière (CA), mais ton partenaire ne peut déménager et l'intimité est menacée (SP). Que sacrifies-tu ?",zh:'另一城市的录用承诺事业跃升（CA），但伴侣无法搬迁、亲密受威胁（SP）。你牺牲哪个？'}},
+ // Pair 16: HO vs PA
+ {a:'HO',b:'PA',r1:{o:['HO','PA'],en:'Which is more valuable: your hobby and personal time, or attention and help to parents?',ru:'Что ценнее: твоё хобби и личное время или внимание и помощь родителям?',es:'¿Qué vale más: tu afición y tiempo personal, o atención y ayuda a los padres?',fr:"Ce qui a plus de valeur : ton loisir et ton temps personnel, ou l'attention et l'aide aux parents ?",zh:'哪个更有价值：你的爱好与个人时间，还是对父母的关注与帮助？'},r2:{o:['PA','HO'],en:'Parents invite you to spend the weekend at theirs (PA), and you have long planned these days for your project/game (HO). What wins?',ru:'Родители зовут провести выходные у них (PA), а ты давно запланировал эти дни под свой проект/игру (HO). Что победит?',es:'Los padres te invitan a pasar el fin de semana con ellos (PA), y llevas tiempo planeando estos días para tu proyecto/juego (HO). ¿Qué gana?',fr:"Les parents t'invitent à passer le week-end chez eux (PA), et tu as depuis longtemps prévu ces jours pour ton projet/jeu (HO). Qui gagne ?",zh:'父母邀你周末去他们那（PA），而你早把这几天留给项目/游戏（HO）。哪个胜出？'}},
+ // Pair 17: HO vs CH
+ {a:'HO',b:'CH',r1:{o:['HO','CH'],en:'Which matters more: immersion in your hobby or activities with children?',ru:'Что важнее: погружение в своё хобби или занятия с детьми?',es:'¿Qué importa más: sumergirte en tu afición o actividades con los niños?',fr:"Ce qui compte le plus : l'immersion dans ton loisir ou les activités avec les enfants ?",zh:'哪个更重要：沉浸于爱好，还是与孩子互动？'},r2:{o:['CH','HO'],en:'A child asks to play right now (CH), and you are in the flow of your hobby/game (HO). What do you interrupt?',ru:'Ребёнок просит поиграть прямо сейчас (CH), а ты в потоке своего хобби/игры (HO). Что ты прервёшь?',es:'Un niño pide jugar ahora mismo (CH), y tú estás en flujo con tu afición/juego (HO). ¿Qué interrumpes?',fr:"Un enfant demande à jouer tout de suite (CH), et tu es dans le flux de ton loisir/jeu (HO). Qu'interromps-tu ?",zh:'孩子此刻要你陪玩（CH），而你正沉浸于爱好/游戏的心流（HO）。你打断哪个？'}},
+ // Pair 18: HO vs CA
+ {a:'HO',b:'CA',r1:{o:['HO','CA'],en:'Which is more valuable: a hobby for the soul without money, or career and income?',ru:'Что ценнее: хобби для души без денег или карьера и доход?',es:'¿Qué vale más: una afición para el alma sin dinero, o carrera e ingresos?',fr:"Ce qui a plus de valeur : un loisir pour l'âme sans argent, ou carrière et revenus ?",zh:'哪个更有价值：滋养灵魂却无钱的爱好，还是事业与收入？'},r2:{o:['HO','CA'],en:'A year of free time can be invested in only one: a hobby that gives thrill (HO), or study/growth that gives career (CA)?',ru:'Год свободного времени можно вложить только в одно: хобби, дающее кайф (HO), или учёбу/рост, дающие карьеру (CA)?',es:'Un año de tiempo libre solo puede invertirse en uno: afición que da emoción (HO), o estudio/crecimiento que da carrera (CA)?',fr:"Une année de temps libre ne peut être investie que dans l'un : loisir qui donne du frisson (HO), ou études/croissance qui donnent une carrière (CA) ?",zh:'一年的空闲只能投入一项：带来快感的爱好（HO），或带来事业的学业/成长（CA）？'}},
+ // Pair 19: PA vs CH
+ {a:'PA',b:'CH',r1:{o:['PA','CH'],en:'Who is dearer to you: your parents or your children?',ru:'Кто тебе дороже: твои родители или твои дети?',es:'¿Quién te es más querido: tus padres o tus hijos?',fr:"Qui t'est le plus cher : tes parents ou tes enfants ?",zh:'谁对你更亲：父母还是孩子？'},r2:{o:['PA','CH'],en:'A scarce resource — time or money — must be split between helping parents (PA) and investing in children (CH). Who gets the larger share?',ru:'Дефицитный ресурс — время или деньги — нужно поделить между помощью родителям (PA) и вложением в детей (CH). Кому достанется большая доля?',es:'Un recurso escaso — tiempo o dinero — debe dividirse entre ayudar a los padres (PA) e invertir en los hijos (CH). ¿Quién recibe la mayor parte?',fr:"Une ressource rare — temps ou argent — doit être partagée entre aider les parents (PA) et investir dans les enfants (CH). Qui reçoit la plus grande part ?",zh:'稀缺资源——时间或金钱——须在帮扶父母（PA）与投入孩子（CH）间分配。谁得更大份额？'}},
+ // Pair 20: PA vs CA
+ {a:'PA',b:'CA',r1:{o:['PA','CA'],en:'Which matters more: duty and closeness with parents, or career and personal achievements?',ru:'Что важнее: долг и близость с родителями или карьера и личные достижения?',es:'¿Qué importa más: deber y cercanía con los padres, o carrera y logros personales?',fr:"Ce qui compte le plus : le devoir et la proximité avec les parents, ou carrière et réussites personnelles ?",zh:'哪个更重要：对父母的责任与亲近，还是事业与个人成就？'},r2:{o:['CA','PA'],en:'An important business trip/promotion (CA) conflicts with the need to be near parents (PA). What do you choose?',ru:'Важная командировка/повышение (CA) конфликтует с необходимостью быть рядом с родителями (PA). Что выберешь?',es:'Un viaje de negocios/promoción importante (CA) entra en conflicto con la necesidad de estar cerca de los padres (PA). ¿Qué eliges?',fr:"Un déplacement/promotion important (CA) entre en conflit avec le besoin d'être près des parents (PA). Que choisis-tu ?",zh:'重要的出差/晋升（CA）与需陪伴父母（PA）冲突。你选哪个？'}},
+ // Pair 21: CH vs CA
+ {a:'CH',b:'CA',r1:{o:['CH','CA'],en:'Which is more valuable: children and time with them, or career and professional realization?',ru:'Что ценнее: дети и время с ними или карьера и профессиональная реализация?',es:'¿Qué vale más: los hijos y el tiempo con ellos, o carrera y realización profesional?',fr:"Ce qui a plus de valeur : les enfants et le temps avec eux, ou carrière et réalisation professionnelle ?",zh:'哪个更有价值：孩子与共度的时光，还是事业与职业实现？'},r2:{o:['CA','CH'],en:'A project demanding all your strength for a year promises career growth (CA), but this same year is critical for your children (CH). To whom do you give the year?',ru:'Проект, требующий все силы на год, обещает рост карьеры (CA), но этот же год — критичный для твоих детей (CH). Кому отдашь год?',es:'Un proyecto que exige todas tus fuerzas durante un año promete crecimiento de carrera (CA), pero ese mismo año es crítico para tus hijos (CH). ¿A quién das el año?',fr:"Un projet exigeant toutes tes forces pendant un an promet une croissance de carrière (CA), mais cette même année est critique pour tes enfants (CH). À qui donnes-tu l'année ?",zh:'一个需你全年尽力的项目承诺事业成长（CA），但这同一年对孩子至关重要（CH）。这一年给谁？'}}
 ];
-function flat(){ var out=[]; ITEMS.forEach(function(pr,pi){ out.push({pi:pi,r:1,a:pr.a,b:pr.b,o:pr.r1.o,txt:pr.r1[L()]||pr.r1.en,idx:pi*2}); out.push({pi:pi,r:2,a:pr.a,b:pr.b,o:pr.r2.o,txt:pr.r2[L()]||pr.r2.en,idx:pi*2+1}); }); return out; }
-var answers = [];
-try { var raw = LSg('edc1_answers'); if (raw) { var p = JSON.parse(raw); if (Array.isArray(p) && p.length === 42) answers = p; } } catch(e){}
-while (answers.length < 42) answers.push(null);
-function compute(){
-var totals={}; DOM_ORDER.forEach(function(d){ totals[d]=0; });
-var dirs=[];
-for (var pi=0; pi<ITEMS.length; pi++){
-var pr=ITEMS[pi]; var ds=[];
-for (var rn=1; rn<=2; rn++){
-var it=flat()[pi*2+(rn-1)];
-var ans=answers[it.idx];
-var wf=W[ans], ws=W[4-ans];
-var pa=(it.o[0]===pr.a)?wf:ws, pb=(it.o[0]===pr.a)?ws:wf;
-totals[pr.a]+=pa; totals[pr.b]+=pb;
-ds.push(pa===pb?0:(pa>pb?1:-1));
-}
-dirs.push(ds);
-}
-var sum=0; DOM_ORDER.forEach(function(d){ sum+=totals[d]; }); if(!sum) sum=1;
-var shares={}; DOM_ORDER.forEach(function(d){ shares[d]=Math.round(totals[d]/sum*100); });
-var stack=DOM_ORDER.slice().sort(function(x,y){ return totals[y]-totals[x]; });
-var conf=0; dirs.forEach(function(ds){ if(ds[0]!==0 && ds[1]!==0 && ds[0]!==ds[1]) conf++; });
-return { totals:totals, shares:shares, stack:stack, lie:Math.round(conf/21*100) };
-}
-function uf6(sa, sb){
-function rank(st,d){ var i=st.indexOf(d); return i<0?99:i; }
-var topA=sa.slice(0,3), topB=sb.slice(0,3);
-var ov=topA.filter(function(x){ return topB.indexOf(x)>=0; }).length;
-var base=Math.round(ov/3*70);
-var dHO=Math.abs(rank(sa,'HO')-rank(sb,'HO'));
-var dCA=Math.abs(rank(sa,'CA')-rank(sb,'CA'));
-var bal=Math.max(0, 30-(dHO+dCA)*3);
-var score=base+bal;
-var cc=(rank(sa,'CH')<=1 && rank(sb,'CH')>=5)||(rank(sb,'CH')<=1 && rank(sa,'CH')>=5);
-if(cc) score-=45;
-return { score:Math.max(0,Math.min(100,score)), overlap:ov, childConflict:cc };
-}
-window.qftmComputeUF6 = uf6;
-/* ---- DOM ---- */
-var overlay=document.createElement('div');
-overlay.className='modal-overlay'; overlay.id='edcOverlay';
-overlay.innerHTML='<div class="modal"><button class="modal-close" id="edcClose">✕</button><h2 id="edcTitle"></h2><div id="edcBody"></div></div>';
-document.body.appendChild(overlay);
-overlay.addEventListener('click', function(e){ if(e.target===overlay) close(); });
-document.getElementById('edcClose').addEventListener('click', close);
-document.addEventListener('keydown', function(e){ if(e.key==='Escape' && overlay.classList.contains('open')) close(); });
-function open(){ overlay.classList.add('open'); document.body.style.overflow='hidden'; render(); }
-function close(){ overlay.classList.remove('open'); document.body.style.overflow=''; }
-var hdrBtn=document.createElement('button');
-hdrBtn.className='hdr-btn'; hdrBtn.id='btnEdc';
-var anchor=document.getElementById('btnRights');
-if (anchor && anchor.parentElement) anchor.parentElement.appendChild(hdrBtn);
-hdrBtn.addEventListener('click', open);
-var sel=document.getElementById('languageSelect');
-if (sel) sel.addEventListener('change', function(){ hdrBtn.textContent=t('btn'); if (overlay.classList.contains('open')) render(); });
-function render(){
-hdrBtn.textContent=t('btn');
-document.getElementById('edcTitle').textContent=t('title');
-var sc=SCALE[L()]||SCALE.en;
-var h='<div style="color:#888;font-size:0.8rem;margin-bottom:8px;">'+esc(t('sub'))+'</div>';
-h+='<div class="t120-warn">⚠️ '+esc(t('warn'))+'</div>';
-h+='<details style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:12px;"><summary style="cursor:pointer;color:#fff;font-weight:700;font-size:0.86rem;">📜 '+esc(t('title'))+'</summary><div style="font-size:0.8rem;color:#bbb;line-height:1.6;margin-top:8px;">'+esc(t('theory'))+'</div></details>';
-var f=flat();
-for (var i=0;i<f.length;i++){
-var it=f[i];
-h+='<div class="t120-row" id="edcRow'+it.idx+'" style="margin-bottom:8px;"><div class="t120-q"><span class="t120-num">'+(i+1)+'.</span>'+esc(it.txt)+'</div><div style="color:#888;font-size:0.7rem;margin:-4px 0 6px;">'+esc(dl(it.a))+' ⇄ '+esc(dl(it.b))+' · R'+it.r+'</div><div class="t120-opts">';
-for (var v=0;v<5;v++){ h+='<button type="button" class="t120-opt'+(answers[it.idx]===v?' sel':'')+'" data-edc="'+it.idx+'" data-v="'+v+'">'+(v+1)+'</button>'; }
-h+='</div></div>';
-}
-h+='<div style="text-align:center;margin:14px 0;"><button class="btn" id="edcCalc">'+esc(t('compute'))+'</button><button class="btn btn-outline" id="edcReset">'+esc(t('reset'))+'</button></div>';
-h+='<div id="edcResult"></div>';
-h+='<div id="edcUf6" style="margin-top:16px;"></div>';
-document.getElementById('edcBody').innerHTML=h;
-document.getElementById('edcBody').querySelectorAll('[data-edc]').forEach(function(b){
-b.addEventListener('click', function(){
-var idx=parseInt(b.getAttribute('data-edc'),10), v=parseInt(b.getAttribute('data-v'),10);
-answers[idx]=v; LSs('edc1_answers', JSON.stringify(answers));
-var row=document.getElementById('edcRow'+idx);
-row.querySelectorAll('[data-edc]').forEach(function(x){ x.classList.toggle('sel', parseInt(x.getAttribute('data-v'),10)===v); });
-row.classList.add('done');
+
+// Worst-case questions (7 items)
+const WORST_CASE = [
+ {d:'ST',en:'If you had to permanently lose ONE thing forever: either never attend parties/meet new people again, OR never see your closest friends/partner/family/kids/work/hobby again. Which loss hurts LESS?',ru:'Если бы пришлось навсегда потерять ОДНО: либо никогда не ходить на вечеринки/знакомиться с новыми людьми, либо никогда не видеть ближайших друзей/партнёра/семью/детей/работу/хобби. Какая потеря болит МЕНЬШЕ?',es:'Si tuvieras que perder permanentemente UNA cosa para siempre: nunca volver a asistir a fiestas/conocer gente nueva, O nunca volver a ver a tus amigos cercanos/pareja/familia/hijos/trabajo/afición. ¿Qué pérdida duele MENOS?',fr:'Si tu devais perdre définitivement UNE chose : ne plus jamais faire la fête/rencontrer de nouvelles personnes, OU ne plus jamais revoir tes amis proches/partenaires/famille/enfants/travail/loisirs. Quelle perte fait MOINS mal ?',zh:'如果必须永远失去一件事：要么再也不参加派对/结识新人，要么再也见不到最亲密的朋友/伴侣/家人/孩子/工作/爱好。哪种损失痛苦更小？'},
+ {d:'FR',en:'If you had to permanently lose ONE thing forever: either never see your closest friends again, OR never attend parties/meet new people/partner/family/kids/work/hobby again. Which loss hurts LESS?',ru:'Если бы пришлось навсегда потерять ОДНО: либо никогда не видеть ближайших друзей, либо никогда не ходить на вечеринки/знакомиться с новыми людьми/партнёром/семьёй/детьми/работой/хобби. Какая потеря болит МЕНЬШЕ?',es:'Si tuvieras que perder permanentemente UNA cosa para siempre: nunca volver a ver a tus amigos cercanos, O nunca volver a asistir a fiestas/conocer gente nueva/pareja/familia/hijos/trabajo/afición. ¿Qué pérdida duele MENOS?',fr:'Si tu devais perdre définitivement UNE chose : ne plus jamais revoir tes amis proches, OU ne plus jamais faire la fête/rencontrer de nouvelles personnes/partenaires/famille/enfants/travail/loisirs. Quelle perte fait MOINS mal ?',zh:'如果必须永远失去一件事：要么再也见不到最亲密的朋友，要么再也不参加派对/结识新人/伴侣/家人/孩子/工作/爱好。哪种损失痛苦更小？'},
+ {d:'SP',en:'If you had to permanently lose ONE thing forever: either never be with your partner/spouse again, OR never attend parties/meet new people/close friends/family/kids/work/hobby again. Which loss hurts LESS?',ru:'Если бы пришлось навсегда потерять ОДНО: либо никогда не быть с партнёром/супругом, либо никогда не ходить на вечеринки/знакомиться с новыми людьми/ближайшими друзьями/семьёй/детьми/работой/хобби. Какая потеря болит МЕНЬШЕ?',es:'Si tuvieras que perder permanentemente UNA cosa para siempre: nunca volver a estar con tu pareja/cónyuge, O nunca volver a asistir a fiestas/conocer gente nueva/amigos cercanos/familia/hijos/trabajo/afición. ¿Qué pérdida duele MENOS?',fr:'Si tu devais perdre définitivement UNE chose : ne plus jamais être avec ton partenaire/conjoint, OU ne plus jamais faire la fête/rencontrer de nouvelles personnes/amis proches/famille/enfants/travail/loisirs. Quelle perte fait MOINS mal ?',zh:'如果必须永远失去一件事：要么再也不能与伴侣/配偶在一起，要么再也不参加派对/结识新人/密友/家人/孩子/工作/爱好。哪种损失痛苦更小？'},
+ {d:'HO',en:'If you had to permanently lose ONE thing forever: either never pursue your hobby/personal projects again, OR never attend parties/meet new people/close friends/partner/family/kids/work again. Which loss hurts LESS?',ru:'Если бы пришлось навсегда потерять ОДНО: либо никогда не заниматься своим хобби/личными проектами, либо никогда не ходить на вечеринки/знакомиться с новыми людьми/ближайшими друзьями/партнёром/семьёй/детьми/работой. Какая потеря болит МЕНЬШЕ?',es:'Si tuvieras que perder permanentemente UNA cosa para siempre: nunca volver a dedicarte a tu afición/proyectos personales, O nunca volver a asistir a fiestas/conocer gente nueva/amigos cercanos/pareja/familia/hijos/trabajo. ¿Qué pérdida duele MENOS?',fr:'Si tu devais perdre définitivement UNE chose : ne plus jamais poursuivre ton loisir/projets personnels, OU ne plus jamais faire la fête/rencontrer de nouvelles personnes/amis proches/partenaires/famille/enfants/travail. Quelle perte fait MOINS mal ?',zh:'如果必须永远失去一件事：要么再也不追求自己的爱好/个人项目，要么再也不参加派对/结识新人/密友/伴侣/家人/孩子/工作。哪种损失痛苦更小？'},
+ {d:'PA',en:'If you had to permanently lose ONE thing forever: either never see/help your parents again, OR never attend parties/meet new people/close friends/partner/kids/work/hobby again. Which loss hurts LESS?',ru:'Если бы пришлось навсегда потерять ОДНО: либо никогда не видеть/помогать родителям, либо никогда не ходить на вечеринки/знакомиться с новыми людьми/ближайшими друзьями/партнёром/детьми/работой/хобби. Какая потеря болит МЕНЬШЕ?',es:'Si tuvieras que perder permanentemente UNA cosa para siempre: nunca volver a ver/ayudar a tus padres, O nunca volver a asistir a fiestas/conocer gente nueva/amigos cercanos/pareja/hijos/trabajo/afición. ¿Qué pérdida duele MENOS?',fr:'Si tu devais perdre définitivement UNE chose : ne plus jamais revoir/aider tes parents, OU ne plus jamais faire la fête/rencontrer de nouvelles personnes/amis proches/partenaires/enfants/travail/loisirs. Quelle perte fait MOINS mal ?',zh:'如果必须永远失去一件事：要么再也见不到/帮助不了父母，要么再也不参加派对/结识新人/密友/伴侣/孩子/工作/爱好。哪种损失痛苦更小？'},
+ {d:'CH',en:'If you had to permanently lose ONE thing forever: either never have/be around children again, OR never attend parties/meet new people/close friends/partner/family/work/hobby again. Which loss hurts LESS?',ru:'Если бы пришлось навсегда потерять ОДНО: либо никогда не иметь/быть рядом с детьми, либо никогда не ходить на вечеринки/знакомиться с новыми людьми/ближайшими друзьями/партнёром/семьёй/работой/хобби. Какая потеря болит МЕНЬШЕ?',es:'Si tuvieras que perder permanentemente UNA cosa para siempre: nunca volver a tener/estar cerca de niños, O nunca volver a asistir a fiestas/conocer gente nueva/amigos cercanos/pareja/familia/trabajo/afición. ¿Qué pérdida duele MENOS?',fr:'Si tu devais perdre définitivement UNE chose : ne plus jamais avoir/fréquenter des enfants, OU ne plus jamais faire la fête/rencontrer de nouvelles personnes/amis proches/partenaires/famille/travail/loisirs. Quelle perte fait MOINS mal ?',zh:'如果必须永远失去一件事：要么再也不拥有/陪伴孩子，要么再也不参加派对/结识新人/密友/伴侣/家人/工作/爱好。哪种损失痛苦更小？'},
+ {d:'CA',en:'If you had to permanently lose ONE thing forever: either never advance your career/studies again, OR never attend parties/meet new people/close friends/partner/family/kids/hobby again. Which loss hurts LESS?',ru:'Если бы пришлось навсегда потерять ОДНО: либо никогда не продвигать карьеру/учёбу, либо никогда не ходить на вечеринки/знакомиться с новыми людьми/ближайшими друзьями/партнёром/семьёй/детьми/хобби. Какая потеря болит МЕНЬШЕ?',es:'Si tuvieras que perder permanentemente UNA cosa para siempre: nunca volver a avanzar en tu carrera/estudios, O nunca volver a asistir a fiestas/conocer gente nueva/amigos cercanos/pareja/familia/hijos/afición. ¿Qué pérdida duele MENOS?',fr:'Si tu devais perdre définitivement UNE chose : ne plus jamais faire progresser ta carrière/études, OU ne plus jamais faire la fête/rencontrer de nouvelles personnes/amis proches/partenaires/famille/enfants/loisirs. Quelle perte fait MOINS mal ?',zh:'如果必须永远失去一件事：要么再也不推进事业/学业，要么再也不参加派对/结识新人/密友/伴侣/家人/孩子/爱好。哪种损失痛苦更小？'}
+];
+
+// Flatten all questions into a single array for randomization
+let ALL_ITEMS = [];
+QUESTIONS_RAW.forEach((pr, pi) => {
+  ALL_ITEMS.push({type:'pair', pi, round:1, ...pr.r1});
+  ALL_ITEMS.push({type:'pair', pi, round:2, ...pr.r2});
 });
+WORST_CASE.forEach(wc => {
+  ALL_ITEMS.push({type:'worst', wc});
 });
-document.getElementById('edcCalc').addEventListener('click', function(){
-for (var i=0;i<42;i++){ if (answers[i]==null){ alert(t('incomplete')+' #'+(i+1)); var el=document.getElementById('edcRow'+i); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); return; } }
-var r=compute();
-LSs('edc1_stack', JSON.stringify(r.stack)); LSs('edc1_shares', JSON.stringify(r.shares)); LSs('edc1_lie', String(r.lie));
-window.QFTM_EDC_STACK=r.stack;
-showResult(r); showUf6();
-});
-document.getElementById('edcReset').addEventListener('click', function(){
-answers=[]; while(answers.length<42) answers.push(null);
-LSd('edc1_answers'); LSd('edc1_stack'); LSd('edc1_shares'); LSd('edc1_lie');
-window.QFTM_EDC_STACK=null; render();
-});
-var st=null; try { st=JSON.parse(LSg('edc1_stack')||'null'); } catch(e){}
-if (st){ window.QFTM_EDC_STACK=st; showResult(compute()); }
-showUf6();
+
+// State
+let currentOrder = [];
+let answers = {}; // key: item_index_in_currentOrder, value: option_index (0..5)
+let resultStack = null;
+let lieIndex = 0;
+
+function initModule() {
+  // Create Button in Header
+  const anchor = document.getElementById('btnRights');
+  if (!anchor || !anchor.parentElement) return;
+  
+  const btn = document.createElement('button');
+  btn.className = 'hdr-btn';
+  btn.id = 'btnEdcV2';
+  btn.innerHTML = '🧭 EDC';
+  anchor.parentElement.appendChild(btn);
+  
+  // Create Modal Overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'edcV2Overlay';
+  overlay.innerHTML = `
+    <div class="modal" style="max-width:700px; max-height:90vh; overflow-y:auto;">
+      <button class="modal-close" id="edcV2Close">✕</button>
+      <h2 id="edcV2Title">EDC-1 v2 · Energy Direction Coefficient</h2>
+      <div id="edcV2Body"></div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  
+  // Events
+  btn.addEventListener('click', openModal);
+  overlay.querySelector('#edcV2Close').addEventListener('click', closeModal);
+  overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', e => { 
+    if(e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); 
+  });
+  
+  // Language Hook
+  const langSel = document.getElementById('languageSelect');
+  if(langSel) langSel.addEventListener('change', () => {
+    if(overlay.classList.contains('open')) renderCurrentStep();
+  });
 }
-function showResult(r){
-var lieCol = r.lie<15 ? '#6bcb77' : (r.lie<35 ? '#ffd93d' : '#ff6b6b');
-var lieTxt = r.lie<15 ? t('lieLow') : (r.lie<35 ? t('lieMid') : t('lieHigh'));
-var bars='';
-r.stack.forEach(function(d){
-bars+='<div style="display:flex;align-items:center;gap:8px;margin:4px 0;"><div style="width:130px;font-size:0.74rem;color:#bbb;text-align:right;">'+esc(dl(d))+'</div><div class="uf-bar" style="flex:1;margin:0;"><div class="uf-fill" style="width:'+r.shares[d]+'%;background:#8b5cff;"></div></div><div style="width:40px;font-size:0.74rem;color:#fff;font-weight:800;">'+r.shares[d]+'%</div></div>';
-});
-document.getElementById('edcResult').innerHTML=
-'<div class="compat-overall"><div style="color:#888;font-size:0.8rem;">'+esc(t('result'))+'</div>'+
-'<div class="qci" style="color:#fff;text-shadow:0 0 14px #8b5cff;">'+esc(r.stack.slice(0,3).join('/'))+'</div>'+
-'<div style="font-size:0.74rem;color:#888;margin-top:4px;">'+esc(t('top3'))+' · '+esc(t('blind'))+': '+esc(r.stack.slice(5).join('/'))+'</div>'+
-'<div style="margin:12px 0 4px;text-align:left;">'+bars+'</div>'+
-'<div style="font-size:0.8rem;color:'+lieCol+';font-weight:800;margin-top:8px;">'+esc(t('lie'))+': '+r.lie+'% — '+esc(lieTxt)+'</div>'+
-'<div style="font-size:0.74rem;color:#6bcb77;margin-top:6px;">✓ '+esc(t('saved'))+'</div></div>';
+
+function getLang() {
+  return (lsGet('qftm1024_lang') || navigator.language.split('-')[0]).toLowerCase().slice(0,2);
 }
-function showUf6(){
-var box=document.getElementById('edcUf6');
-box.innerHTML='<div class="uf-card"><div class="uf-name">'+esc(t('uf6t'))+'</div>'+
-'<div id="edcUf6Me" style="font-size:0.8rem;color:#c9b6ff;margin:8px 0;"></div>'+
-'<div style="font-size:0.78rem;color:#aaa;margin-bottom:4px;">'+esc(t('uf6p'))+'</div>'+
-'<input id="edcUf6P" class="cat-in" style="width:130px;" maxlength="20" placeholder="SP/PA/HO" spellcheck="false" autocomplete="off">'+
-'<button class="btn btn-outline" id="edcUf6Go" style="margin-left:6px;">'+esc(t('uf6go'))+'</button>'+
-'<div id="edcUf6Out" style="margin-top:10px;"></div></div>';
-var me=document.getElementById('edcUf6Me');
-me.textContent = window.QFTM_EDC_STACK ? ('✓ '+window.QFTM_EDC_STACK.slice(0,3).join('/')) : t('uf6need');
-document.getElementById('edcUf6Go').addEventListener('click', function(){
-var out=document.getElementById('edcUf6Out');
-if (!window.QFTM_EDC_STACK){ out.innerHTML='<span style="color:#ff6b6b;font-size:0.8rem;">'+esc(t('uf6need'))+'</span>'; return; }
-var pv=String(document.getElementById('edcUf6P').value||'').toUpperCase().replace(/[^A-Z\/]/g,'').split('/').filter(function(x){ return DOM_ORDER.indexOf(x)>=0; });
-if (pv.length<3){ out.innerHTML='<span style="color:#ff6b6b;font-size:0.8rem;">3 codes: ST FR SP HO PA CH CA</span>'; return; }
-var full=pv.slice(); DOM_ORDER.forEach(function(d){ if(full.indexOf(d)<0) full.push(d); });
-var res=uf6(window.QFTM_EDC_STACK, full);
-var col=res.childConflict?'#ff6b6b':(res.score>=70?'#6bcb77':(res.score>=45?'#ffd93d':'#ff9f43'));
-out.innerHTML='<div style="font-size:2rem;font-weight:900;color:'+col+';">UF-6 = '+res.score+'</div>'+
-'<div style="font-size:0.76rem;color:#aaa;margin:4px 0;">'+res.overlap+'/3 '+esc(t('uf6m'))+'</div>'+
-(res.childConflict ? '<div style="font-size:0.78rem;color:#ff6b6b;font-weight:800;">⛔ '+esc(t('uf6c'))+'</div>' : '<div style="font-size:0.78rem;color:#6bcb77;">✓ '+esc(t('uf6ok'))+'</div>');
-});
+function t(key) {
+  const l = getLang();
+  const dict = {
+    title:{en:'EDC-1 v2 · Energy Direction Coefficient',ru:'EDC-1 v2 · Коэффициент направления энергии',es:'EDC-1 v2 · Coeficiente de Dirección de Energía',fr:'EDC-1 v2 · Coefficient de Direction de l’Énergie',zh:'EDC-1 v2 · 能量方向系数'},
+    intro:{en:'Answer instinctively. The order is randomized. At the end, you will choose what you can live WITHOUT.',ru:'Отвечай инстинктивно. Порядок случайный. В конце выберешь то, без чего сможешь жить.',es:'Responde por instinto. El orden es aleatorio. Al final elegirás aquello sin lo que podrías vivir.',fr:'Réponds par instinct. L’ordre est aléatoire. À la fin, tu choisiras ce dont tu peux te passer.',zh:'凭直觉作答。顺序随机。最后你将选择没有它也能生存的东西。'},
+    compute:{en:'🔍 Compute Stack & Lie-Index',ru:'🔍 Рассчитать стек и индекс лжи',es:'🔍 Calcular pila e índice de mentira',fr:'🔍 Calculer pile et indice de mensonge',zh:'🔍 计算栈和谎言指数'},
+    reset:{en:'🗑 Reset Progress',ru:'🗑 Сбросить прогресс',es:'🗑 Reiniciar progreso',fr:'🗑 Réinitialiser progression',zh:'🗑 重置进度'},
+    done:{en:'✅ Saved independently of IPIP-120.',ru:'✅ Сохранено независимо от IPIP-120.',es:'✅ Guardado independientemente del IPIP-120.',fr:'✅ Enregistré indépendamment de l’IPIP-120.',zh:'✅ 独立于 IPIP-120 保存。'},
+    stackLabel:{en:'Your Energy Stack:',ru:'Твой стек энергии:',es:'Tu pila de energía:',fr:'Ta pile d’énergie :',zh:'你的能量栈：'},
+    lieLabel:{en:'Lie-Index (Consistency):',ru:'Индекс лжи (Консистентность):',es:'Índice de mentira (Consistencia):',fr:'Indice de mensonge (Cohérence) :',zh:'谎言指数（一致性）：'},
+    low:{en:'Low – Values are stable',ru:'Низкий – Ценности устойчивы',es:'Bajo – Valores estables',fr:'Faible – Valeurs stables',zh:'低 – 价值观稳定'},
+    mid:{en:'Medium – Some declared values are not lived',ru:'Средний – Часть деклараций не проживается',es:'Medio – Algunos valores declarados no se viven',fr:'Moyen – Certaines valeurs déclarées ne sont pas vécues',zh:'中等 – 部分宣称未践行'},
+    high:{en:'High – Contradictory, retake when calm',ru:'Высокий – Противоречиво, перепройти в спокойствии',es:'Alto – Contradictorio, repítelo en calma',fr:'Élevé – Contradictoire, repasse-le au calme',zh:'高 – 矛盾，平静时重测'}
+  };
+  return (dict[key] && dict[key][l]) ? dict[key][l] : (dict[key] ? dict[key].en : key);
 }
-hdrBtn.textContent=t('btn');
-try { var st0=JSON.parse(LSg('edc1_stack')||'null'); if (st0) window.QFTM_EDC_STACK=st0; } catch(e){}
+
+function openModal() {
+  const ov = document.getElementById('edcV2Overlay');
+  if(!ov) return;
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  
+  // Load saved state or initialize new run
+  const savedAns = lsGet(LS_KEY_ANSWERS);
+  if(savedAns) {
+    try { answers = JSON.parse(savedAns); } catch(e) { answers = {}; }
+  } else {
+    answers = {};
+  }
+  
+  // Shuffle items ONLY IF starting fresh or resetting
+  if(Object.keys(answers).length === 0) {
+    currentOrder = shuffle(ALL_ITEMS.map((_,i)=>i));
+  } else {
+    // Reconstruct order based on existing keys? Simpler: just re-shuffle everything but keep answers mapped by content hash? 
+    // For simplicity in this patch: We assume if answers exist, we continue with the SAME shuffled order stored in memory during session. 
+    // But since page reload clears memory, we must store ORDER too. Let's simplify: Always reshuffle on open if no explicit resume flag.
+    // Better approach: Store the specific IDs answered. Since our IDs are indices in ALL_ITEMS, we can map back.
+    // Actually, easiest robust way: Just regenerate order every time user clicks "Start/New". If they refresh mid-test, they lose progress unless we save order.
+    // Let's save order too.
+    const savedOrd = lsGet('qftm1024_edc_order');
+    if(savedOrd) {
+       try { currentOrder = JSON.parse(savedOrd); } catch(e) { currentOrder = shuffle([...Array(ALL_ITEMS.length).keys()]); }
+    } else {
+       currentOrder = shuffle([...Array(ALL_ITEMS.length).keys()]);
+       lsSet('qftm1024_edc_order', JSON.stringify(currentOrder));
+    }
+  }
+  
+  renderIntro();
+}
+
+function closeModal() {
+  const ov = document.getElementById('edcV2Overlay');
+  if(ov) ov.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderIntro() {
+  const body = document.getElementById('edcV2Body');
+  body.innerHTML = `
+    <p style="color:#aaa;font-size:0.9rem;margin-bottom:16px;">${esc(t('intro'))}</p>
+    <div style="text-align:center;">
+      <button class="btn" onclick="window._edcStart()">▶ Start Test</button>
+      ${Object.keys(answers).length > 0 ? '<button class="btn btn-outline" onclick="window._edcResume()" style="margin-left:10px;">↩ Resume</button>' : ''}
+      <button class="btn btn-danger" onclick="window._edcReset()" style="margin-left:10px;background:#330000;border-color:#ff4444;color:#ff8888;">${esc(t('reset'))}</button>
+    </div>
+  `;
+}
+
+window._edcStart = function() {
+  answers = {};
+  currentOrder = shuffle([...Array(ALL_ITEMS.length).keys()]);
+  lsSet(LS_KEY_ANSWERS, '{}');
+  lsSet('qftm1024_edc_order', JSON.stringify(currentOrder));
+  renderQuestion(0);
+};
+
+window._edcResume = function() {
+  // Find first unanswered index in currentOrder
+  let idx = 0;
+  for(; idx < currentOrder.length; idx++) {
+    if(answers[idx] === undefined) break;
+  }
+  if(idx >= currentOrder.length) {
+    showResults();
+  } else {
+    renderQuestion(idx);
+  }
+};
+
+window._edcReset = function() {
+  if(confirm("Clear all EDC data?")) {
+    lsDel(LS_KEY_ANSWERS);
+    lsDel('qftm1024_edc_order');
+    lsDel(LS_KEY_STACK);
+    lsDel(LS_KEY_LIE);
+    answers = {};
+    currentOrder = [];
+    resultStack = null;
+    window.QFTM_EDC_STACK = null;
+    renderIntro();
+  }
+};
+
+function renderQuestion(qIdx) {
+  if(qIdx >= currentOrder.length) {
+    showResults();
+    return;
+  }
+  
+  const itemId = currentOrder[qIdx];
+  const item = ALL_ITEMS[itemId];
+  const body = document.getElementById('edcV2Body');
+  const l = getLang();
+  
+  let html = `<div style="font-size:0.75rem;color:#888;margin-bottom:8px;">Item ${qIdx+1}/${currentOrder.length}</div>`;
+  
+  if(item.type === 'pair') {
+    const aName = DOMAIN_NAMES[item.a][l] || DOMAIN_NAMES[item.a].en;
+    const bName = DOMAIN_NAMES[item.b][l] || DOMAIN_NAMES[item.b].en;
+    const txt = item[l] || item.en;
+    
+    html += `<h3 style="color:#fff;margin:10px 0 16px;line-height:1.4;">${esc(txt)}</h3>`;
+    html += `<div style="display:flex;justify-content:space-between;font-size:0.8rem;color:#ccc;margin-bottom:8px;padding:0 4px;"><span>← ${esc(aName)}</span><span>${esc(bName)} →</span></div>`;
+    html += `<div class="t120-opts" style="flex-wrap:wrap;gap:6px;justify-content:center;">`;
+    
+    const labels = OPT_LABELS[l] || OPT_LABELS.en;
+    for(let v=0; v<6; v++) {
+      const selected = answers[qIdx] === v ? 'sel' : '';
+      // Special styling for "Both Bad"
+      const extraClass = v===5 ? 'style="background:#440000;border-color:#aa0000;color:#ffaaaa;"' : '';
+      html += `<button type="button" class="t120-opt ${selected}" ${extraClass} onclick="window._edcAnswer(${qIdx},${v})">${esc(labels[v])}</button>`;
+    }
+    html += `</div>`;
+  } else {
+    // Worst Case
+    const dName = DOMAIN_NAMES[item.wc.d][l] || DOMAIN_NAMES[item.wc.d].en;
+    const txt = item.wc[l] || item.wc.en;
+    
+    html += `<h3 style="color:#ff9999;margin:10px 0 16px;line-height:1.4;">⚠️ WORST CASE: ${esc(dName)}</h3>`;
+    html += `<p style="color:#ddd;font-size:0.95rem;margin-bottom:16px;">${esc(txt)}</p>`;
+    html += `<div class="t120-opts" style="flex-wrap:wrap;gap:6px;justify-content:center;">`;
+    
+    // Options: Keep Domain / Lose Domain / Both Painful
+    const opts = [
+      {label:{en:`Keep ${dName}`,ru:`Оставить ${dName}`,es:`Mantener ${dName}`,fr:`Garder ${dName}`,zh:`保留 ${dName}`}, val:0}, // 0 = Keep (Good for score)
+      {label:{en:`Lose ${dName}`,ru:`Потерять ${dName}`,es:`Perder ${dName}`,fr:`Perdre ${dName}`,zh:`失去 ${dName}`}, val:1}, // 1 = Lose (Bad for score)
+      {label:{en:`Both painful`,ru:`Оба болезненны`,es:`Ambos dolorosos`,fr:`Les deux pénibles`,zh:`两者都痛苦`}, val:2}  // 2 = Trap
+    ];
+    
+    opts.forEach(o => {
+      const selected = answers[qIdx] === o.val ? 'sel' : '';
+      const bg = o.val===2 ? 'background:#440000;border-color:#aa0000;color:#ffaaaa;' : '';
+      html += `<button type="button" class="t120-opt ${selected}" style="${bg}" onclick="window._edcAnswer(${qIdx},${o.val})">${esc(o.label[l]||o.label.en)}</button>`;
+    });
+    html += `</div>`;
+  }
+  
+  html += `<div style="margin-top:20px;text-align:center;"><button class="btn btn-outline" onclick="window._edcPrev()">← Back</button></div>`;
+  body.innerHTML = html;
+}
+
+window._edcAnswer = function(qIdx, optVal) {
+  answers[qIdx] = optVal;
+  lsSet(LS_KEY_ANSWERS, JSON.stringify(answers));
+  
+  // Auto-next after short delay
+  setTimeout(() => {
+    renderQuestion(qIdx + 1);
+  }, 200);
+};
+
+window._edcPrev = function() {
+  // Find current index roughly by checking which question was last rendered? 
+  // Simpler: We track current view index globally.
+  // For this patch, let's just decrement a global counter managed in closure.
+  // Since we passed qIdx to render, we need to know it here. 
+  // Hack: Read from DOM header "Item X/Y"
+  const hdr = document.querySelector('#edcV2Body div[style*="font-size:0.75rem"]');
+  if(hdr) {
+    const match = hdr.textContent.match(/(\d+)\/\d+/);
+    if(match) {
+      const cur = parseInt(match[1])-1;
+      if(cur > 0) renderQuestion(cur-1);
+    }
+  }
+};
+
+function calculateScores() {
+  const scores = {};
+  DOMAINS.forEach(d => scores[d] = 0);
+  
+  // Process Pair Questions
+  QUESTIONS_RAW.forEach((pr, pi) => {
+    // Round 1
+    const r1Idx = currentOrder.findIndex(id => ALL_ITEMS[id].type==='pair' && ALL_ITEMS[id].pi===pi && ALL_ITEMS[id].round===1);
+    if(r1Idx !== -1 && answers[r1Idx] !== undefined) {
+      const w = OPT_WEIGHTS[answers[r1Idx]];
+      // Map weights to A/B based on item order definition
+      const item = ALL_ITEMS[currentOrder[r1Idx]];
+      const isFirstA = item.o[0] === pr.a;
+      const scA = isFirstA ? w[0] : w[1];
+      const scB = isFirstA ? w[1] : w[0];
+      scores[pr.a] += scA;
+      scores[pr.b] += scB;
+    }
+    // Round 2
+    const r2Idx = currentOrder.findIndex(id => ALL_ITEMS[id].type==='pair' && ALL_ITEMS[id].pi===pi && ALL_ITEMS[id].round===2);
+    if(r2Idx !== -1 && answers[r2Idx] !== undefined) {
+      const w = OPT_WEIGHTS[answers[r2Idx]];
+      const item = ALL_ITEMS[currentOrder[r2Idx]];
+      const isFirstA = item.o[0] === pr.a;
+      const scA = isFirstA ? w[0] : w[1];
+      const scB = isFirstA ? w[1] : w[0];
+      scores[pr.a] += scA;
+      scores[pr.b] += scB;
+    }
+  });
+  
+  // Process Worst Case (Negative reinforcement)
+  WORST_CASE.forEach(wc => {
+    const wIdx = currentOrder.findIndex(id => ALL_ITEMS[id].type==='worst' && ALL_ITEMS[id].wc.d===wc.d);
+    if(wIdx !== -1 && answers[wIdx] !== undefined) {
+      const val = answers[wIdx];
+      if(val === 1) { // User chose to LOSE this domain -> Heavy penalty
+        scores[wc.d] -= 50; 
+      } else if(val === 2) { // Both painful -> Moderate penalty to ALL others except this one? No, penalize THIS one heavily too as it's unwanted.
+        scores[wc.d] -= 30;
+      }
+      // val 0 (Keep) adds nothing extra, assumes baseline preference held up.
+    }
+  });
+  
+  return scores;
+}
+
+function calculateLieIndex(scores) {
+  let inconsistencies = 0;
+  let totalChecks = 0;
+  
+  // Check pair consistency R1 vs R2
+  QUESTIONS_RAW.forEach(pr => {
+    const r1Idx = currentOrder.findIndex(id => ALL_ITEMS[id].type==='pair' && ALL_ITEMS[id].pi===pr.pi && ALL_ITEMS[id].round===1);
+    const r2Idx = currentOrder.findIndex(id => ALL_ITEMS[id].type==='pair' && ALL_ITEMS[id].pi===pr.pi && ALL_ITEMS[id].round===2);
+    
+    if(r1Idx!==-1 && r2Idx!==-1 && answers[r1Idx]!==undefined && answers[r2Idx]!==undefined) {
+      totalChecks++;
+      const w1 = OPT_WEIGHTS[answers[r1Idx]];
+      const w2 = OPT_WEIGHTS[answers[r2Idx]];
+      
+      // Normalize direction relative to pr.a
+      const dir1 = (w1[0]-w1[1]); // Positive means prefers A
+      const dir2Raw = (w2[0]-w2[1]);
+      // Adjust dir2 based on round 2 order definition if swapped
+      const item2 = ALL_ITEMS[currentOrder[r2Idx]];
+      const dir2 = (item2.o[0] === pr.a) ? dir2Raw : -dir2Raw;
+      
+      // If signs differ significantly (one strongly A, other strongly B), count inconsistency
+      if(dir1 * dir2 < 0 && Math.abs(dir1)>10 && Math.abs(dir2)>10) {
+        inconsistencies++;
+      }
+    }
+  });
+  
+  // Check "Both Bad" traps in top domains
+  const sortedDomains = DOMAINS.sort((a,b)=>scores[b]-scores[a]);
+  const top3 = sortedDomains.slice(0,3);
+  
+  WORST_CASE.forEach(wc => {
+    if(top3.includes(wc.d)) {
+      const wIdx = currentOrder.findIndex(id => ALL_ITEMS[id].type==='worst' && ALL_ITEMS[id].wc.d===wc.d);
+      if(wIdx!==-1 && answers[wIdx]===2) { // Chose "Both painful" for a TOP domain
+        inconsistencies += 2; // Double weight error
+      }
+    }
+  });
+  
+  const maxPossible = totalChecks + top3.length;
+  return maxPossible > 0 ? Math.round(inconsistencies / maxPossible * 100) : 0;
+}
+
+function showResults() {
+  const scores = calculateScores();
+  const lie = calculateLieIndex(scores);
+  
+  // Sort domains by score descending
+  const stack = DOMAINS.slice().sort((a,b) => scores[b] - scores[a]);
+  
+  // Save
+  lsSet(LS_KEY_STACK, JSON.stringify(stack));
+  lsSet(LS_KEY_LIE, String(lie));
+  window.QFTM_EDC_STACK = stack;
+  
+  // Render Result UI
+  const body = document.getElementById('edcV2Body');
+  const l = getLang();
+  
+  let barsHtml = '';
+  stack.forEach(d => {
+    const pct = Math.max(0, Math.min(100, Math.round((scores[d]+100)/2))); // Normalize approx -100..100 to 0..100 for visual
+    const color = d===stack[0]?'#8b5cff':(d===stack[1]?'#a78bfa':(d===stack[2]?'#c4b5fd':'#6b7280'));
+    barsHtml += `
+      <div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
+        <div style="width:100px;text-align:right;font-weight:800;color:${color};font-size:0.9rem;">${DOMAIN_NAMES[d][l]}</div>
+        <div style="flex:1;height:12px;background:#222;border-radius:6px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:${color};"></div>
+        </div>
+        <div style="width:40px;font-weight:800;color:#fff;">${scores[d]}</div>
+      </div>
+    `;
+  });
+  
+  const lieTxt = lie < 15 ? t('low') : (lie < 35 ? t('mid') : t('high'));
+  const lieColor = lie < 15 ? '#6bcb77' : (lie < 35 ? '#ffd93d' : '#ff6b6b');
+  
+  body.innerHTML = `
+    <div style="text-align:center;margin-bottom:20px;">
+      <h3 style="color:#fff;margin:0;">${esc(t('done'))}</h3>
+      <div style="font-size:1.5rem;font-weight:900;color:#8b5cff;margin:10px 0;letter-spacing:2px;">${stack.slice(0,3).join('/')}</div>
+      <div style="font-size:0.8rem;color:#888;">${esc(t('stackLabel'))}</div>
+    </div>
+    <div style="background:#111;border:1px solid #333;border-radius:12px;padding:16px;margin-bottom:20px;">
+      ${barsHtml}
+    </div>
+    <div style="text-align:center;padding:12px;background:${lieColor}22;border:1px solid ${lieColor};border-radius:10px;">
+      <strong style="color:${lieColor};">${esc(t('lieLabel'))} ${lie}%</strong><br>
+      <span style="color:#ccc;font-size:0.85rem;">${esc(lieTxt)}</span>
+    </div>
+    <div style="text-align:center;margin-top:20px;">
+      <button class="btn" onclick="closeModal()">✓ Close</button>
+      <button class="btn btn-outline" onclick="window._edcReset()" style="margin-left:10px;">${esc(t('reset'))}</button>
+    </div>
+  `;
+  
+  // Inject UF-6 Toggle into Compat Panel if exists
+  injectUf6Toggle();
+}
+
+function injectUf6Toggle() {
+  const compatPanel = document.getElementById('panel-compat');
+  if(!compatPanel) return;
+  
+  // Avoid double injection
+  if(compatPanel.querySelector('#edcUf6Container')) return;
+  
+  const container = document.createElement('div');
+  container.id = 'edcUf6Container';
+  container.style.cssText = 'margin-top:20px;padding:16px;background:rgba(139,92,255,0.05);border:1px solid rgba(139,92,255,0.3);border-radius:12px;';
+  
+  container.innerHTML = `
+    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;color:#c9b6ff;font-weight:700;font-size:0.95rem;">
+      <input type="checkbox" id="uf6EnableChk" style="width:20px;height:20px;accent-color:#8b5cff;">
+      🔥 Experimental Module: EDC Energy Alignment (UF-6)
+    </label>
+    <div id="uf6InputsArea" style="display:none;margin-top:16px;padding-top:16px;border-top:1px dashed #444;">
+      <p style="font-size:0.85rem;color:#aaa;margin-bottom:10px;">Enter stacks (e.g., SP/HO/PA). First code has 3x weight, second 2x, third 1x.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <input id="uf6MyStack" class="cat-in" placeholder="Your Stack" maxlength="12" style="width:140px;text-transform:uppercase;">
+        <span style="color:#666;">⇄</span>
+        <input id="uf6PartnerStack" class="cat-in" placeholder="Partner Stack" maxlength="12" style="width:140px;text-transform:uppercase;">
+        <button class="btn small" id="uf6CalcBtn">Calculate UF-6</button>
+      </div>
+      <div id="uf6ResultBox" style="margin-top:12px;font-size:0.9rem;"></div>
+    </div>
+  `;
+  
+  compatPanel.appendChild(container);
+  
+  // Logic Binding
+  const chk = container.querySelector('#uf6EnableChk');
+  const inputs = container.querySelector('#uf6InputsArea');
+  
+  chk.addEventListener('change', () => {
+    inputs.style.display = chk.checked ? 'block' : 'none';
+    if(chk.checked && window.QFTM_EDC_STACK) {
+      container.querySelector('#uf6MyStack').value = window.QFTM_EDC_STACK.slice(0,3).join('/');
+    }
+  });
+  
+  container.querySelector('#uf6CalcBtn').addEventListener('click', () => {
+    const myStr = container.querySelector('#uf6MyStack').value.toUpperCase().split('/').filter(Boolean);
+    const ptStr = container.querySelector('#uf6PartnerStack').value.toUpperCase().split('/').filter(Boolean);
+    const out = container.querySelector('#uf6ResultBox');
+    
+    if(myStr.length<3 || ptStr.length<3) {
+      out.innerHTML = '<span style="color:#ff6b6b;">Need 3 codes each.</span>';
+      return;
+    }
+    
+    // Simple UF-6 Calc
+    let score = 0;
+    const weights = [3,2,1];
+    
+    // Overlap bonus
+    myStr.forEach((code, i) => {
+      const pIdx = ptStr.indexOf(code);
+      if(pIdx !== -1) {
+        score += (weights[i] * weights[pIdx]) * 10; // Max possible overlap contribution
+      }
+    });
+    
+    // Child Conflict Penalty
+    const myChildRank = myStr.indexOf('CH');
+    const ptChildRank = ptStr.indexOf('CH');
+    if((myChildRank <= 1 && ptChildRank >= 4) || (ptChildRank <= 1 && myChildRank >= 4)) {
+      score -= 50; // Fatal conflict
+    }
+    
+    // Normalize roughly to 0-100 scale for display
+    const normalized = Math.max(0, Math.min(100, Math.round(score / 3 * 2))); 
+    
+    const col = normalized > 70 ? '#6bcb77' : (normalized > 40 ? '#ffd93d' : '#ff6b6b');
+    out.innerHTML = `<div style="font-size:1.2rem;font-weight:900;color:${col};">UF-6 Score: ${normalized}/100</div>`;
+    if(normalized < 30) out.innerHTML += `<div style="color:#ff6b6b;font-size:0.8rem;margin-top:4px;">⚠️ Critical misalignment detected.</div>`;
+  });
+}
+
+// Init on load
+if(document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initModule);
+} else {
+  initModule();
+}
+
 })();
 </script>
 </body>
