@@ -4340,6 +4340,7 @@ verdictIndex: verdictIndex
 };
 }
   function ufBarColor(score) {
+  window.QFTM_COMPAT = function(a, b) { return computeCompat(a, b); };
 if (score >= 93) return '#ff00c8'; // Fuchsia
 if (score >= 84) return '#a855f7'; // Violet
 if (score >= 74) return '#4d7cff'; // Blue
@@ -4364,17 +4365,7 @@ return '#ff5c5c';                  // Red
       catsBox.innerHTML = '';
       breakBox.innerHTML = '';
       ufBox.innerHTML = '';
-      const oColor = ufBarColor(res.overall);
-      overallBox.innerHTML =
-'<div class="compat-overall">' +
-'<div style="color:#888;font-size:0.8rem;">' + ui('compatOverallTitle') + '</div>' +
-'<div class="qci" style="color:' + oColor + ';text-shadow:0 0 14px ' + oColor + ';">' + res.overall.toFixed(1) + '</div>' +
-'<div class="verdict" style="color:' + oColor + ';">' + ui('compatVerdict') + ': ' + ui('verdict' + res.verdictIndex) + '</div>' +
-'<div class="ranges" style="line-height:1.6;">' + 
-ui('verdict0') + ' • ' + ui('verdict1') + ' • ' + ui('verdict2') + ' • ' + ui('verdict3') + '<br>' +
-ui('verdict4') + ' • ' + ui('verdict5') + ' • ' + ui('verdict6') + ' • ' + ui('verdict7') + 
-'</div>' +
-'</div>';
+      overallBox.innerHTML = '';
       alert(ui('gmInvalidCat'));
       return;
     }
@@ -4424,7 +4415,7 @@ ui('verdict4') + ' • ' + ui('verdict5') + ' • ' + ui('verdict6') + ' • ' +
         '<div style="color:#888;font-size:0.8rem;">' + ui('compatOverallTitle') + '</div>' +
         '<div class="qci" style="color:' + oColor + ';text-shadow:0 0 14px ' + oColor + ';">' + res.overall.toFixed(1) + '</div>' +
         '<div class="verdict" style="color:' + oColor + ';">' + ui('compatVerdict') + ': ' + ui('verdict' + res.verdictIndex) + '</div>' +
-        '<div class="ranges">' + ui('verdict0') + ' • ' + ui('verdict1') + ' • ' + ui('verdict2') + ' • ' + ui('verdict3') + ' • ' + ui('verdict4') + '</div>' +
+        '<div class="ranges" style="line-height:1.6;">' + ui('verdict0') + ' • ' + ui('verdict1') + ' • ' + ui('verdict2') + ' • ' + ui('verdict3') + '<br>' + ui('verdict4') + ' • ' + ui('verdict5') + ' • ' + ui('verdict6') + ' • ' + ui('verdict7') + '</div>' +
       '</div>';
   }
   function svgToImage(svgText, size) {
@@ -7190,36 +7181,35 @@ var exA=Math.max(0,aN-50),exB=Math.max(0,bN-50);
 var interact=(exA*exB)/100;
 return clamp100(0.5*(100-meanN)+0.3*(100-maxN)-0.15*gap-interact);
 }
-function contribDomain(d,x,y){
-if(!CLASS_A[d]){
-var c=x*y;
-if(d==='CH')c*=2.5;
-return c;
-}
-var mag=Math.abs(x*y);
-if(x>0.5&&y>0.5)return 0.5*x*y;
-if(x<-0.5&&y<-0.5)return 0.2*x*y;
-return 0.9*mag-0.05*mag;
-}
 function uf6(oa,ob,nLa,nLb){
-var rows=[],S=0,chClash=false;
+var PW=[10,7.5,5.625,4.219,3.164,2.373,1.78,1.335,1.001,0.751];
+var rankA={},rankB={};
+oa.forEach(function(d,i){rankA[d]=i;});
+ob.forEach(function(d,i){rankB[d]=i;});
+var rows=[],alignSum=0,wSum=0;
 DOMS.forEach(function(d){
-var ra2=oa.indexOf(d),rb2=ob.indexOf(d);
-var x=eRank(ra2),y=eRank(rb2);
-var c=contribDomain(d,x,y);
-S+=c;
-var ta=tierOf(ra2),tb=tierOf(rb2);
-if(d==='CH'&&((ta<=2&&tb===5)||(tb<=2&&ta===5)))chClash=true;
-rows.push({d:d,ta:ta,tb:tb,x:x,y:y,c:c,cls:CLASS_A[d]?'A':'B'});
+var rA=rankA[d],rB=rankB[d];
+var agr=1-Math.abs(rA-rB)/9;
+var w=(PW[rA]+PW[rB])/2;
+rows.push({d:d,rA:rA,rB:rB,x:4.5-rA,y:4.5-rB,cls:CLASS_A[d]?'A':'B',ta:tierOf(rA),tb:tierOf(rB),c:(agr-0.5)*w});
+alignSum+=rows[rows.length-1].c; wSum+=w;
 });
-var aN=MIDN[nLa]||40,bN=MIDN[nLb]||40;
-var nT=neuroTerm(aN,bN);
-var nPair=(nT-50)*0.5;
-S+=nPair;
-var score=Math.max(0,Math.min(100,50+S/2.2));
+var A=50+35*(alignSum/(0.5*wSum));
+var headA=oa.slice(0,3),headB=ob.slice(0,3),tailA=oa.slice(7),tailB=ob.slice(7);
+var h=headA.filter(function(x){return headB.indexOf(x)!==-1;}).length;
+var clash=headA.filter(function(x){return tailB.indexOf(x)!==-1;}).length+headB.filter(function(x){return tailA.indexOf(x)!==-1;}).length;
+var t=tailA.filter(function(x){return tailB.indexOf(x)!==-1;}).length;
+var orderBonus=(h===3)?(headA.join()===headB.join()?6:3):0;
+var headFactor=0.55+0.45*(h/3);
+var nT=neuroTerm(MIDN[nLa]||40,MIDN[nLb]||40);
+var nPair=(nT-50)*0.3;
+var fatal=Math.abs(rankA['CH']-rankB['CH'])>=6;
+var score=Math.max(0,Math.min(100,A*headFactor+orderBonus-9*clash+2*t+nPair));
+if(fatal)score=Math.min(score,39);
+var k=35/(0.5*wSum);
+rows.forEach(function(r){r.c=r.c*k;});
 var vi=score>=80?0:score>=65?1:score>=50?2:score>=35?3:4;
-var ov=oa.slice(0,3).filter(function(q){return ob.indexOf(q)>=0&&ob.indexOf(q)<3;}).length;
-return {score:score,rows:rows,chClash:chClash,vi:vi,overlap:ov,S:S,nT:nT,nPair:nPair};
+return {score:score,rows:rows,chClash:fatal,vi:vi,overlap:h,S:alignSum,nT:nT,nPair:nPair};
 }
 function barColor(s){return s>=80?'#2e9e4f':s>=65?'#6bcb77':s>=50?'#ffd93d':s>=35?'#ff9f43':'#ff6b6b';}
 var LET={E:'IDAE',O:'SMHN',A:'TLCF',C:'WPUJ',N:'BRZV'};
@@ -7413,8 +7403,8 @@ card.innerHTML='<div class="uf-head"><span class="uf-name">'+esc(t('uf6name'))+'
 (r.chClash?'<div style="color:#ff6b6b;font-weight:800;font-size:0.78rem;margin-top:6px;">⛔ '+esc(t('chWarn'))+'</div>':'');
 if(ufBox)ufBox.appendChild(card);
 if(validCodes&&ovBox){
-var u=uf15(cA,cB);
-var exp=(0.25*u.uf[0]+0.15*u.uf[1]+0.25*u.uf[2]+0.20*u.uf[3]+0.15*u.uf[4]+0.50*r.score)/1.5;
+var u=(window.QFTM_COMPAT?window.QFTM_COMPAT(cA,cB):uf15(cA,cB));
+var exp=(u.overall+0.50*r.score)/1.5;
 var ec=barColor(exp);
 var vi=exp>=80?0:exp>=65?1:exp>=50?2:exp>=35?3:4;
 ovBox.dataset.edcExp='1';
@@ -7422,7 +7412,7 @@ ovBox.innerHTML='<div class="compat-overall">'+
 '<div style="color:#c9b6ff;font-size:0.8rem;font-weight:800;">🧪 '+esc(t('expTitle'))+'</div>'+
 '<div class="qci" style="color:'+ec+';text-shadow:0 0 14px '+ec+';">'+exp.toFixed(3)+'</div>'+
 '<div class="verdict" style="color:'+ec+';">'+esc(t('verdict'))+': '+esc(t('v'+vi))+'</div>'+
-'<div class="ranges" style="margin-top:8px;">'+esc(t('expBase'))+' <strong style="color:#fff;">'+u.base.toFixed(3)+'</strong> • UF-6 = <strong style="color:'+col+';">'+r.score.toFixed(3)+'</strong></div>'+
+'<div class="ranges" style="margin-top:8px;">'+esc(t('expBase'))+' <strong style="color:#fff;">'+u.overall.toFixed(3)+'</strong> • UF-6 = <strong style="color:'+col+';">'+r.score.toFixed(3)+'</strong></div>'+
 '<div class="ranges" style="margin-top:4px;">'+esc(t('expNote'))+'</div>'+
 '<div class="ranges">'+esc(t('v0'))+' • '+esc(t('v1'))+' • '+esc(t('v2'))+' • '+esc(t('v3'))+' • '+esc(t('v4'))+'</div>'+
 '</div>';
