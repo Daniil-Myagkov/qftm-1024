@@ -4288,8 +4288,7 @@ const weakest = Math.min(sim.E, sim.O, sim.A, sim.C, 100-mean('N'));
 const uf5 = clamp100(0.70*strategy + 0.30*weakest);
 
 // === ИТОГ: UF-4 30% + UF-3 25% + UF-1 20% + UF-5 20% + UF-2 5% ===
-const overall = 0.30 * uf4 + 0.25 * uf3 + 0.20 * uf1 + 0.20 * uf5 + 0.05 * uf2
-);
+const overall = 0.30 * uf4 + 0.25 * uf3 + 0.20 * uf1 + 0.20 * uf5 + 0.05 * uf2;
 
 let verdictIndex;
 if (overall > 100) verdictIndex = 8;       // светлая фуксия
