@@ -4288,29 +4288,36 @@ const weakest = Math.min(sim.E, sim.O, sim.A, sim.C, 100-mean('N'));
 const uf5 = clamp100(0.70*strategy + 0.30*weakest);
 
 // === ИТОГ: UF-4 30% + UF-3 25% + UF-1 20% + UF-5 20% + UF-2 5% ===
-const overall = clamp100(
-0.30*uf4 + 0.25*uf3 + 0.20*uf1 + 0.20*uf5 + 0.05*uf2
+const overall = 0.30 * uf4 + 0.25 * uf3 + 0.20 * uf1 + 0.20 * uf5 + 0.05 * uf2
 );
 
 let verdictIndex;
-if (overall>=93) verdictIndex=7; else if (overall>=84) verdictIndex=6;
-else if (overall>=74) verdictIndex=5; else if (overall>=64) verdictIndex=4;
-else if (overall>=52) verdictIndex=3; else if (overall>=40) verdictIndex=2;
-else if (overall>=25) verdictIndex=1; else verdictIndex=0;
+if (overall > 100) verdictIndex = 8;       // светлая фуксия
+else if (overall >= 93) verdictIndex = 7;  // фуксия
+else if (overall >= 84) verdictIndex = 6;
+else if (overall >= 74) verdictIndex = 5;
+else if (overall >= 64) verdictIndex = 4;
+else if (overall >= 52) verdictIndex = 3;
+else if (overall >= 40) verdictIndex = 2;
+else if (overall >= 25) verdictIndex = 1;
+else if (overall >= 0) verdictIndex = 0;
+else verdictIndex = 9;                     // тёмно-бордовый
 
 return { a:a, b:b, sim:sim, diff:diff, uf:[uf1,uf2,uf3,uf4,uf5], overall:overall, verdictIndex:verdictIndex };
 }
   function ufBarColor(score) {
-  window.QFTM_COMPAT = function(a, b) { return computeCompat(a, b); };
-if (score >= 93) return '#ff00c8'; // Fuchsia
-if (score >= 84) return '#a855f7'; // Violet
-if (score >= 74) return '#4d7cff'; // Blue
-if (score >= 64) return '#22d3ee'; // Cyan
-if (score >= 52) return '#3ddc84'; // Bright Green
-if (score >= 40) return '#ffd93d'; // Yellow
-if (score >= 25) return '#ff9f43'; // Orange
-return '#ff5c5c';                  // Red
+if (score > 100) return '#ff4ddc'; // светлая фуксия
+if (score < 0)   return '#7a0000'; // тёмно-бордовый
+if (score >= 93) return '#ff00c8';
+if (score >= 84) return '#a855f7';
+if (score >= 74) return '#4d7cff';
+if (score >= 64) return '#22d3ee';
+if (score >= 52) return '#3ddc84';
+if (score >= 40) return '#ffd93d';
+if (score >= 25) return '#ff9f43';
+return '#ff5c5c';
 }
+  window.QFTM_COMPAT = function(a, b) { return computeCompat(a, b); };
   function renderCompat() {
     const inA = document.getElementById('compatAInput');
     const inB = document.getElementById('compatBInput');
@@ -7143,57 +7150,46 @@ var interact=(exA*exB)/100;
 return clamp100(0.5*(100-meanN)+0.3*(100-maxN)-0.15*gap-interact);
 }
 function uf6(oa,ob,nLa,nLb){
-var PW=[10,7.5,5.625,4.219,3.164,2.373,1.78,1.335,1.001,0.751];
-var rankA={},rankB={};
-oa.forEach(function(d,i){rankA[d]=i;});
-ob.forEach(function(d,i){rankB[d]=i;});
-var rows=[],alignSum=0,wSum=0;
+var rows=[],S=0,D=0,chClash=false;
 DOMS.forEach(function(d){
-var rA=rankA[d],rB=rankB[d];
-var agr=1-Math.abs(rA-rB)/9;
-var w=(PW[rA]+PW[rB])/2;
-rows.push({d:d,rA:rA,rB:rB,x:4.5-rA,y:4.5-rB,cls:CLASS_A[d]?'A':'B',ta:tierOf(rA),tb:tierOf(rB),c:(agr-0.5)*w});
-alignSum+=rows[rows.length-1].c; wSum+=w;
+var ra=oa.indexOf(d),rb=ob.indexOf(d);
+var x=4.5-ra,y=4.5-rb;
+var c=contribDomain(d,x,y);
+var dd=Math.abs(x-y);                       // смещение в рангах
+var w=(Math.abs(x)+Math.abs(y))/2+0.5;      // вес важности (голова тяжелее)
+var pen=dd*w*0.35;                          // штраф за любое рассогласование
+S+=c-pen; D+=dd*w;
+var ta=tierOf(ra),tb=tierOf(rb);
+if(d==='CH'&&((ta<=2&&tb===5)||(tb<=2&&ta===5)))chClash=true;
+rows.push({d:d,ta:ta,tb:tb,x:x,y:y,c:c-pen,cls:CLASS_A[d]?'A':'B'});
 });
-var A=50+35*(alignSum/(0.5*wSum));
-var headA=oa.slice(0,3),headB=ob.slice(0,3),tailA=oa.slice(7),tailB=ob.slice(7);
-var h=headA.filter(function(x){return headB.indexOf(x)!==-1;}).length;
-var clash=headA.filter(function(x){return tailB.indexOf(x)!==-1;}).length+headB.filter(function(x){return tailA.indexOf(x)!==-1;}).length;
-var t=tailA.filter(function(x){return tailB.indexOf(x)!==-1;}).length;
-var orderBonus=(h===3)?(headA.join()===headB.join()?6:3):0;
-var headFactor=0.55+0.45*(h/3);
-var nT=neuroTerm(MIDN[nLa]||40,MIDN[nLb]||40);
-var nPair=(nT-50)*0.3;
-var fatal=Math.abs(rankA['CH']-rankB['CH'])>=6;
-var score=Math.max(0,Math.min(100,A*headFactor+orderBonus-9*clash+2*t+nPair));
-if(fatal)score=Math.min(score,39);
-var k=35/(0.5*wSum);
-rows.forEach(function(r){r.c=r.c*k;});
+var aN=MIDN[nLa]||40,bN=MIDN[nLb]||40;
+var nT=neuroTerm(aN,bN);
+var nPair=(nT-50)*0.5;
+S+=nPair;
+var score=50+0.6*S;   // БЕЗ ГРАНИЦ: может быть <0 и >100
 var vi=score>=80?0:score>=65?1:score>=50?2:score>=35?3:4;
-return {score:score,rows:rows,chClash:fatal,vi:vi,overlap:h,S:alignSum,nT:nT,nPair:nPair};
+var ov=oa.slice(0,3).filter(function(q){return ob.indexOf(q)>=0&&ob.indexOf(q)<3;}).length;
+return {score:score,rows:rows,chClash:chClash,vi:vi,overlap:ov,S:S,D:D,nT:nT,nPair:nPair};
 }
-function barColor(s){return s>=80?'#2e9e4f':s>=65?'#6bcb77':s>=50?'#ffd93d':s>=35?'#ff9f43':'#ff6b6b';}
+function barColor(s) {
+  if (s > 100) return '#ff4ddc'; // светлая фуксия (>100)
+  if (s < 0)   return '#7a0000'; // тёмно-бордовый (<0)
+  if (s >= 93) return '#ff00c8';
+  if (s >= 84) return '#a855f7';
+  if (s >= 74) return '#4d7cff';
+  if (s >= 64) return '#22d3ee';
+  if (s >= 52) return '#3ddc84';
+  if (s >= 40) return '#ffd93d';
+  if (s >= 25) return '#ff9f43';
+  return '#ff5c5c';
+}
 var LET={E:'IDAE',O:'SMHN',A:'TLCF',C:'WPUJ',N:'BRZV'};
 var MID=[15,40,60,85];
 function axisFromCode(code){var p=code.toUpperCase().split('-');return {E:MID[LET.E.indexOf(p[0][0])],O:MID[LET.O.indexOf(p[0][1])],A:MID[LET.A.indexOf(p[0][2])],C:MID[LET.C.indexOf(p[0][3])],N:MID[LET.N.indexOf(p[1])]};}
-function uf15(codeA,codeB){
-var a=axisFromCode(codeA),b=axisFromCode(codeB),ax=['E','O','A','C','N'],sim={},diff={};
-ax.forEach(function(x){diff[x]=Math.abs(a[x]-b[x]);sim[x]=100-diff[x];});
-var nT=neuroTerm(a.N,b.N);
-var uf1=clamp100(0.30*sim.A+0.25*nT+0.20*sim.E+0.15*sim.C+0.10*sim.O);
-var compE=(diff.E/70)*100,compC=(diff.C/70)*100;
-var domA=a.E*(100-a.A),domB=b.E*(100-b.A);
-var balance=100-(Math.abs(domA-domB)/70);
-var uf2=clamp100(0.25*compE+0.15*compC+0.15*sim.A+0.15*nT+0.10*sim.O+0.20*balance);
-var buffer=(a.A+b.A)/2,capacity=((a.A+a.C)+(b.A+b.C))/4,growth=(a.O+b.O)/2;
-var repair=((a.A*b.C)+(b.A*a.C))/(2*85*85)*100;
-var uf3=clamp100(0.30*nT+0.15*buffer+0.25*capacity+0.10*growth+0.20*repair);
-var meanE=(a.E+b.E)/2,meanInvN=((100-a.N)+(100-b.N))/2,pool=(meanE*meanInvN)/(85*85)*100;
-var uf4=clamp100(0.30*pool+0.25*Math.min(a.A,b.A)+0.20*nT+0.25*((a.C+b.C)/2));
-var strategy=0.40*sim.C+0.30*sim.O+0.30*sim.E,weakest=Math.min(sim.E,sim.O,sim.A,sim.C,sim.N);
-var uf5=clamp100(0.70*strategy+0.30*weakest);
-var base=clamp100(0.25*uf1+0.15*uf2+0.25*uf3+0.20*uf4+0.15*uf5);
-return {uf:[uf1,uf2,uf3,uf4,uf5],base:base};
+function uf15(codeA, codeB) {
+  var r = window.QFTM_COMPAT(codeA, codeB); // Зовём тот самый мостик из Шага 3
+  return { uf: r.uf, base: r.overall };     // Возвращаем те же самые цифры
 }
 var ov=document.createElement('div');ov.className='modal-overlay';ov.id='edcOverlay';
 ov.innerHTML='<div class="modal"><button class="modal-close" id="edcClose">✕</button><h2 id="edcTitle"></h2><div id="edcBody"></div></div>';
