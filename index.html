@@ -4244,20 +4244,14 @@ const uf1 = clamp100(
 );
 
 // === UF-2: здоровая комплементарность, ПОДАВЛЕННАЯ добротой и спокойствием ===
-// compE/compC: пик на умеренной противоположности, сходство (diff=0) и крайность (~70+) почти нулевые
 const compE = curve(diff.E, 35, 26);
 const compC = curve(diff.C, 30, 24);
-// dom НОРМИРОВАН в 0..100 (раньше был 0..10000 и ломал curve)
 const domA = a.E * (100 - a.A) / 100;
 const domB = b.E * (100 - b.A) / 100;
 const balance = curve(Math.abs(domA - domB), 22, 20);
 const rawComp = 0.30 * compE + 0.20 * compC + 0.25 * balance + 0.25 * sim.O;
-// множитель безопасности: комплементарность ценна ТОЛЬКО когда оба добры и не тревожны
-// (иначе это «тиран + жертва» — токсично, а не взаимодополняемо)
 const safety = Math.min(min('A'), 100 - mean('N')) / 100;   // 0..1
 const uf2 = clamp100(rawComp * (0.35 + 0.65 * safety));
-0.25*compE + 0.15*compC + 0.15*sim.A + 0.15*(100-mean('N')) + 0.10*sim.O + 0.20*balance
-);
 
 // === UF-3: пол слабого звена + штраф за РАЗРЫВ (не среднее!) ===
 const loadScore = Math.max(0, (100-mean('N')) - 0.30*diff.N);   // разрыв N = дисрегуляция
