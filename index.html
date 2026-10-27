@@ -4243,15 +4243,19 @@ const uf1 = clamp100(
 0.35*sim.A + 0.25*sim.O + 0.20*(100-mean('N')) + 0.12*sim.C + 0.08*sim.E
 );
 
-// === UF-2: здоровая комплементарность, ПОДАВЛЕННАЯ добротой и спокойствием ===
-const compE = curve(diff.E, 35, 26);
-const compC = curve(diff.C, 30, 24);
+// === UF-2: Широкая комплементарность (Противоположности притягиваются) ===
+// Spread увеличен, чтобы разница 60-70 пунктов считалась полезным разнообразием, а не конфликтом.
+const compE = curve(diff.E, 35, 42); 
+const compC = curve(diff.C, 30, 40); 
 const domA = a.E * (100 - a.A) / 100;
 const domB = b.E * (100 - b.A) / 100;
-const balance = curve(Math.abs(domA - domB), 22, 20);
-const rawComp = 0.30 * compE + 0.20 * compC + 0.25 * balance + 0.25 * sim.O;
-const safety = Math.min(min('A'), 100 - mean('N')) / 100;   // 0..1
-const uf2 = clamp100(rawComp * (0.35 + 0.65 * safety));
+const balance = curve(Math.abs(domA - domB), 22, 25); // Также чуть шире
+const uf2 = clamp100(
+    0.30 * compE + 
+    0.20 * compC + 
+    0.25 * balance + 
+    0.25 * sim.O 
+);
 
 // === UF-3: пол слабого звена + штраф за РАЗРЫВ (не среднее!) ===
 const loadScore = Math.max(0, (100-mean('N')) - 0.30*diff.N);   // разрыв N = дисрегуляция
