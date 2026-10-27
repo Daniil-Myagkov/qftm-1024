@@ -7149,6 +7149,17 @@ var interact=(exA*exB)/100;
 return clamp100(0.5*(100-meanN)+0.3*(100-maxN)-0.15*gap-interact);
 }
 function uf6(oa,ob,nLa,nLb){
+function contribDomain(d,x,y){
+if(!CLASS_A[d]){
+var c=x*y;
+if(d==='CH')c*=2.5;
+return c;
+}
+var mag=Math.abs(x*y);
+if(x>0.5&&y>0.5)return 0.5*x*y;
+if(x<-0.5&&y<-0.5)return 0.2*x*y;
+return 0.9*mag-0.05*mag;
+}
 var rows=[],S=0,D=0,chClash=false;
 DOMS.forEach(function(d){
 var ra=oa.indexOf(d),rb=ob.indexOf(d);
@@ -7333,6 +7344,7 @@ var box=document.getElementById('edcCompatBox');if(!box)return;
 var chk=box.querySelector('#edcUf6Chk');var out=box.querySelector('#edcUf6Out');if(!chk||!out)return;
 var ufBox=document.getElementById('compatUfs');var ovBox=document.getElementById('compatOverall');
 var oldCard=document.getElementById('edcUf6Card');if(oldCard)oldCard.remove();
+out.innerHTML='';
 if(!chk.checked){if(ovBox&&ovBox.dataset.edcExp){delete ovBox.dataset.edcExp;setTimeout(function(){var bc=document.getElementById('btnCompatCalc');if(bc)bc.click();},0);}return;}
 var oa=parseStack10(box.querySelector('#edcStackA').value);
 var ob=parseStack10(box.querySelector('#edcStackB').value);
