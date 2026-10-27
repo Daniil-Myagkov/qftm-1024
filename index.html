@@ -2078,7 +2078,7 @@ canvas {
         theoryScienceText: 'QFTM-1024 does not recognize cognitive functions. It uses only the Big Five model: Extraversion, Openness, Agreeableness, Conscientiousness, Neuroticism. Enneagram and instinctual variants are not part of QFTM-1024 theory.',
         theoryLetters: 'QFTM-1024 letters',
         theoryVisual: 'Visual identity',
-        theoryVisualText: 'Every QFTM-1024 profile generates a procedural cat avatar. Coat color = exact profile color. Scene encodes Conscientiousness (sea / forest / home / office), tail and ears encode Extraversion, eyes encode Agreeableness, face expression encodes Neuroticism, held object encodes Openness (apple / coin / book / moon). You can stamp your name on the cat before downloading or sharing it.',
+        theoryVisualText: 'Every QFTM-1024 profile generates a procedural cat avatar. Coat color = exact profile color. Scene encodes Conscientiousness (sea / forest / home / office), tail and ears encode Extraversion, eyes encode Agreeableness, face expression encodes Neuroticism, held object encodes Openness (coin / apple / book / moon). You can stamp your name on the cat before downloading or sharing it.',
         whyMbtiTitle: '4 reasons why QFTM-1024 is better than MBTI',
         whyMbti1t: '1. Scientific base.',
         whyMbti1d: 'MBTI is built on Jung’s 1920s ideas that modern psychology has not confirmed. QFTM-1024 stands on the Big Five — the only personality model recognized by academic science.',
@@ -2441,7 +2441,7 @@ canvas {
         theoryScienceText: 'QFTM-1024 не признаёт когнитивные функции. Используется только модель Big Five: Экстраверсия, Открытость, Доброжелательность, Добросовестность, Нейротизм. Эннеаграмма и инстинктивные варианты не являются частью теории QFTM-1024.',
         theoryLetters: 'Буквы QFTM-1024',
         theoryVisual: 'Визуальная идентичность',
-        theoryVisualText: 'Каждый профиль QFTM-1024 генерирует процедурного котика. Цвет шубы = точный цвет профиля. Сцена кодирует Добросовестность (море / лес / домик / работа), хвост и уши — Экстраверсию, глаза — Доброжелательность, выражение морды — Нейротизм, предмет в лапах — Открытость (яблоко / монета / книга / луна). Перед скачиванием или шарингом на котика можно нанести своё имя.',
+        theoryVisualText: 'Каждый профиль QFTM-1024 генерирует процедурного котика. Цвет шубы = точный цвет профиля. Сцена кодирует Добросовестность (море / лес / домик / работа), хвост и уши — Экстраверсию, глаза — Доброжелательность, выражение морды — Нейротизм, предмет в лапах — Открытость (монета / яблоко / книга / луна). Перед скачиванием или шарингом на котика можно нанести своё имя.',
         whyMbtiTitle: '4 причины, почему QFTM-1024 лучше MBTI',
         whyMbti1t: '1. Научная база.',
         whyMbti1d: 'MBTI построена на идеях Юнга 1920-х годов, которые не подтверждены современной психологией. QFTM-1024 стоит на Big Five — единственной модели личности, признанной академической наукой.',
@@ -4157,9 +4157,9 @@ canvas {
     }
 
     let obj = '';
-    if (iO === 0) {
+    if (iO === 1) {
       obj = '<g transform="translate(30,166)"><circle r="14" fill="#e8443a" stroke="' + dark + '" stroke-width="2.5"/><path d="M0 -14 Q2 -22 8 -22" stroke="#5a3a1a" stroke-width="2.5" fill="none"/><path d="M2 -18 Q12 -22 12 -12 Q4 -10 2 -18Z" fill="#3fae4a"/><ellipse cx="-5" cy="-4" rx="3" ry="5" fill="#fff" opacity=".55"/></g>';
-    } else if (iO === 1) {
+    } else if (iO === 0) {
       obj = '<g transform="translate(170,166)"><circle r="13" fill="#ffcf4a" stroke="' + dark + '" stroke-width="2.5"/><circle r="9" fill="none" stroke="#b8860b" stroke-width="1.6"/><path d="M0 -6 L0 6 M-4 -3 L4 -3 M-4 2 L4 2" stroke="#7a5200" stroke-width="2" stroke-linecap="round"/><path d="M-6 -8 l3 -3 M6 8 l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/></g>';
     } else if (iO === 2) {
       obj = '<g transform="translate(30,164)"><path d="M-16 -8 Q0 -14 0 -8 L0 12 Q0 6 -16 12 Z" fill="' + light + '" stroke="' + dark + '" stroke-width="2"/><path d="M16 -8 Q0 -14 0 -8 L0 12 Q0 6 16 12 Z" fill="' + soft + '" stroke="' + dark + '" stroke-width="2"/><line x1="0" y1="-8" x2="0" y2="12" stroke="' + dark + '" stroke-width="2"/><path d="M-12 -2 h8 M-12 3 h8 M4 -2 h8 M4 3 h8" stroke="' + dark + '" stroke-width="1.4" opacity=".5"/></g>';
@@ -7078,11 +7078,16 @@ stErr:{en:'Enter exactly 10 unique codes: BD CA MN SP PA CH FR ST HO GR',ru:'В�
 need:{en:'Calculate compatibility first (Calculate button above).',ru:'Сначала рассчитай совместимость (кнопка «Рассчитать» выше).',es:'Calcula primero la compatibilidad (botón Calcular arriba).',fr:'Calcule d’abord la compatibilité (bouton Calculer ci-dessus).',zh:'先计算兼容性（上方“计算”按钮）。'},
 uf6name:{en:'UF-6 — Energy alignment (classes + global neuro term)',ru:'UF-6 — Согласование энергии (классы + глобальный нейро-член)',es:'UF-6 — Alineación energética (clases + término neuro global)',fr:'UF-6 — Alignement énergétique (classes + terme neuro global)',zh:'UF-6 — 能量对齐（分类 + 全局神经项）'},
 uf6ref:{en:'Class A (CA/MN/SP): complementarity bonus with microscopic minus for the difference; both-high = half-size similarity bonus; both-low = weak agreement. Class B: similarity adds, opposition subtracts, CH ×2.5. GLOBAL neuro term nTerm added once: calm+calm > anxious+calm > anxious+anxious. Every position shift moves the score.',ru:'Класс A (CA/MN/SP): бонус комплементарности с микроскопическим минусом за различие; оба-верха = бонус за сходство в половину размера; оба-низа = слабое согласие. Класс B: сходство плюсует, разрыв минусует, CH ×2.5. ГЛОБАЛЬНЫЙ нейро-член nTerm добавляется один раз: спокойный+спокойный > тревожный+спокойный > тревожный+тревожный. Любой сдвиг позиции двигает счёт.',es:'Clase A: bono de complementariedad con minus microscópico; ambos-arriba = bono mitad; ambos-abajo acuerdo débil. Clase B: similitud suma, oposición resta, CH ×2.5. Término neuro GLOBAL nTerm una vez. Cada cambio de posición mueve el score.',fr:'Classe A : bonus de complémentarité avec minus microscopique ; deux en haut = bonus moitié ; deux en bas accord faible. Classe B : similarité ajoute, opposition soustrait, CH ×2.5. Terme neuro GLOBAL nTerm une fois. Chaque décalage bouge le score.',zh:'A 类：互补奖金含极微小差异扣分；双高=半额相似奖金；双低=弱一致。B 类：相似加分、相反减分、CH ×2.5。全局神经项 nTerm 加一次。任何位置变动都移动分数。'},
-v0:{en:'Resonant pair (80–100)',ru:'Резонансная пара (80–100)',es:'Pareja resonante (80–100)',fr:'Pair résonant (80–100)',zh:'共振伴侣（80–100）'},
-v1:{en:'Harmonic, with work (65–79)',ru:'Гармоничная, с работой (65–79)',es:'Armónica, con trabajo (65–79)',fr:'Harmonieux, avec travail (65–79)',zh:'和谐、需经营（65–79）'},
-v2:{en:'Neutral, effort-based (50–64)',ru:'Нейтральная, на усилиях (50–64)',es:'Neutra, basada en esfuerzo (50–64)',fr:'Neutre, basée sur l’effort (50–64)',zh:'中性、靠努力（50–64）'},
-v3:{en:'Friction zone (35–49)',ru:'Зона трения (35–49)',es:'Zona de fricción (35–49)',fr:'Zone de friction (35–49)',zh:'摩擦区（35–49）'},
-v4:{en:'Polar profiles (0–34)',ru:'Полярные профили (0–34)',es:'Perfiles polares (0–34)',fr:'Profils polaires (0–34)',zh:'极性剖面（0–34）'},
+v0:{en:'Elemental clash (0–24)',ru:'Столкновение стихий (0–24)',es:'Choque de elementos (0–24)',fr:'Choc élémentaire (0–24)',zh:'元素冲突（0–24）'},
+v1:{en:'Friction zone (25–39)',ru:'Зона трения (25–39)',es:'Zona de fricción (25–39)',fr:'Zone de friction (25–39)',zh:'摩擦区（25–39）'},
+v2:{en:'Fragile equilibrium (40–51)',ru:'Хрупкое равновесие (40–51)',es:'Equilibrio frágil (40–51)',fr:'Équilibre fragile (40–51)',zh:'脆弱平衡（40–51）'},
+v3:{en:'Warm norm (52–63)',ru:'Тёплая норма (52–63)',es:'Norma cálida (52–63)',fr:'Norme chaleureuse (52–63)',zh:'温暖常态（52–63）'},
+v4:{en:'Clean harmony (64–73)',ru:'Чистая гармония (64–73)',es:'Armonía limpia (64–73)',fr:'Harmonie pure (64–73)',zh:'纯净和谐（64–73）'},
+v5:{en:'Deep resonance (74–83)',ru:'Глубокий резонанс (74–83)',es:'Resonancia profunda (74–83)',fr:'Résonance profonde (74–83)',zh:'深度共鸣（74–83）'},
+v6:{en:'Rare alignment (84–92)',ru:'Редкое совпадение (84–92)',es:'Alineación rara (84–92)',fr:'Alignement rare (84–92)',zh:'罕见契合（84–92）'},
+v7:{en:'Absolute resonance (93–100)',ru:'Абсолютный резонанс (93–100)',es:'Resonancia absoluta (93–100)',fr:'Résonance absolue (93–100)',zh:'绝对共鸣（93–100）'},
+v8:{en:'above scale (>100)',ru:'выше шкалы (>100)',es:'sobre escala (>100)',fr:'hors échelle (>100)',zh:'超标（>100）'},
+v9:{en:'below scale (<0)',ru:'ниже шкалы (<0)',es:'bajo escala (<0)',fr:'sous échelle (<0)',zh:'负值（<0）'},
 chWarn:{en:'CHILDREN CLASH: one puts kids in core/green, the other in red — the heaviest minus of the model (×2.5).',ru:'КОНФЛИКТ ДЕТЕЙ: у одного дети в ядре/зелёной, у другого в красной — самый тяжёлый минус модели (×2.5).',es:'CHOQUE DE HIJOS: uno en núcleo/verde, el otro en rojo — el menos más pesado (×2.5).',fr:'CONFLIT ENFANTS : l’un en noyau/vert, l’autre en rouge — le minus le plus lourd (×2.5).',zh:'孩子冲突：一方核心/绿，另一方红——最重减分（×2.5）。'},
 tblZone:{en:'Zone & class table (A vs B)',ru:'Таблица зон и классов (A против B)',es:'Tabla de zonas y clases (A vs B)',fr:'Table des zones et classes (A vs B)',zh:'区域与分类表（A 对 B）'},
 tblContrib:{en:'contribution',ru:'вклад',es:'aporte',fr:'contribution',zh:'贡献'},
@@ -7178,7 +7183,7 @@ var nT=neuroTerm(aN,bN);
 var nPair=(nT-50)*0.5;
 S+=nPair;
 var score=50+0.6*S;   // БЕЗ ГРАНИЦ: может быть <0 и >100
-var vi=score>=80?0:score>=65?1:score>=50?2:score>=35?3:4;
+var vi=score>100?8:score<0?9:score>=93?7:score>=84?6:score>=74?5:score>=64?4:score>=52?3:score>=40?2:score>=25?1:0;
 var ov=oa.slice(0,3).filter(function(q){return ob.indexOf(q)>=0&&ob.indexOf(q)<3;}).length;
 return {score:score,rows:rows,chClash:chClash,vi:vi,overlap:ov,S:S,D:D,nT:nT,nPair:nPair};
 }
@@ -7374,7 +7379,7 @@ if(validCodes&&ovBox){
 var u=(window.QFTM_COMPAT?window.QFTM_COMPAT(cA,cB):uf15(cA,cB));
 var exp=(u.overall+0.50*r.score)/1.5;
 var ec=barColor(exp);
-var vi=exp>=80?0:exp>=65?1:exp>=50?2:exp>=35?3:4;
+var vi=exp>100?8:exp<0?9:exp>=93?7:exp>=84?6:exp>=74?5:exp>=64?4:exp>=52?3:exp>=40?2:exp>=25?1:0;
 ovBox.dataset.edcExp='1';
 ovBox.innerHTML='<div class="compat-overall">'+
 '<div style="color:#c9b6ff;font-size:0.8rem;font-weight:800;">🧪 '+esc(t('expTitle'))+'</div>'+
@@ -7382,7 +7387,7 @@ ovBox.innerHTML='<div class="compat-overall">'+
 '<div class="verdict" style="color:'+ec+';">'+esc(t('verdict'))+': '+esc(t('v'+vi))+'</div>'+
 '<div class="ranges" style="margin-top:8px;">'+esc(t('expBase'))+' <strong style="color:#fff;">'+u.overall.toFixed(3)+'</strong> • UF-6 = <strong style="color:'+col+';">'+r.score.toFixed(3)+'</strong></div>'+
 '<div class="ranges" style="margin-top:4px;">'+esc(t('expNote'))+'</div>'+
-'<div class="ranges">'+esc(t('v0'))+' • '+esc(t('v1'))+' • '+esc(t('v2'))+' • '+esc(t('v3'))+' • '+esc(t('v4'))+'</div>'+
+'<div class="ranges">'+esc(t('v0'))+' • '+esc(t('v1'))+' • '+esc(t('v2'))+' • '+esc(t('v3'))+' • '+esc(t('v4'))+'<br>'+esc(t('v5'))+' • '+esc(t('v6'))+' • '+esc(t('v7'))+' • '+esc(t('v8'))+' • '+esc(t('v9'))+'</div>'+
 '</div>';
 }else{
 out.innerHTML='<div style="font-size:0.74rem;color:#8f86a8;">A: '+esc(oa.join('/'))+' • B: '+esc(ob.join('/'))+'</div><span style="color:#ffd93d;font-size:0.78rem;">'+esc(t('need'))+'</span>';
