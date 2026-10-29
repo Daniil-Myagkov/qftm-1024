@@ -6964,24 +6964,26 @@ box.innerHTML = html;
 </script>
 <script>
 /* ============================================================
-   QFTM-1024 :: EDC-2 (10 domains) — NEURO-CORRECT UF-6, v8
-   Neuroticism pairing rule (global, all formulas):
-   calm+calm = good > anxious+calm = very bad > anxious+anxious = terrible.
-   nTerm = 0.5*(100-meanN) + 0.3*(100-maxN) - 0.15*gap - (exA*exB)/100.
-   Role-based N modifiers retired (they caused the V+V > V+B paradox).
-   45 pairs ×2 rounds = 90 forced choices, commitment, sacrifice, lie-index,
-   5 zone tiers, class-aware UF-6 (A: CA/MN/SP; B: rest, CH ×2.5), 3 decimals.
-   © 2026 Daniil Vasilievich Myagkov. Heuristic, not clinical.
-   ============================================================ */
+QFTM-1024 :: EDC-2 (10 domains) — NO CLASS A/B, EQUAL-SCORE SACRIFICE, v9
+Removed: Class A/B logic, "Both equally", "Both unpleasant".
+All domains now: similarity adds, opposition subtracts. Children x2.5.
+Round 3 (Sacrifice) now triggers when two domains have EQUAL preference scores.
+Neuroticism pairing rule (global, all formulas):
+calm+calm = good > anxious+calm = very bad > anxious+anxious = terrible.
+nTerm = 0.5*(100-meanN) + 0.3*(100-maxN) - 0.15*gap - (exA*exB)/100.
+90 forced choices (4 options each), commitment, equal-score sacrifice,
+5 zone tiers, UF-6, 3 decimals.
+© 2026 Daniil Vasilievich Myagkov. Heuristic, not clinical.
+============================================================ */
 (function(){
 'use strict';
 function LSg(k){try{return localStorage.getItem('qftm1024_'+k);}catch(e){return null;}}
 function LSs(k,v){try{localStorage.setItem('qftm1024_'+k,v);}catch(e){}}
 function LSd(k){try{localStorage.removeItem('qftm1024_'+k);}catch(e){}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-var WK=[[25,-25],[12,-12],[12,12],[-12,12],[-25,25],[-25,-25]];
+/* 4 options only: Definitely A, Rather A, Rather B, Definitely B */
+var WK=[[25,-25],[12,-12],[-12,12],[-25,25]];
 var DOMS=['BD','CA','MN','SP','PA','CH','FR','ST','HO','GR'];
-var CLASS_A={CA:1,MN:1,SP:1};
 var MIDN={B:15,R:40,Z:60,V:85};
 var SHORT={
 BD:{en:'Body',ru:'Тело',es:'Cuerpo',fr:'Corps',zh:'身体'},
@@ -7035,18 +7037,17 @@ btn:{en:'🧭 EDC',ru:'🧭 EDC',es:'🧭 EDC',fr:'🧭 EDC',zh:'🧭 EDC'},
 title:{en:'EDC-2 · Where your life energy goes (10 domains, experimental)',ru:'EDC-2 · Куда течёт твоя жизненная энергия (10 доменов, эксперимент)',es:'EDC-2 · A dónde va tu energía vital (10 dominios, experimental)',fr:'EDC-2 · Où va ton énergie vitale (10 domaines, expérimental)',zh:'EDC-2 · 生命能量流向（10 领域，实验）'},
 sub:{en:'90 forced choices · 10 domains · 5 zone tiers · neuro-correct UF-6',ru:'90 принудительных выбора · 10 доменов · 5 ярусов зон · нейро-корректный UF-6',es:'90 elecciones forzadas · 10 dominios · 5 niveles · UF-6 neuro-correcto',fr:'90 choix forcés · 10 domaines · 5 niveaux · UF-6 neuro-correct',zh:'90 项强制选择 · 10 领域 · 5 区层 · 神经质修正 UF-6'},
 warn:{en:'Answer instinctively, as you ARE now. Each pair is asked twice in different framings; contradictions raise the Lie-Index. Points are hidden on purpose.',ru:'Отвечай инстинктивно, как ты ЕСТЬ сейчас. Каждая пара спрашивается дважды в разных рамках; противоречия поднимают Индекс Лжи. Очки скрыты намеренно.',es:'Responde por instinto, como ERES ahora. Cada par se pregunta dos veces; las contradicciones suben el Índice de Mentira. Puntos ocultos a propósito.',fr:'Réponds par instinct, tel que tu ES. Chaque paire est posée deux fois ; les contradictions montent l’Indice de Mensonge. Points cachés exprès.',zh:'凭直觉按当下作答。每对问两次；矛盾抬高谎言指数。分数故意隐藏。'},
-theory:{en:'EDC-2 splits 10 domains into Class A (Career, Money, Partner: complementarity bonus with a microscopic minus for the difference; both-high = half-size similarity bonus; both-low = weak agreement) and Class B (similarity adds, opposition subtracts; Children ×2.5). Neuroticism is handled GLOBALLY by nTerm: calm+calm = good, anxious+calm = very bad, anxious+anxious = terrible (mean load + weakest-link floor + both-anxious interaction + gap cost). Same-neuroticism is never rewarded.',ru:'EDC-2 делит 10 доменов на Класс A (Карьера, Деньги, Партнёр: бонус комплементарности с микроскопическим минусом за различие; оба-верха = бонус за сходство в половину размера; оба-низа = слабое согласие) и Класс B (сходство плюсует, разрыв минусует; Дети ×2.5). Нейротизм обрабатывается ГЛОБАЛЬНО через nTerm: спокойный+спокойный = хорошо, тревожный+спокойный = очень плохо, тревожный+тревожный = ужас (средняя нагрузка + пол слабого звена + интеракция «оба тревожных» + цена разрыва). Одинаковый нейротизм никогда не награждается.',es:'EDC-2 divide 10 dominios en Clase A (Carrera, Dinero, Pareja) y Clase B (similitud suma, oposición resta; Hijos ×2.5). El neuroticismo se maneja GLOBALMENTE con nTerm: calma+calma bien, ansioso+calma muy mal, ansioso+ansioso terrible. La misma neuroticidad nunca se premia.',fr:'EDC-2 sépare 10 domaines en Classe A et Classe B (similarité ajoute, opposition soustrait ; Enfants ×2.5). Le névrosisme est traité GLOBALEMENT par nTerm : calme+calme bien, anxieux+calme très mal, anxieux+anxieux terrible. Même névrosisme jamais récompensé.',zh:'EDC-2 将 10 领域分为 A 类与 B 类（相似加分、相反减分；孩子 ×2.5）。神经质由 nTerm 全局处理：平静+平静好，焦虑+平静很差，焦虑+焦虑糟糕。相同神经质从不获奖。'},
+theory:{en:'EDC-2 ranks 10 domains by forced choices. Similarity adds, opposition subtracts (Children ×2.5). Neuroticism is handled GLOBALLY by nTerm: calm+calm = good, anxious+calm = very bad, anxious+anxious = terrible (mean load + weakest-link floor + both-anxious interaction + gap cost). Same-neuroticism is never rewarded.',ru:'EDC-2 ранжирует 10 доменов принудительным выбором. Сходство плюсует, разрыв минусует (Дети ×2.5). Нейротизм обрабатывается ГЛОБАЛЬНО через nTerm: спокойный+спокойный = хорошо, тревожный+спокойный = очень плохо, тревожный+тревожный = ужас (средняя нагрузка + пол слабого звена + интеракция «оба тревожных» + цена разрыва). Одинаковый нейротизм никогда не награждается.',es:'EDC-2 ordena 10 dominios por elección forzada. Similitud suma, oposición resta (Hijos ×2.5). El neuroticismo se maneja GLOBALMENTE con nTerm: calma+calma bien, ansioso+calma muy mal, ansioso+ansioso terrible. La misma neuroticidad nunca se premia.',fr:'EDC-2 classe 10 domaines par choix forcé. La similarité ajoute, l’opposition soustrait (Enfants ×2.5). Le névrosisme est traité GLOBALEMENT par nTerm : calme+calme bien, anxieux+calme très mal, anxieux+anxieux terrible. Même névrosisme jamais récompensé.',zh:'EDC-2 通过强制选择对 10 领域排序。相似加分、相反减分（孩子 ×2.5）。神经质由 nTerm 全局处理：平静+平静好，焦虑+平静很差，焦虑+焦虑糟糕。相同神经质从不获奖。'},
 nPair:{en:'Neuroticism pairing term (calm+calm > anxious+calm > anxious+anxious)',ru:'Член пары по нейротизму (спокойный+спокойный > тревожный+спокойный > тревожный+тревожный)',es:'Término de pareja por neuroticismo (calma+calma > ansioso+calma > ansioso+ansioso)',fr:'Terme de couple par névrosisme (calme+calme > anxieux+calme > anxieux+anxieux)',zh:'神经质配对项（平静+平静 > 焦虑+平静 > 焦虑+焦虑）'},
-clsA:{en:'Class A (resource): CA, MN, SP',ru:'Класс A (ресурсные): CA, MN, SP',es:'Clase A (recurso): CA, MN, SP',fr:'Classe A (ressource) : CA, MN, SP',zh:'A 类（资源）：CA, MN, SP'},
-clsB:{en:'Class B (synergy): BD, PA, CH, FR, ST, HO, GR — CH ×2.5',ru:'Класс B (синергия): BD, PA, CH, FR, ST, HO, GR — CH ×2.5',es:'Clase B (sinergia): BD, PA, CH, FR, ST, HO, GR — CH ×2.5',fr:'Classe B (synergie) : BD, PA, CH, FR, ST, HO, GR — CH ×2.5',zh:'B 类（协同）：BD, PA, CH, FR, ST, HO, GR — CH ×2.5'},
 gg:{en:'Joys & griefs of each path (read before answering)',ru:'Радости и горести каждого пути (прочти перед ответами)',es:'Alegrías y penas de cada camino (lee antes)',fr:'Joies et peines de chaque voie (lis avant)',zh:'每条路的喜与悲（作答前阅读）'},
 s1:{en:'Round 1 · Forced choices (90)',ru:'Раунд 1 · Принудительный выбор (90)',es:'Ronda 1 · Elecciones forzadas (90)',fr:'Tour 1 · Choix forcés (90)',zh:'第 1 轮 · 强制选择（90）'},
 s2:{en:'Round 2 · Commitment: joys vs griefs',ru:'Раунд 2 · Преданность: радости против горестей',es:'Ronda 2 · Compromiso: alegrías contra penas',fr:'Tour 2 · Engagement : joies contre peines',zh:'第 2 轮 · 承诺：喜与悲'},
 commitQ:{en:'I agree to carry these griefs for the sake of those joys.',ru:'Я согласен нести эти горести ради этих радостей.',es:'Acepto cargar estas penas por esas alegrías.',fr:'J’accepte de porter ces peines pour ces joies.',zh:'我愿意为这些喜承受这些悲。'},
-s3:{en:'Round 3 · Sacrifice: pick the weakest link',ru:'Раунд 3 · Жертва: выбери слабейшее звено',es:'Ronda 3 · Sacrificio: el eslabón más débil',fr:'Tour 3 · Sacrifice : le maillon le plus faible',zh:'第 3 轮 · 牺牲：选最弱一环'},
-s3i:{en:'You said both paths burden you. Now the lesser evil: which one do you KEEP if only one survives?',ru:'Ты сказал, что оба пути тебя тяготят. Теперь меньшее из зол: какой ОСТАВИШЬ, если выживет только один?',es:'Dijiste que ambos caminos te pesan. Ahora el mal menor: ¿cuál MANTIENES si solo uno sobrevive?',fr:'Tu as dit que les deux voies te pèsent. Maintenant le moindre mal : laquelle GARDES-TU si une seule survit ?',zh:'你说两条路都让你负担。现在两害相权：若只能留一个，你留哪个？'},
-s3none:{en:'No “both unpleasant” answers — nothing to sacrifice.',ru:'Ответов «оба неприятны» нет — жертвовать нечем.',es:'Sin «ambos desagradables» — nada que sacrificar.',fr:'Aucune réponse « les deux pénibles » — rien à sacrifier.',zh:'没有“两者都不愉快”——无需牺牲。'},
+s3:{en:'Round 3 · Sacrifice: equal scores detected',ru:'Раунд 3 · Жертва: обнаружены равные баллы',es:'Ronda 3 · Sacrificio: puntajes iguales',fr:'Tour 3 · Sacrifice : scores égaux',zh:'第 3 轮 · 牺牲：发现同分'},
+s3i:{en:'Some domains got equal preference scores. Pick the one you KEEP if only one survives.',ru:'Некоторые домены получили одинаковые баллы предпочтения. Выбери, какой ОСТАВИШЬ, если выживет только один.',es:'Algunos dominios obtuvieron puntajes iguales. Elige cuál MANTIENES si solo uno sobrevive.',fr:'Certains domaines ont des scores égaux. Choisis lequel tu GARDES si un seul survit.',zh:'某些领域偏好分相同。如果只能留一个，你保留哪个？'},
+s3none:{en:'No equal scores — nothing to sacrifice.',ru:'Нет равных баллов — жертвовать нечем.',es:'Sin puntajes iguales — nada que sacrificar.',fr:'Aucun score égal — rien à sacrifier.',zh:'没有同分——无需牺牲。'},
 calc:{en:'🔍 Compute stack',ru:'🔍 Рассчитать стек',es:'🔍 Calcular pila',fr:'🔍 Calculer la pile',zh:'🔍 计算栈'},
+calcFinal:{en:'🔍 Compute stack (final, after sacrifice)',ru:'🔍 Рассчитать стек (финал, после жертвы)',es:'🔍 Calcular pila (final, tras sacrificio)',fr:'🔍 Calculer la pile (final, après sacrifice)',zh:'🔍 计算栈（最终，牺牲后）'},
 reset:{en:'🗑 Reset EDC',ru:'🗑 Сбросить EDC',es:'🗑 Reiniciar EDC',fr:'🗑 Réinitialiser EDC',zh:'🗑 重置 EDC'},
 inc:{en:'Not answered yet: ',ru:'Ещё не отвечено: ',es:'Faltan respuestas: ',fr:'Non répondu : ',zh:'尚未回答：'},
 incS1:{en:'round 1 items',ru:'пункты раунда 1',es:'ítems de ronda 1',fr:'items du tour 1',zh:'第 1 轮题目'},
@@ -7070,14 +7071,14 @@ z3:{en:'Mid (yellow, neutral)',ru:'Середина (жёлтая, нейтра�
 z4:{en:'Far (orange, friction)',ru:'Дальнее (оранжевая, трение)',es:'Lejano (naranja, fricción)',fr:'Lointain (orange, friction)',zh:'遥远（橙，摩擦）'},
 z5:{en:'Main enemy (red)',ru:'Главный враг (красная)',es:'Enemigo principal (rojo)',fr:'Ennemi principal (rouge)',zh:'主要敌人（红）'},
 chk:{en:'🧪 UF-6 · Energy alignment (experimental, weight = 2× a standard UF)',ru:'🧪 UF-6 · Согласование энергии (эксперимент, вес = 2× обычной UF)',es:'🧪 UF-6 · Alineación energética (experimental, peso = 2× UF estándar)',fr:'🧪 UF-6 · Alignement énergétique (expérimental, poids = 2× UF standard)',zh:'🧪 UF-6 · 能量对齐（实验，权重 = 2× 标准 UF）'},
-chkNote:{en:'Off by default. When on: full 10-code stacks A/B are compared with class-aware math plus a GLOBAL neuroticism pairing term; UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental, 3 decimals.',ru:'По умолчанию выкл. Когда вкл: полные стеки A/B из 10 кодов сравниваются по классовой математике плюс ГЛОБАЛЬНЫЙ член пары по нейротизму; UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально», 3 знака.',es:'Desactivado por defecto. Al activar: pilas completas A/B con matemática por clases más un término GLOBAL de neuroticismo; UF-6 se une a las cinco UF y el QCI se recalcula (QCI + 0.5·UF-6)/1.5, experimental, 3 decimales.',fr:'Désactivé par défaut. Activé : piles complètes A/B par classes plus un terme GLOBAL de névrosisme ; UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, expérimental, 3 décimales.',zh:'默认关闭。开启后：A/B 完整 10 码栈按分类数学加全局神经质配对项比较；UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算，实验性，3 位小数。'},
+chkNote:{en:'Off by default. When on: full 10-code stacks A/B are compared with similarity/opposition math plus a GLOBAL neuroticism pairing term; UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental, 3 decimals.',ru:'По умолчанию выкл. Когда вкл: полные стеки A/B из 10 кодов сравниваются по математике сходства/разрыва плюс ГЛОБАЛЬНЫЙ член пары по нейротизму; UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально», 3 знака.',es:'Desactivado por defecto. Al activar: pilas completas A/B con matemática de similitud/oposición más un término GLOBAL de neuroticismo; UF-6 se une a las cinco UF y el QCI se recalcula (QCI + 0.5·UF-6)/1.5, experimental, 3 decimales.',fr:'Désactivé par défaut. Activé : piles complètes A/B avec math similarité/opposition plus un terme GLOBAL de névrosisme ; UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, expérimental, 3 décimales.',zh:'默认关闭。开启后：A/B 完整 10 码栈按相似/相反数学加全局神经质配对项比较；UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算，实验性，3 位小数。'},
 stA:{en:'Stack A (all 10, in order)',ru:'Стек A (все 10, по порядку)',es:'Pila A (las 10, en orden)',fr:'Pile A (les 10, en ordre)',zh:'栈 A（全 10，按序）'},
 stB:{en:'Stack B (all 10, in order)',ru:'Стек B (все 10, по порядку)',es:'Pila B (las 10, en orden)',fr:'Pile B (les 10, en ordre)',zh:'栈 B（全 10，按序）'},
 stPh:{en:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',ru:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',es:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',fr:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',zh:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH'},
 stErr:{en:'Enter exactly 10 unique codes: BD CA MN SP PA CH FR ST HO GR',ru:'Введи ровно 10 уникальных кодов: BD CA MN SP PA CH FR ST HO GR',es:'Introduce exactamente 10 códigos únicos: BD CA MN SP PA CH FR ST HO GR',fr:'Saisis exactement 10 codes uniques : BD CA MN SP PA CH FR ST HO GR',zh:'请输入 10 个唯一代码：BD CA MN SP PA CH FR ST HO GR'},
 need:{en:'Calculate compatibility first (Calculate button above).',ru:'Сначала рассчитай совместимость (кнопка «Рассчитать» выше).',es:'Calcula primero la compatibilidad (botón Calcular arriba).',fr:'Calcule d’abord la compatibilité (bouton Calculer ci-dessus).',zh:'先计算兼容性（上方“计算”按钮）。'},
-uf6name:{en:'UF-6 — Energy alignment (classes + global neuro term)',ru:'UF-6 — Согласование энергии (классы + глобальный нейро-член)',es:'UF-6 — Alineación energética (clases + término neuro global)',fr:'UF-6 — Alignement énergétique (classes + terme neuro global)',zh:'UF-6 — 能量对齐（分类 + 全局神经项）'},
-uf6ref:{en:'Class A (CA/MN/SP): complementarity bonus with microscopic minus for the difference; both-high = half-size similarity bonus; both-low = weak agreement. Class B: similarity adds, opposition subtracts, CH ×2.5. GLOBAL neuro term nTerm added once: calm+calm > anxious+calm > anxious+anxious. Every position shift moves the score.',ru:'Класс A (CA/MN/SP): бонус комплементарности с микроскопическим минусом за различие; оба-верха = бонус за сходство в половину размера; оба-низа = слабое согласие. Класс B: сходство плюсует, разрыв минусует, CH ×2.5. ГЛОБАЛЬНЫЙ нейро-член nTerm добавляется один раз: спокойный+спокойный > тревожный+спокойный > тревожный+тревожный. Любой сдвиг позиции двигает счёт.',es:'Clase A: bono de complementariedad con minus microscópico; ambos-arriba = bono mitad; ambos-abajo acuerdo débil. Clase B: similitud suma, oposición resta, CH ×2.5. Término neuro GLOBAL nTerm una vez. Cada cambio de posición mueve el score.',fr:'Classe A : bonus de complémentarité avec minus microscopique ; deux en haut = bonus moitié ; deux en bas accord faible. Classe B : similarité ajoute, opposition soustrait, CH ×2.5. Terme neuro GLOBAL nTerm une fois. Chaque décalage bouge le score.',zh:'A 类：互补奖金含极微小差异扣分；双高=半额相似奖金；双低=弱一致。B 类：相似加分、相反减分、CH ×2.5。全局神经项 nTerm 加一次。任何位置变动都移动分数。'},
+uf6name:{en:'UF-6 — Energy alignment (similarity/opposition + global neuro term)',ru:'UF-6 — Согласование энергии (сходство/разрыв + глобальный нейро-член)',es:'UF-6 — Alineación energética (similitud/oposición + término neuro global)',fr:'UF-6 — Alignement énergétique (similarité/opposition + terme neuro global)',zh:'UF-6 — 能量对齐（相似/相反 + 全局神经项）'},
+uf6ref:{en:'Every domain: similarity adds, opposition subtracts (Children ×2.5). GLOBAL neuro term nTerm added once: calm+calm > anxious+calm > anxious+anxious. Every position shift moves the score.',ru:'Каждый домен: сходство плюсует, разрыв минусует (Дети ×2.5). ГЛОБАЛЬНЫЙ нейро-член nTerm добавляется один раз: спокойный+спокойный > тревожный+спокойный > тревожный+тревожный. Любой сдвиг позиции двигает счёт.',es:'Cada dominio: similitud suma, oposición resta (Hijos ×2.5). Término neuro GLOBAL nTerm una vez. Cada cambio de posición mueve el score.',fr:'Chaque domaine : similarité ajoute, opposition soustrait (Enfants ×2.5). Terme neuro GLOBAL nTerm une fois. Chaque décalage bouge le score.',zh:'每个领域：相似加分、相反减分（孩子 ×2.5）。全局神经项 nTerm 加一次。任何位置变动都移动分数。'},
 v0:{en:'Elemental clash (0–24)',ru:'Столкновение стихий (0–24)',es:'Choque de elementos (0–24)',fr:'Choc élémentaire (0–24)',zh:'元素冲突（0–24）'},
 v1:{en:'Friction zone (25–39)',ru:'Зона трения (25–39)',es:'Zona de fricción (25–39)',fr:'Zone de friction (25–39)',zh:'摩擦区（25–39）'},
 v2:{en:'Fragile equilibrium (40–51)',ru:'Хрупкое равновесие (40–51)',es:'Equilibrio frágil (40–51)',fr:'Équilibre fragile (40–51)',zh:'脆弱平衡（40–51）'},
@@ -7089,7 +7090,7 @@ v7:{en:'Absolute resonance (93–100)',ru:'Абсолютный резонанс
 v8:{en:'above scale (>100)',ru:'выше шкалы (>100)',es:'sobre escala (>100)',fr:'hors échelle (>100)',zh:'超标（>100）'},
 v9:{en:'below scale (<0)',ru:'ниже шкалы (<0)',es:'bajo escala (<0)',fr:'sous échelle (<0)',zh:'负值（<0）'},
 chWarn:{en:'CHILDREN CLASH: one puts kids in core/green, the other in red — the heaviest minus of the model (×2.5).',ru:'КОНФЛИКТ ДЕТЕЙ: у одного дети в ядре/зелёной, у другого в красной — самый тяжёлый минус модели (×2.5).',es:'CHOQUE DE HIJOS: uno en núcleo/verde, el otro en rojo — el menos más pesado (×2.5).',fr:'CONFLIT ENFANTS : l’un en noyau/vert, l’autre en rouge — le minus le plus lourd (×2.5).',zh:'孩子冲突：一方核心/绿，另一方红——最重减分（×2.5）。'},
-tblZone:{en:'Zone & class table (A vs B)',ru:'Таблица зон и классов (A против B)',es:'Tabla de zonas y clases (A vs B)',fr:'Table des zones et classes (A vs B)',zh:'区域与分类表（A 对 B）'},
+tblZone:{en:'Zone table (A vs B)',ru:'Таблица зон (A против B)',es:'Tabla de zonas (A vs B)',fr:'Table des zones (A vs B)',zh:'区域表（A 对 B）'},
 tblContrib:{en:'contribution',ru:'вклад',es:'aporte',fr:'contribution',zh:'贡献'},
 expTitle:{en:'Overall synthesis (QCI) — EXPERIMENTAL, includes UF-6',ru:'Общий синтез (QCI) — ЭКСПЕРИМЕНТАЛЬНО, с UF-6',es:'Síntesis global (QCI) — EXPERIMENTAL, con UF-6',fr:'Synthèse globale (QCI) — EXPÉRIMENTAL, avec UF-6',zh:'总体合成（QCI）——实验性，含 UF-6'},
 expBase:{en:'Base QCI without UF-6:',ru:'Базовый QCI без UF-6:',es:'QCI base sin UF-6:',fr:'QCI de base sans UF-6:',zh:'不含 UF-6 的基础 QCI：'},
@@ -7097,8 +7098,6 @@ expNote:{en:'UF-6 weight = 0.50 (2× a standard UF). Experimental heuristic, not
 verdict:{en:'Verdict',ru:'Вердикт',es:'Veredicto',fr:'Verdict',zh:'判定'},
 optP1:{en:'Definitely: ',ru:'Определённо: ',es:'Definitivamente: ',fr:'Certainement : ',zh:'确定：'},
 optP2:{en:'Rather: ',ru:'Скорее: ',es:'Más bien: ',fr:'Plutôt : ',zh:'较倾向：'},
-optEq:{en:'Both equally',ru:'И то и другое',es:'Ambos por igual',fr:'Les deux également',zh:'两者同等'},
-optBad:{en:'Both unpleasant',ru:'Оба неприятны',es:'Ambos desagradables',fr:'Les deux pénibles',zh:'两者都不愉快'},
 optK:{en:'Keep: ',ru:'Оставить: ',es:'Mantener: ',fr:'Garder : ',zh:'保留：'},
 cl:{en:['Strongly no','Rather no','Neutral','Rather yes','Strongly yes'],ru:['Совершенно нет','Скорее нет','Нейтрально','Скорее да','Совершенно да'],es:['No fuerte','No más bien','Neutral','Sí más bien','Sí fuerte'],fr:['Non fort','Non plutôt','Neutre','Oui plutôt','Oui fort'],zh:['强烈否','较否','中立','较是','强烈是']}}};
 function lang(){var l=LSg('lang');return (l&&TK.ui.btn[l])?l:'en';}
@@ -7108,9 +7107,11 @@ function ess(d){return ESS[d][lang()]||ESS[d].en;}
 var PAIRS=[];for(var pi=0;pi<DOMS.length;pi++){for(var pj=pi+1;pj<DOMS.length;pj++){PAIRS.push([DOMS[pi],DOMS[pj]]);}}
 var NITEMS=PAIRS.length*2;
 var answers=[],sacr={},commit=[];
-try{var ra=JSON.parse(LSg('edc2_answers')||'null');if(Array.isArray(ra)&&ra.length===NITEMS)answers=ra;}catch(e){}
+var sacrShown=false;
+var currentEqPairs=[];
+try{var ra=JSON.parse(LSg('edc2_answers')||'null');if(Array.isArray(ra)&&ra.length===NITEMS){answers=ra;for(var i=0;i<NITEMS;i++){if(answers[i]!==null&&(answers[i]<0||answers[i]>3))answers[i]=null;}}}catch(e){}
 while(answers.length<NITEMS)answers.push(null);
-try{sacr=JSON.parse(LSg('edc2_sacr')||'{}')||{};}catch(e){sacr={};}
+try{var rs=JSON.parse(LSg('edc2_sacr')||'{}');if(rs&&typeof rs==='object'){sacr={};for(var k in rs){var parts=k.split('|');if(parts.length===2&&DOMS.indexOf(parts[0])>=0&&DOMS.indexOf(parts[1])>=0&&(rs[k]===0||rs[k]===1))sacr[k]=rs[k];}}}catch(e){sacr={};}
 try{var rc=JSON.parse(LSg('edc2_commit')||'null');if(Array.isArray(rc)&&rc.length===10)commit=rc;}catch(e){}
 while(commit.length<10)commit.push(null);
 var order=[];for(var i0=0;i0<NITEMS;i0++)order.push(i0);
@@ -7118,21 +7119,41 @@ function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()
 shuffle(order);
 function itemOf(idx){var p=Math.floor(idx/2),r=idx%2,pr=PAIRS[p];return {p:p,r:r,a:pr[0],b:pr[1]};}
 function itemText(it){var tpl=it.r===0?TPL.r1:TPL.r2;var s=tpl[lang()]||tpl.en;return s.replace('{A}',ess(it.a)).replace('{B}',ess(it.b));}
-function xPairs(){var s=[];for(var p=0;p<PAIRS.length;p++){if(answers[p*2]===5||answers[p*2+1]===5)s.push(p);}return s;}
-function compute(){
+function prelimSc(){
 var sc={};DOMS.forEach(function(d){sc[d]=0;});
-var dirs=[];for(var p=0;p<PAIRS.length;p++)dirs.push([0,0]);
 for(var i=0;i<NITEMS;i++){
 var it=itemOf(i),a=answers[i];if(a==null)continue;
 var wf=WK[a][0],ws=WK[a][1];
 sc[it.a]+=wf;sc[it.b]+=ws;
-var d=(wf===ws)?0:(wf>ws?1:-1);
+}
+return sc;
+}
+function equalPairs(sc){
+var out=[];
+for(var pi=0;pi<DOMS.length;pi++){
+for(var pj=pi+1;pj<DOMS.length;pj++){
+if(sc[DOMS[pi]]===sc[DOMS[pj]])out.push(DOMS[pi]+'|'+DOMS[pj]);
+}}
+return out;
+}
+function compute(){
+var sc=prelimSc();
+for(var k in sacr){
+var parts=k.split('|');
+if(parts.length!==2)continue;
+var A=parts[0],B=parts[1];
+var v=sacr[k];
+if(v===0)sc[A]+=35;else if(v===1)sc[B]+=35;
+}
+var dirs=[];for(var p=0;p<PAIRS.length;p++)dirs.push([0,0]);
+for(var i=0;i<NITEMS;i++){
+var it=itemOf(i),a=answers[i];if(a==null)continue;
+var wf=WK[a][0],ws=WK[a][1];
+var d=(wf>ws)?1:-1;
 dirs[it.p][it.r]=d;
 }
-var conf=0;dirs.forEach(function(ds2){if(ds2[0]*ds2[1]<0)conf+=1;else if((ds2[0]===0)!==(ds2[1]===0))conf+=0.5;});
+var conf=0;dirs.forEach(function(ds2){if(ds2[0]*ds2[1]<0)conf+=1;});
 var lie=Math.round(conf/PAIRS.length*100);
-for(var k in sacr){var pp=parseInt(k,10);var v=sacr[pp];var A=PAIRS[pp][0],B=PAIRS[pp][1];
-if(v===0)sc[A]+=35;else if(v===1)sc[B]+=35;}
 var mx=1;DOMS.forEach(function(d){mx=Math.max(mx,Math.abs(sc[d]));});
 var fin={};DOMS.forEach(function(d,i){fin[d]=Math.round(0.7*(sc[d]/mx*100)+0.6*((commit[i]==null?50:commit[i]*25)-50));});
 var stack=DOMS.slice().sort(function(x,y){return fin[y]-fin[x];});
@@ -7155,56 +7176,50 @@ return clamp100(0.5*(100-meanN)+0.3*(100-maxN)-0.15*gap-interact);
 }
 function uf6(oa,ob,nLa,nLb){
 function contribDomain(d,x,y){
-if(!CLASS_A[d]){
 var c=x*y;
 if(d==='CH')c*=2.5;
 return c;
-}
-var mag=Math.abs(x*y);
-if(x>0.5&&y>0.5)return 0.5*x*y;
-if(x<-0.5&&y<-0.5)return 0.2*x*y;
-return 0.9*mag-0.05*mag;
 }
 var rows=[],S=0,D=0,chClash=false;
 DOMS.forEach(function(d){
 var ra=oa.indexOf(d),rb=ob.indexOf(d);
 var x=4.5-ra,y=4.5-rb;
 var c=contribDomain(d,x,y);
-var dd=Math.abs(x-y);                       // смещение в рангах
-var w=(Math.abs(x)+Math.abs(y))/2+0.5;      // вес важности (голова тяжелее)
-var pen=dd*w*0.35;                          // штраф за любое рассогласование
+var dd=Math.abs(x-y);
+var w=(Math.abs(x)+Math.abs(y))/2+0.5;
+var pen=dd*w*0.35;
 S+=c-pen; D+=dd*w;
 var ta=tierOf(ra),tb=tierOf(rb);
 if(d==='CH'&&((ta<=2&&tb===5)||(tb<=2&&ta===5)))chClash=true;
-rows.push({d:d,ta:ta,tb:tb,x:x,y:y,c:c-pen,cls:CLASS_A[d]?'A':'B'});
+rows.push({d:d,ta:ta,tb:tb,x:x,y:y,c:c-pen});
 });
 var aN=MIDN[nLa]||40,bN=MIDN[nLb]||40;
 var nT=neuroTerm(aN,bN);
 var nPair=(nT-50)*0.5;
 S+=nPair;
-var score=50+0.6*S;   // БЕЗ ГРАНИЦ: может быть <0 и >100
+var score=50+0.6*S;
 var vi=score>100?8:score<0?9:score>=93?7:score>=84?6:score>=74?5:score>=64?4:score>=52?3:score>=40?2:score>=25?1:0;
 var ov=oa.slice(0,3).filter(function(q){return ob.indexOf(q)>=0&&ob.indexOf(q)<3;}).length;
 return {score:score,rows:rows,chClash:chClash,vi:vi,overlap:ov,S:S,D:D,nT:nT,nPair:nPair};
 }
 function barColor(s) {
-  if (s > 100) return '#ff4ddc'; // светлая фуксия (>100)
-  if (s < 0)   return '#7a0000'; // тёмно-бордовый (<0)
-  if (s >= 93) return '#ff00c8';
-  if (s >= 84) return '#a855f7';
-  if (s >= 74) return '#4d7cff';
-  if (s >= 64) return '#22d3ee';
-  if (s >= 52) return '#3ddc84';
-  if (s >= 40) return '#ffd93d';
-  if (s >= 25) return '#ff9f43';
-  return '#ff5c5c';
+if (s > 100) return '#ff4ddc';
+if (s < 0)   return '#7a0000';
+if (s >= 93) return '#ff00c8';
+if (s >= 84) return '#a855f7';
+if (s >= 74) return '#4d7cff';
+if (s >= 64) return '#22d3ee';
+if (s >= 52) return '#3ddc84';
+if (s >= 40) return '#ffd93d';
+if (s >= 25) return '#ff9f43';
+return '#ff5c5c';
 }
 var LET={E:'IDAE',O:'SMHN',A:'TLCF',C:'WPUJ',N:'BRZV'};
 var MID=[15,40,60,85];
 function axisFromCode(code){var p=code.toUpperCase().split('-');return {E:MID[LET.E.indexOf(p[0][0])],O:MID[LET.O.indexOf(p[0][1])],A:MID[LET.A.indexOf(p[0][2])],C:MID[LET.C.indexOf(p[0][3])],N:MID[LET.N.indexOf(p[1])]};}
 function uf15(codeA, codeB) {
-  var r = window.QFTM_COMPAT(codeA, codeB); // Зовём тот самый мостик из Шага 3
-  return { uf: r.uf, base: r.overall };     // Возвращаем те же самые цифры
+var r = window.QFTM_COMPAT(codeA, codeB);
+return { uf: r.uf, base: r.overall };
 }
 var ov=document.createElement('div');ov.className='modal-overlay';ov.id='edcOverlay';
 ov.innerHTML='<div class="modal"><button class="modal-close" id="edcClose">✕</button><h2 id="edcTitle"></h2><div id="edcBody"></div></div>';
@@ -7217,40 +7232,55 @@ function close(){ov.classList.remove('open');document.body.style.overflow='';}
 var hb=document.createElement('button');hb.className='hdr-btn';hb.id='btnEdc';
 var anc=document.getElementById('btnRights');if(anc&&anc.parentElement)anc.parentElement.appendChild(hb);
 hb.addEventListener('click',open);
-function optLabels(L1,L2){return [t('optP1')+L1,t('optP2')+L1,t('optEq'),t('optP2')+L2,t('optP1')+L2,t('optBad')];}
+function optLabels(L1,L2){return [t('optP1')+L1,t('optP2')+L1,t('optP2')+L2,t('optP1')+L2];}
+function renderSacrBlock(pairs){
+var blk=document.getElementById('edcSacrBlock');
+if(!blk)return;
+if(!pairs.length){blk.innerHTML='<div style="font-size:0.8rem;color:#888;">'+esc(t('s3none'))+'</div>';return;}
+var h='<div style="font-size:0.8rem;color:#bbb;margin-bottom:8px;">'+esc(t('s3i'))+'</div>';
+pairs.forEach(function(pk){
+var parts=pk.split('|'),A=parts[0],B=parts[1];
+h+='<div class="t120-row"><div class="t120-q">'+esc(ds(A))+' ⇄ '+esc(ds(B))+'</div><div class="t120-opts">';
+var sl=[t('optK')+ds(A),t('optK')+ds(B)];
+for(var v3=0;v3<2;v3++)h+='<button type="button" class="t120-opt'+(sacr[pk]===v3?' sel':'')+'" data-sac="'+pk+'" data-v="'+v3+'">'+esc(sl[v3])+'</button>';
+h+='</div></div>';
+});
+blk.innerHTML=h;
+blk.querySelectorAll('[data-sac]').forEach(function(b){
+b.addEventListener('click',function(){
+var pk=b.getAttribute('data-sac'),v=+b.getAttribute('data-v');
+sacr[pk]=v;LSs('edc2_sacr',JSON.stringify(sacr));
+var row=b.closest('.t120-row');
+row.querySelectorAll('[data-sac]').forEach(function(x){x.classList.toggle('sel',+x.getAttribute('data-v')===v);});
+});
+});
+}
 function render(){
 hb.textContent=t('btn');
 document.getElementById('edcTitle').textContent=t('title');
+sacrShown=false;
+currentEqPairs=[];
 var L=lang(),h='';
 h+='<div style="color:#888;font-size:0.8rem;margin-bottom:8px;">'+esc(t('sub'))+'</div>';
 h+='<div class="t120-warn">⚠️ '+esc(t('warn'))+'</div>';
-h+='<details style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;"><summary style="cursor:pointer;color:#fff;font-weight:700;font-size:0.86rem;">📜 '+esc(t('theory'))+'</summary><div style="margin-top:8px;font-size:0.76rem;color:#bbb;line-height:1.6;">'+esc(t('clsA'))+'<br>'+esc(t('clsB'))+'<br>'+esc(t('nPair'))+'</div></details>';
+h+='<details style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;"><summary style="cursor:pointer;color:#fff;font-weight:700;font-size:0.86rem;">📜 '+esc(t('theory'))+'</summary><div style="margin-top:8px;font-size:0.76rem;color:#bbb;line-height:1.6;">'+esc(t('theory'))+'<br>'+esc(t('nPair'))+'</div></details>';
 h+='<details style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:12px;"><summary style="cursor:pointer;color:#ffd93d;font-weight:700;font-size:0.86rem;">💡 '+esc(t('gg'))+'</summary><div style="margin-top:8px;">';
-DOMS.forEach(function(d){h+='<div style="font-size:0.78rem;line-height:1.55;margin-bottom:6px;"><strong style="color:#fff;">'+esc(ds(d))+'</strong> <span style="color:#888;font-size:0.68rem;">['+(CLASS_A[d]?'A':'B')+']</span><br><span style="color:#6bcb77;">+ '+esc(JOY[d][L]||JOY[d].en)+'</span><br><span style="color:#ff9f43;">− '+esc(GRIEF[d][L]||GRIEF[d].en)+'</span></div>';});
+DOMS.forEach(function(d){h+='<div style="font-size:0.78rem;line-height:1.55;margin-bottom:6px;"><strong style="color:#fff;">'+esc(ds(d))+'</strong><br><span style="color:#6bcb77;">+ '+esc(JOY[d][L]||JOY[d].en)+'</span><br><span style="color:#ff9f43;">− '+esc(GRIEF[d][L]||GRIEF[d].en)+'</span></div>';});
 h+='</div></details>';
 h+='<h3 style="color:#fff;font-size:0.95rem;margin:10px 0 8px;">'+esc(t('s1'))+'</h3>';
 order.forEach(function(idx,pos){
 var it=itemOf(idx),labs=optLabels(ds(it.a),ds(it.b));
 h+='<div class="t120-row" id="edcRow'+idx+'"><div class="t120-q"><span class="t120-num">'+(pos+1)+'.</span>'+esc(itemText(it))+'</div><div class="t120-opts">';
-for(var v=0;v<6;v++)h+='<button type="button" class="t120-opt'+(answers[idx]===v?' sel':'')+'" data-edc="'+idx+'" data-v="'+v+'">'+esc(labs[v])+'</button>';
+for(var v=0;v<4;v++)h+='<button type="button" class="t120-opt'+(answers[idx]===v?' sel':'')+'" data-edc="'+idx+'" data-v="'+v+'">'+esc(labs[v])+'</button>';
 h+='</div></div>';
 });
 h+='<h3 style="color:#fff;font-size:0.95rem;margin:14px 0 8px;">'+esc(t('s2'))+'</h3>';
 DOMS.forEach(function(d,i){
-h+='<div class="t120-row" id="edcCom'+i+'"><div class="t120-q"><strong style="color:#fff;">'+esc(ds(d))+'</strong> <span style="color:#888;font-size:0.68rem;">['+(CLASS_A[d]?'A':'B')+']</span><br><span style="color:#6bcb77;font-size:0.78rem;">+ '+esc(JOY[d][L]||JOY[d].en)+'</span><br><span style="color:#ff9f43;font-size:0.78rem;">− '+esc(GRIEF[d][L]||GRIEF[d].en)+'</span><br>'+esc(t('commitQ'))+'</div><div class="t120-opts">';
+h+='<div class="t120-row" id="edcCom'+i+'"><div class="t120-q"><strong style="color:#fff;">'+esc(ds(d))+'</strong><br><span style="color:#6bcb77;font-size:0.78rem;">+ '+esc(JOY[d][L]||JOY[d].en)+'</span><br><span style="color:#ff9f43;font-size:0.78rem;">− '+esc(GRIEF[d][L]||GRIEF[d].en)+'</span><br>'+esc(t('commitQ'))+'</div><div class="t120-opts">';
 for(var v2=0;v2<5;v2++)h+='<button type="button" class="t120-opt'+(commit[i]===v2?' sel':'')+'" data-com="'+i+'" data-v="'+v2+'">'+esc(TK.ui.cl[lang()][v2])+'</button>';
 h+='</div></div>';
 });
-var xp=xPairs();
-h+='<h3 style="color:#fff;font-size:0.95rem;margin:14px 0 6px;">'+esc(t('s3'))+'</h3><div style="font-size:0.8rem;color:#bbb;margin-bottom:8px;">'+esc(t('s3i'))+'</div>';
-if(!xp.length)h+='<div style="font-size:0.8rem;color:#888;">'+esc(t('s3none'))+'</div>';
-xp.forEach(function(p){
-var A=PAIRS[p][0],B=PAIRS[p][1];
-h+='<div class="t120-row" id="edcSac'+p+'"><div class="t120-q">'+esc(ds(A))+' ⇄ '+esc(ds(B))+'</div><div class="t120-opts">';
-var sl=[t('optK')+ds(A),t('optK')+ds(B)];
-for(var v3=0;v3<2;v3++)h+='<button type="button" class="t120-opt'+(sacr[p]===v3?' sel':'')+'" data-sac="'+p+'" data-v="'+v3+'">'+esc(sl[v3])+'</button>';
-h+='</div></div>';
-});
+h+='<h3 style="color:#fff;font-size:0.95rem;margin:14px 0 6px;">'+esc(t('s3'))+'</h3><div id="edcSacrBlock"></div>';
 h+='<div style="text-align:center;margin:16px 0;"><button class="btn" id="edcCalc">'+esc(t('calc'))+'</button><button class="btn btn-outline" id="edcReset">'+esc(t('reset'))+'</button></div>';
 h+='<div id="edcResult"></div>';
 document.getElementById('edcBody').innerHTML=h;
@@ -7268,25 +7298,37 @@ var i=+b.getAttribute('data-com'),v=+b.getAttribute('data-v');
 commit[i]=v;LSs('edc2_commit',JSON.stringify(commit));
 document.getElementById('edcCom'+i).querySelectorAll('[data-com]').forEach(function(x){x.classList.toggle('sel',+x.getAttribute('data-v')===v);});
 });});
-document.getElementById('edcBody').querySelectorAll('[data-sac]').forEach(function(b){
-b.addEventListener('click',function(){
-var p=+b.getAttribute('data-sac'),v=+b.getAttribute('data-v');
-sacr[p]=v;LSs('edc2_sacr',JSON.stringify(sacr));
-document.getElementById('edcSac'+p).querySelectorAll('[data-sac]').forEach(function(x){x.classList.toggle('sel',+x.getAttribute('data-v')===v);});
-});});
 document.getElementById('edcCalc').addEventListener('click',function(){
-var m1=[],m2=[],m3=[];
+var m1=[],m2=[];
 for(var i=0;i<NITEMS;i++)if(answers[i]==null)m1.push(i+1);
 for(var c=0;c<10;c++)if(commit[c]==null)m2.push(c+1);
-xPairs().forEach(function(p){if(sacr[p]==null)m3.push(p+1);});
-if(m1.length||m2.length||m3.length){
+if(m1.length||m2.length){
 var msg=t('inc');
 if(m1.length)msg+=t('incS1')+' ('+m1.length+'); ';
-if(m2.length)msg+=t('incS2')+' ('+m2.length+'); ';
-if(m3.length)msg+=t('incS3')+' ('+m3.length+')';
+if(m2.length)msg+=t('incS2')+' ('+m2.length+')';
 alert(msg);
 if(m1.length){var el=document.getElementById('edcRow'+(m1[0]-1));if(el)el.scrollIntoView({behavior:'smooth',block:'center'});}
 return;
+}
+if(!sacrShown){
+var pre=prelimSc();
+var eq=equalPairs(pre);
+currentEqPairs=eq;
+if(eq.length){
+renderSacrBlock(eq);
+sacrShown=true;
+document.getElementById('edcCalc').textContent=t('calcFinal');
+var blk=document.getElementById('edcSacrBlock');
+if(blk)blk.scrollIntoView({behavior:'smooth',block:'center'});
+return;
+} else {
+sacrShown=true;
+}
+}
+if(sacrShown && currentEqPairs.length){
+var m3=[];
+currentEqPairs.forEach(function(pk){ if(sacr[pk]==null)m3.push(pk); });
+if(m3.length){alert(t('inc')+t('incS3')+' ('+m3.length+')');return;}
 }
 var r=compute();
 LSs('edc2_stack',JSON.stringify(r.stack));LSs('edc2_fin',JSON.stringify(r.fin));LSs('edc2_lie',String(r.lie));
@@ -7296,6 +7338,7 @@ showResult(r);renderUf6();
 document.getElementById('edcReset').addEventListener('click',function(){
 answers=[];while(answers.length<NITEMS)answers.push(null);
 sacr={};commit=[];while(commit.length<10)commit.push(null);
+sacrShown=false;currentEqPairs=[];
 LSd('edc2_answers');LSd('edc2_sacr');LSd('edc2_commit');LSd('edc2_stack');LSd('edc2_fin');LSd('edc2_lie');
 window.QFTM_EDC_STACK=null;shuffle(order);render();renderUf6();
 });
@@ -7314,7 +7357,7 @@ var h='<div class="compat-overall"><div style="color:#888;font-size:0.8rem;">'+e
 r.stack.forEach(function(d,i){
 var cm=commit[DOMS.indexOf(d)];cm=(cm==null?50:cm*25);
 var tr=tierOf(i),col=TIERCOL[tr];
-h+='<tr><td style="color:'+col+';font-weight:800;">● '+esc(ds(d))+' <span style="font-size:0.66rem;color:#888;">['+(CLASS_A[d]?'A':'B')+'] '+esc(t('z'+tr))+'</span></td><td>'+r.sc[d]+'</td><td>'+cm+'%</td><td style="font-weight:800;color:'+col+';">'+r.fin[d]+'</td></tr>';
+h+='<tr><td style="color:'+col+';font-weight:800;">● '+esc(ds(d))+' <span style="font-size:0.66rem;color:#888;">'+esc(t('z'+tr))+'</span></td><td>'+r.sc[d]+'</td><td>'+cm+'%</td><td style="font-weight:800;color:'+col+';">'+r.fin[d]+'</td></tr>';
 });
 h+='</table><div style="font-size:0.8rem;color:'+lieC+';font-weight:800;margin-top:8px;">'+esc(t('lie'))+': '+r.lie+'% — '+esc(lieT)+'</div>'+
 '<div style="font-size:0.74rem;color:#6bcb77;margin-top:6px;">✓ '+esc(t('saved'))+'</div></div>';
@@ -7363,10 +7406,10 @@ var r=uf6(oa,ob,nLa,nLb);
 var col=barColor(r.score);
 var card=document.createElement('div');
 card.className='uf-card';card.id='edcUf6Card';
-var tbl='<table class="compat-table" style="margin-top:8px;"><tr><th>'+esc(t('cDom'))+'</th><th>cls</th><th>A e</th><th>B e</th><th>'+esc(t('tblContrib'))+'</th></tr>';
+var tbl='<table class="compat-table" style="margin-top:8px;"><tr><th>'+esc(t('cDom'))+'</th><th>A e</th><th>B e</th><th>'+esc(t('tblContrib'))+'</th></tr>';
 r.rows.forEach(function(row){
 var cs=row.c>0?'#6bcb77':row.c<0?'#ff6b6b':'#888';
-tbl+='<tr><td style="color:'+TIERCOL[row.ta]+';font-weight:800;">● '+esc(ds(row.d))+'</td><td style="color:#888;">'+row.cls+'</td><td>'+row.x.toFixed(1)+'</td><td>'+row.y.toFixed(1)+'</td><td style="color:'+cs+';font-weight:800;">'+(row.c>0?'+':'')+row.c.toFixed(3)+'</td></tr>';
+tbl+='<tr><td style="color:'+TIERCOL[row.ta]+';font-weight:800;">● '+esc(ds(row.d))+'</td><td>'+row.x.toFixed(1)+'</td><td>'+row.y.toFixed(1)+'</td><td style="color:'+cs+';font-weight:800;">'+(row.c>0?'+':'')+row.c.toFixed(3)+'</td></tr>';
 });
 tbl+='</table>';
 card.innerHTML='<div class="uf-head"><span class="uf-name">'+esc(t('uf6name'))+'</span><span class="uf-score" style="color:'+col+';">'+r.score.toFixed(3)+'</span></div>'+
