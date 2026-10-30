@@ -6964,13 +6964,15 @@ box.innerHTML = html;
 </script>
 <script>
 /* ============================================================
-QFTM-1024 :: EDC-3 (11 domains) — SX ADDED, GR/ST/PA FIXED, ROUND 2 CLARIFIED
+QFTM-1024 :: EDC-3 (11 domains) — SX, NO DOUBLE CHILD COUNT,
+SP/CH CORE BONUSES, 11-TIER ZONES, HONEST UF-6, v11
 11 domains: BD CA MN SP PA CH FR ST HO GR SX
-Round 1: 55 pairs × 2 = 110 forced choices (4 options each)
-Round 2: 11 commitment questions with plain-language explanations
-Round 3: sacrifice on equal scores
-No Class A/B. Similarity adds, opposition subtracts. Children ×2.5.
-Child-status aware. Dynamics warning. Detailed legend.
+Round 1: 55 pairs x2 = 110 forced choices (4 options)
+Round 2: 11 commitment w/ plain hint. Round 3: equal-score sacrifice.
+UF-6 uses ONLY stacks (no child-status selectors). eRank center = 5.
+Mutual SP-in-core = +18 bonus; mutual CH-in-core = +8 bonus.
+Zone split for 11: 3 dark-green / 2 green / 2 yellow / 3 orange / 1 red.
+No Class A/B. Similarity adds, opposition subtracts, CH x2.5.
 © 2026 Daniil Vasilievich Myagkov. Heuristic, not clinical.
 ============================================================ */
 (function(){
@@ -6983,6 +6985,7 @@ var WK=[[25,-25],[12,-12],[-12,12],[-25,25]];
 var DOMS=['BD','CA','MN','SP','PA','CH','FR','ST','HO','GR','SX'];
 var MIDN={B:15,R:40,Z:60,V:85};
 var CHSTATUSES=['has','want','free','und'];
+var SP_CORE_BONUS=18, CH_CORE_BONUS=8;
 var SHORT={
 BD:{en:'Body',ru:'Тело',es:'Cuerpo',fr:'Corps',zh:'身体'},
 CA:{en:'Career',ru:'Карьера',es:'Carrera',fr:'Carrière',zh:'事业'},
@@ -7030,7 +7033,6 @@ ST:{en:'small-talk hangover, crowd fatigue, shallow ties, performance pressure',
 HO:{en:'guilt over rest, procrastination, “useless” doubts',ru:'вина за отдых, прокрастинация, сомнения «это бесполезно»',es:'culpa por descansar, procrastinación, dudas',fr:'culpabilité du repos, procrastination, doutes',zh:'休息内疚、拖延、“无用”怀疑'},
 GR:{en:'painful insights, long trauma work, loneliness of the path',ru:'больные инсайты, долгая работа с травмами, одиночество пути',es:'insights dolorosos, trabajo largo con heridas, soledad',fr:'insights douloureux, long travail des blessures, solitude',zh:'痛苦洞察、漫长创伤工作、孤独'},
 SX:{en:'rejection, mismatched desire, performance anxiety, routine killing spark',ru:'отказ, несовпадение желаний, тревога «не справиться», рутина убивает искру',es:'rechazo, deseo desincronizado, ansiedad de rendimiento, rutina mata la chispa',fr:'rejet, désir désynchronisé, anxiété de performance, routine tue l’étincelle',zh:'拒绝、欲望不同步、表现焦虑、例行公事扼杀火花'}};
-/* Detailed legend for all 11 domains */
 var DETAIL={
 BD:{what:{en:'Your physical self: health, sleep, energy, sport, how you feel in your body.',ru:'Ваше физическое «я»: здоровье, сон, энергия, спорт, то, как вы ощущаете себя в теле.',es:'Tu yo físico: salud, sueño, energía, deporte, cómo te sientes en tu cuerpo.',fr:'Votre « moi » physique : santé, sommeil, énergie, sport, comment vous vous sentez.',zh:'你的身体自我：健康、睡眠、能量、运动、身体感受。'},
 hi:{en:'High = you invest in your body and feel alive when it’s strong.',ru:'Высоко = вы вкладываетесь в тело и чувствуете себя живым, когда оно сильное.',es:'Alto = inviertes en tu cuerpo y te sientes vivo cuando está fuerte.',fr:'Haut = vous investissez dans votre corps et vous sentez vivant quand il est fort.',zh:'高 = 你投资身体，身体强健时感到有活力。'},
@@ -7071,7 +7073,7 @@ r2:{en:'Imagine your next year: which one will you put more energy into?',ru:'П
 var TK={ui:{
 btn:{en:'🧭 EDC',ru:'🧭 EDC',es:'🧭 EDC',fr:'🧭 EDC',zh:'🧭 EDC'},
 title:{en:'EDC-3 · Where your life energy goes (11 domains)',ru:'EDC-3 · Куда течёт твоя жизненная энергия (11 доменов)',es:'EDC-3 · A dónde va tu energía vital (11 dominios)',fr:'EDC-3 · Où va votre énergie vitale (11 domaines)',zh:'EDC-3 · 生命能量流向（11 领域）'},
-sub:{en:'110 forced choices · 11 domains · child-aware · 5 zone tiers · neuro-correct UF-6',ru:'110 принудительных выбора · 11 доменов · учёт детей · 5 ярусов зон · нейро-корректный UF-6',es:'110 elecciones forzadas · 11 dominios · consciente de hijos · UF-6 neuro-correcto',fr:'110 choix forcés · 11 domaines · sensible aux enfants · UF-6 neuro-correct',zh:'110 项强制选择 · 11 领域 · 儿童感知 · 5 区层 · 神经质修正 UF-6'},
+sub:{en:'110 forced choices · 11 domains · child-aware · 5 zone tiers · honest UF-6',ru:'110 принудительных выбора · 11 доменов · учёт детей · 5 ярусов зон · честный UF-6',es:'110 elecciones forzadas · 11 dominios · consciente de hijos · UF-6 honesto',fr:'110 choix forcés · 11 domaines · sensible aux enfants · UF-6 honnête',zh:'110 项强制选择 · 11 领域 · 儿童感知 · 5 区层 · 诚实 UF-6'},
 dynWarn:{en:'⚠️ Your priorities change with age and circumstances. This test captures your energy AS OF TODAY. It is not a life sentence — retake it whenever you feel you have changed.',ru:'⚠️ Ваши приоритеты меняются с возрастом и обстоятельствами. Этот тест фиксирует вашу энергию НА СЕГОДНЯ. Это не приговор на всю жизнь — проходите его заново, когда почувствуете, что изменились.',es:'⚠️ Tus prioridades cambian con la edad y las circunstancias. Este test captura tu energía A DÍA DE HOY. No es una sentencia — repítelo cuando sientas que has cambiado.',fr:'⚠️ Vos priorités changent avec l’âge et les circonstances. Ce test capture votre énergie À CE JOUR. Ce n’est pas une sentence — repassez-le quand vous sentez avoir changé.',zh:'⚠️ 你的优先级会随年龄和境遇改变。此测试捕捉的是你今天的能量。这不是判决——当你觉得自己变了就重测。'},
 whatEdcTitle:{en:'📖 What is EDC and why take it',ru:'📖 Что такое EDC и зачем его проходить',es:'📖 Qué es EDC y por qué hacerlo',fr:'📖 Qu’est-ce que l’EDC et pourquoi le passer',zh:'📖 什么是 EDC，为什么要测'},
 whatEdc1:{en:'EDC (Energy Domain Calculator) shows where your life energy goes right now, across 11 life domains — from your body and money to love, sex, friends and growth.',ru:'EDC (Калькулятор Энергетических Доменов) показывает, куда уходит ваша жизненная энергия прямо сейчас, по 11 жизненным доменам — от тела и денег до любви, секса, друзей и роста.',es:'EDC muestra a dónde va tu energía vital ahora, en 11 dominios: del cuerpo y el dinero al amor, sexo, amigos y crecimiento.',fr:'L’EDC montre où va votre énergie vitale en ce moment, à travers 11 domaines — du corps et l’argent à l’amour, le sexe, les amis et la croissance.',zh:'EDC 显示你当下的生命能量流向 11 个生活领域——从身体、金钱到爱、性、朋友与成长。'},
@@ -7119,17 +7121,14 @@ z3:{en:'Mid (yellow, neutral)',ru:'Середина (жёлтая, нейтра�
 z4:{en:'Far (orange, friction)',ru:'Дальнее (оранжевая, трение)',es:'Lejano (naranja, fricción)',fr:'Lointain (orange, friction)',zh:'遥远（橙，摩擦）'},
 z5:{en:'Main enemy (red)',ru:'Главный враг (красная)',es:'Enemigo principal (rojo)',fr:'Ennemi principal (rouge)',zh:'主要敌人（红）'},
 chk:{en:'🧪 UF-6 · Energy alignment (experimental, weight = 2× a standard UF)',ru:'🧪 UF-6 · Согласование энергии (эксперимент, вес = 2× обычной UF)',es:'🧪 UF-6 · Alineación energética (experimental, peso = 2× UF estándar)',fr:'🧪 UF-6 · Alignement énergétique (expérimental, poids = 2× UF standard)',zh:'🧪 UF-6 · 能量对齐（实验，权重 = 2× 标准 UF）'},
-chkNote:{en:'Off by default. When on: full 11-code stacks A/B are compared with similarity/opposition math plus a GLOBAL neuroticism pairing term and a CHILD-STATUS clash check; UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental, 3 decimals.',ru:'По умолчанию выкл. Когда вкл: полные стеки A/B из 11 кодов сравниваются по математике сходства/разрыва плюс ГЛОБАЛЬНЫЙ член пары по нейротизму и проверка КОНФЛИКТА ПО ДЕТЯМ; UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально», 3 знака.',es:'Desactivado por defecto. Al activar: pilas completas A/B de 11 códigos con similitud/oposición, término GLOBAL de neuroticismo y chequeo de CHOQUE por hijos; UF-6 se une a las cinco UF y el QCI se recalcula (QCI + 0.5·UF-6)/1.5, experimental, 3 decimales.',fr:'Désactivé par défaut. Activé : piles complètes A/B de 11 codes avec similarité/opposition, terme GLOBAL de névrosisme et vérification du CONFLIT Enfants ; UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, expérimental, 3 décimales.',zh:'默认关闭。开启后：A/B 完整 11 码栈按相似/相反数学加全局神经质配对项与儿童状况冲突检查；UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算，实验性，3 位小数。'},
-chSelA:{en:'Children A',ru:'Дети A',es:'Hijos A',fr:'Enfants A',zh:'孩子 A'},
-chSelB:{en:'Children B',ru:'Дети B',es:'Hijos B',fr:'Enfants B',zh:'孩子 B'},
-chStatusWarn:{en:'CHILDREN STATUS CLASH: one partner is childfree, the other wants or has children. This is one of the hardest incompatibilities and heavily lowers the score.',ru:'КОНФЛИКТ ПО ДЕТЯМ: один партнёр чайлдфри, другой хочет или имеет детей. Это одна из самых тяжёлых несовместимостей, сильно снижающая балл.',es:'CHOQUE POR HIJOS: una pareja es childfree, la otra quiere o tiene hijos. Es una de las incompatibilidades más duras y baja mucho la puntuación.',fr:'CONFLIT ENFANTS : un partenaire est childfree, l’autre veut ou a des enfants. C’est l’une des incompatibilités les plus dures et fait beaucoup baisser le score.',zh:'儿童状况冲突：一方丁克，另一方想要或已有孩子。这是最难的不兼容之一，大幅拉低分数。'},
+chkNote:{en:'Off by default. When on: the two full 11-code stacks are compared by similarity/opposition math (Children ×2.5) plus a GLOBAL neuroticism pairing term, with a bonus when BOTH put Partner in the core and a smaller bonus when BOTH put Children in the core. UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental, 3 decimals.',ru:'По умолчанию выкл. Когда вкл: два полных стека из 11 кодов сравниваются по математике сходства/разрыва (Дети ×2.5) плюс ГЛОБАЛЬНЫЙ член пары по нейротизму, с бонусом, когда ОБОЕ ставят Партнёра в ядро, и меньшим бонусом, когда ОБОЕ ставят Детей в ядро. UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально», 3 знака.',es:'Desactivado por defecto. Al activar: las dos pilas completas de 11 códigos se comparan por similitud/oposición (Hijos ×2.5) más un término GLOBAL de neuroticismo, con bono cuando AMBOS ponen Pareja en el núcleo y un bono menor cuando AMBOS ponen Hijos en el núcleo. UF-6 se une a las cinco UF y el QCI se recalcula (QCI + 0.5·UF-6)/1.5, experimental, 3 decimales.',fr:'Désactivé par défaut. Activé : les deux piles complètes de 11 codes sont comparées par similarité/opposition (Enfants ×2.5) plus un terme GLOBAL de névrosisme, avec un bonus quand TOUS DEUX placent Partenaire dans le noyau et un bonus moindre quand TOUS DEUX placent Enfants dans le noyau. UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, expérimental, 3 décimales.',zh:'默认关闭。开启后：两个完整 11 码栈按相似/相反数学（孩子 ×2.5）加全局神经质配对项比较，当双方都把伴侣放入核心时有奖金，双方都把孩子放入核心时有较小编号奖金。UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算，实验性，3 位小数。'},
 stA:{en:'Stack A (all 11, in order)',ru:'Стек A (все 11, по порядку)',es:'Pila A (las 11, en orden)',fr:'Pile A (les 11, en ordre)',zh:'栈 A（全 11，按序）'},
 stB:{en:'Stack B (all 11, in order)',ru:'Стек B (все 11, по порядку)',es:'Pila B (las 11, en orden)',fr:'Pile B (les 11, en ordre)',zh:'栈 B（全 11，按序）'},
 stPh:{en:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',ru:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',es:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',fr:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',zh:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH'},
 stErr:{en:'Enter exactly 11 unique codes: BD CA MN SP PA CH FR ST HO GR SX',ru:'Введи ровно 11 уникальных кодов: BD CA MN SP PA CH FR ST HO GR SX',es:'Introduce exactamente 11 códigos únicos: BD CA MN SP PA CH FR ST HO GR SX',fr:'Saisis exactement 11 codes uniques : BD CA MN SP PA CH FR ST HO GR SX',zh:'请输入 11 个唯一代码：BD CA MN SP PA CH FR ST HO GR SX'},
 need:{en:'Calculate compatibility first (Calculate button above).',ru:'Сначала рассчитай совместимость (кнопка «Рассчитать» выше).',es:'Calcula primero la compatibilidad (botón Calcular arriba).',fr:'Calcule d’abord la compatibilité (bouton Calculer ci-dessus).',zh:'先计算兼容性（上方“计算”按钮）。'},
-uf6name:{en:'UF-6 — Energy alignment (similarity/opposition + global neuro + child status)',ru:'UF-6 — Согласование энергии (сходство/разрыв + глобальный нейро-член + статус детей)',es:'UF-6 — Alineación energética (similitud/oposición + neuro global + estatus de hijos)',fr:'UF-6 — Alignement énergétique (similarité/opposition + neuro global + statut enfants)',zh:'UF-6 — 能量对齐（相似/相反 + 全局神经项 + 儿童状况）'},
-uf6ref:{en:'Every domain: similarity adds, opposition subtracts (Children ×2.5). GLOBAL neuro term nTerm added once: calm+calm > anxious+calm > anxious+anxious. Child-status clash subtracts heavily; matching child goals add. Every position shift moves the score.',ru:'Каждый домен: сходство плюсует, разрыв минусует (Дети ×2.5). ГЛОБАЛЬНЫЙ нейро-член nTerm добавляется один раз: спокойный+спокойный > тревожный+спокойный > тревожный+тревожный. Конфликт по детям сильно вычитает; совпадение целей по детям добавляет. Любой сдвиг позиции двигает счёт.',es:'Cada dominio: similitud suma, oposición resta (Hijos ×2.5). Término neuro GLOBAL nTerm una vez. Choque por hijos resta mucho; metas de hijos coincidentes suman. Cada cambio de posición mueve el score.',fr:'Chaque domaine : similarité ajoute, opposition soustrait (Enfants ×2.5). Terme neuro GLOBAL nTerm une fois. Le conflit enfants soustrait beaucoup ; des objectifs d’enfants alignés ajoutent. Chaque décalage bouge le score.',zh:'每个领域：相似加分、相反减分（孩子 ×2.5）。全局神经项 nTerm 加一次。儿童状况冲突大幅减分；儿童目标一致加分。任何位置变动都移动分数。'},
+uf6name:{en:'UF-6 — Energy alignment (similarity/opposition + global neuro + core bonuses)',ru:'UF-6 — Согласование энергии (сходство/разрыв + глобальный нейро-член + бонусы ядра)',es:'UF-6 — Alineación energética (similitud/oposición + neuro global + bonos de núcleo)',fr:'UF-6 — Alignement énergétique (similarité/opposition + neuro global + bonus noyau)',zh:'UF-6 — 能量对齐（相似/相反 + 全局神经项 + 核心奖金）'},
+uf6ref:{en:'Every domain: similarity adds, opposition subtracts (Children ×2.5). GLOBAL neuro term nTerm added once: calm+calm > anxious+calm > anxious+anxious. BONUS +18 when BOTH put Partner in the dark-green core; BONUS +8 when BOTH put Children in the core. Mismatched ends are punished hard. Every position shift moves the score.',ru:'Каждый домен: сходство плюсует, разрыв минусует (Дети ×2.5). ГЛОБАЛЬНЫЙ нейро-член nTerm добавляется один раз: спокойный+спокойный > тревожный+спокойный > тревожный+тревожный. БОНУС +18, когда ОБОЕ ставят Партнёра в тёмно-зелёное ядро; БОНУС +8, когда ОБОЕ ставят Детей в ядро. Противоположные концы наказываются жёстко. Любой сдвиг позиции двигает счёт.',es:'Cada dominio: similitud suma, oposición resta (Hijos ×2.5). Término neuro GLOBAL nTerm una vez. BONO +18 cuando AMBOS ponen Pareja en el núcleo verde oscuro; BONO +8 cuando AMBOS ponen Hijos en el núcleo. Los extremos opuestos se castigan duro. Cada cambio de posición mueve el score.',fr:'Chaque domaine : similarité ajoute, opposition soustrait (Enfants ×2.5). Terme neuro GLOBAL nTerm une fois. BONUS +18 quand TOUS DEUX placent Partenaire dans le noyau vert foncé ; BONUS +8 quand TOUS DEUX placent Enfants dans le noyau. Les extrêmes opposés sont punis durement. Chaque décalage bouge le score.',zh:'每个领域：相似加分、相反减分（孩子 ×2.5）。全局神经项 nTerm 加一次。当双方都把伴侣放入深绿核心时奖金 +18；双方都把孩子放入核心时奖金 +8。相反端被严厉惩罚。任何位置变动都移动分数。'},
 v0:{en:'Elemental clash (0–24)',ru:'Столкновение стихий (0–24)',es:'Choque de elementos (0–24)',fr:'Choc élémentaire (0–24)',zh:'元素冲突（0–24）'},
 v1:{en:'Friction zone (25–39)',ru:'Зона трения (25–39)',es:'Zona de fricción (25–39)',fr:'Zone de friction (25–39)',zh:'摩擦区（25–39）'},
 v2:{en:'Fragile equilibrium (40–51)',ru:'Хрупкое равновесие (40–51)',es:'Equilibrio frágil (40–51)',fr:'Équilibre fragile (40–51)',zh:'脆弱平衡（40–51）'},
@@ -7141,6 +7140,7 @@ v7:{en:'Absolute resonance (93–100)',ru:'Абсолютный резонанс
 v8:{en:'above scale (>100)',ru:'выше шкалы (>100)',es:'sobre escala (>100)',fr:'hors échelle (>100)',zh:'超标（>100）'},
 v9:{en:'below scale (<0)',ru:'ниже шкалы (<0)',es:'bajo escala (<0)',fr:'sous échelle (<0)',zh:'负值（<0）'},
 chWarn:{en:'CHILDREN CLASH: one puts kids in core/green, the other in red — the heaviest minus of the model (×2.5).',ru:'КОНФЛИКТ ДЕТЕЙ: у одного дети в ядре/зелёной, у другого в красной — самый тяжёлый минус модели (×2.5).',es:'CHOQUE DE HIJOS: uno en núcleo/verde, el otro en rojo — el menos más pesado (×2.5).',fr:'CONFLIT ENFANTS : l’un en noyau/vert, l’autre en rouge — le minus le plus lourd (×2.5).',zh:'孩子冲突：一方核心/绿，另一方红——最重减分（×2.5）。'},
+spWarn:{en:'PARTNER CORE MATCH: both put Partner in the dark-green core — a strong bond that can outweigh other frictions.',ru:'ПАРТНЁР В ЯДРЕ У ОБОИХ: оба ставят Партнёра в тёмно-зелёное ядро — прочная связка, способная перевесить другие трения.',es:'PAREJA EN NÚCLEO AMBOS: ambos ponen Pareja en el núcleo verde oscuro — un vínculo fuerte que puede pesar más que otras fricciones.',fr:'PARTENAIRE NOYAU TOUS DEUX : tous deux placent Partenaire dans le noyau vert foncé — un lien fort qui peut l’emporter sur d’autres frictions.',zh:'双方伴侣皆入核心：都把伴侣放入深绿核心——强纽带，可压过其他摩擦。'},
 tblZone:{en:'Zone table (A vs B)',ru:'Таблица зон (A против B)',es:'Tabla de zonas (A vs B)',fr:'Table des zones (A vs B)',zh:'区域表（A 对 B）'},
 tblContrib:{en:'contribution',ru:'вклад',es:'aporte',fr:'contribution',zh:'贡献'},
 expTitle:{en:'Overall synthesis (QCI) — EXPERIMENTAL, includes UF-6',ru:'Общий синтез (QCI) — ЭКСПЕРИМЕНТАЛЬНО, с UF-6',es:'Síntesis global (QCI) — EXPERIMENTAL, con UF-6',fr:'Synthèse globale (QCI) — EXPÉRIMENTAL, avec UF-6',zh:'总体合成（QCI）——实验性，含 UF-6'},
@@ -7174,7 +7174,7 @@ try{var rs=JSON.parse(LSg('edc2_sacr')||'{}');if(rs&&typeof rs==='object'){sacr=
 try{var rc=JSON.parse(LSg('edc2_commit')||'null');if(Array.isArray(rc)&&rc.length===DOMS.length)commit=rc;}catch(e){}
 while(commit.length<DOMS.length)commit.push(null);
 var order=[];for(var i0=0;i0<NITEMS;i0++)order.push(i0);
-function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=a[i];a[i]=a[j];a[j]=tmp;}return a;}
 shuffle(order);
 function itemOf(idx){var p=Math.floor(idx/2),r=idx%2,pr=PAIRS[p];return {p:p,r:r,a:pr[0],b:pr[1]};}
 function itemText(it){var tpl=it.r===0?TPL.r1:TPL.r2;var s=tpl[lang()]||tpl.en;return s.replace('{A}',ess(it.a)).replace('{B}',ess(it.b));}
@@ -7185,7 +7185,7 @@ return sc;
 }
 function equalPairs(sc){
 var out=[];
-for(var pi=0;pi<DOMS.length;pi++){for(var pj=pi+1;pj<DOMS.length;pj++){if(sc[DOMS[pi]]===sc[DOMS[pj]])out.push(DOMS[pi]+'|'+DOMS[pj]);}}
+for(var p1=0;p1<DOMS.length;p1++){for(var p2=p1+1;p2<DOMS.length;p2++){if(sc[DOMS[p1]]===sc[DOMS[p2]])out.push(DOMS[p1]+'|'+DOMS[p2]);}}
 return out;
 }
 function compute(){
@@ -7200,7 +7200,8 @@ var fin={};DOMS.forEach(function(d,i){fin[d]=Math.round(0.7*(sc[d]/mx*100)+0.6*(
 var stack=DOMS.slice().sort(function(x,y){return fin[y]-fin[x];});
 return {sc:sc,fin:fin,stack:stack,lie:lie};
 }
-function tierOf(rank){return rank<3?1:rank===3?2:rank<6?3:rank<9?4:5;}
+/* NEW tier split for 11 domains: 3 / 2 / 2 / 3 / 1 */
+function tierOf(rank){return rank<3?1:rank<5?2:rank<7?3:rank<10?4:5;}
 var TIERCOL={1:'#2e9e4f',2:'#6bcb77',3:'#ffd93d',4:'#ff9f43',5:'#ff6b6b'};
 function parseStack(s){
 var toks=String(s||'').toUpperCase().split(/[^A-Z]+/).filter(function(x){return DOMS.indexOf(x)>=0;});
@@ -7214,73 +7215,38 @@ var exA=Math.max(0,aN-50),exB=Math.max(0,bN-50);
 var interact=(exA*exB)/100;
 return clamp100(0.5*(100-meanN)+0.3*(100-maxN)-0.15*gap-interact);
 }
-function chStatClash(a,b){
-var free=function(s){return s==='free';};
-var par=function(s){return s==='want'||s==='has';};
-return (free(a)&&par(b))||(free(b)&&par(a));
-}
-function uf6(oa,ob,nLa,nLb,chA,chB){
-chA=chA||'und';chB=chB||'und';
-
-// 1. Проверка статусного конфликта детей
-var chStClash = (function(a,b){
-  var free=function(s){return s==='free';};
-  var par=function(s){return s==='want'||s==='has';};
-  return (free(a)&&par(b))||(free(b)&&par(a));
-})(chA, chB);
-
-function contribDomain(d,x,y){
-  // ЕСЛИ ЭТО ДЕТИ И ЕСТЬ СТАТУСНЫЙ КОНФЛИКТ -> ОГРОМНЫЙ МИНУС
-  if(d==='CH' && chStClash) return -35.0; 
-  
-  var c=x*y;
-  if(d==='CH') c*=2.5; // Вес детей
-  return c;
-}
-
+/* UF-6: stacks ONLY. eRank center = 5 (11 domains). Hard mismatch penalty. Core bonuses. */
+function uf6(oa,ob,nLa,nLb){
+function contribDomain(d,x,y){var c=x*y;if(d==='CH')c*=2.5;return c;}
 var rows=[],S=0,D=0,chClash=false;
 DOMS.forEach(function(d){
-  var ra=oa.indexOf(d),rb=ob.indexOf(d);
-  var x=4.5-ra,y=4.5-rb;
-  
-  // Базовый вклад
-  var c=contribDomain(d,x,y);
-  
-  // 2. УСИЛЕННЫЙ ШТРАФ ЗА РАЗРЫВ ЗОН
-  var dd=Math.abs(x-y); 
-  var w=(Math.abs(x)+Math.abs(y))/2+0.5; 
-  var pen=dd*w*0.65; // Было 0.35, стало 0.65 (почти в 2 раза жестче)
-  
-  // Если зоны совсем разные (один в топе, другой в низу), штраф должен быть еще больше
-  if((x>2 && y<-2) || (x<-2 && y>2)) pen *= 1.5; 
-
-  S+=c-pen; 
-  D+=dd*w;
-  
-  var ta=tierOf(ra),tb=tierOf(rb);
-  if(d==='CH'&&((ta<=2&&tb===5)||(tb<=2&&ta===5)))chClash=true;
-  
-  // В таблицу пишем итоговый вклад (с учетом штрафа)
-  rows.push({d:d,ta:ta,tb:tb,x:x,y:y,c:c-pen});
+var ra=oa.indexOf(d),rb=ob.indexOf(d);
+var x=5-ra,y=5-rb;            /* center 5 for 11 domains => symmetric -5..+5 */
+var c=contribDomain(d,x,y);
+var dd=Math.abs(x-y);
+var w=(Math.abs(x)+Math.abs(y))/2+0.5;
+var pen=dd*w*0.65;            /* hardened mismatch penalty */
+if((x>2&&y<-2)||(x<-2&&y>2))pen*=1.5;  /* opposite ends punished extra */
+S+=c-pen; D+=dd*w;
+var ta=tierOf(ra),tb=tierOf(rb);
+if(d==='CH'&&((ta<=2&&tb===5)||(tb<=2&&ta===5)))chClash=true;
+rows.push({d:d,ta:ta,tb:tb,x:x,y:y,c:c-pen});
 });
-
 var aN=MIDN[nLa]||40,bN=MIDN[nLb]||40;
 var nT=neuroTerm(aN,bN);
 var nPair=(nT-50)*0.5;
 S+=nPair;
-
-// Статусный конфликт уже учтен внутри contribDomain для CH, 
-// но добавим небольшой глобальный штраф за диссонанс ценностей
-if(chStClash) S -= 15; 
-
-// 3. СНИЖАЕМ ОБЩИЙ МНОЖИТЕЛЬ (было 0.6, стало 0.45)
-// Это сделает оценки более реалистичными. 90+ будет только у идеальных пар.
-var score=50+0.45*S; 
-
+/* CORE BONUSES (besides the main contribution) */
+var spA=oa.indexOf('SP'),spB=ob.indexOf('SP');
+var spCore=(spA<3&&spB<3);
+if(spCore)S+=SP_CORE_BONUS;
+var chA=oa.indexOf('CH'),chB=ob.indexOf('CH');
+var chCore=(chA<3&&chB<3);
+if(chCore)S+=CH_CORE_BONUS;
+var score=50+0.45*S;          /* honest multiplier, was 0.6 */
 var vi=score>100?8:score<0?9:score>=93?7:score>=84?6:score>=74?5:score>=64?4:score>=52?3:score>=40?2:score>=25?1:0;
 var ov=oa.slice(0,3).filter(function(q){return ob.indexOf(q)>=0&&ob.indexOf(q)<3;}).length;
-
-return {score:score,rows:rows,chClash:chClash,chStClash:chStClash,vi:vi,overlap:ov,S:S,D:D,nT:nT,nPair:nPair};
+return {score:score,rows:rows,chClash:chClash,spCore:spCore,chCore:chCore,vi:vi,overlap:ov,S:S,D:D,nT:nT,nPair:nPair};
 }
 function barColor(s){
 if(s>100)return '#ff4ddc';
@@ -7461,41 +7427,27 @@ h+='</table><div style="font-size:0.8rem;color:'+lieC+';font-weight:800;margin-t
 document.getElementById('edcResult').innerHTML=h;
 document.getElementById('edcResult').scrollIntoView({behavior:'smooth',block:'start'});
 }
+/* Compatibility UF-6 block: STACKS ONLY, no child-status selectors */
 var cp=document.getElementById('panel-compat');
 if(cp){
 var box=document.createElement('div');
 box.id='edcCompatBox';
 box.style.cssText='background:#101826;border:1px solid #8b5cff44;border-radius:12px;padding:12px 16px;margin:14px 0 0;font-size:0.8rem;color:#e6dcff;line-height:1.55;';
-var chOpts='';
-for(var s2=0;s2<CHSTATUSES.length;s2++){
-var st2=CHSTATUSES[s2];
-var lk=st2==='has'?'chHas':st2==='want'?'chWant':st2==='free'?'chFree':'chUnd';
-chOpts+='<option value="'+st2+'">'+esc(t(lk))+'</option>';
-}
 box.innerHTML='<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;color:#c9b6ff;"><input type="checkbox" id="edcUf6Chk" style="width:18px;height:18px;accent-color:#8b5cff;"> '+esc(t('chk'))+'</label>'+
 '<div id="edcUf6Body" style="display:none;margin-top:10px;"><div style="color:#8f86a8;font-size:0.74rem;">'+esc(t('chkNote'))+'</div>'+
 '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px;">'+
-'<label>'+esc(t('stA'))+' <input id="edcStackA" class="cat-in" style="width:230px;text-transform:uppercase;" maxlength="44" spellcheck="false" autocomplete="off" placeholder="'+esc(t('stPh'))+'"></label>'+
-'<label>'+esc(t('stB'))+' <input id="edcStackB" class="cat-in" style="width:230px;text-transform:uppercase;" maxlength="44" spellcheck="false" autocomplete="off" placeholder="'+esc(t('stPh'))+'"></label></div>'+
-'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px;">'+
-'<label>'+esc(t('chSelA'))+' <select id="edcChStatusA" style="background:#111;color:#fff;border:1px solid #444;border-radius:10px;padding:7px 10px;font-size:0.82rem;">'+chOpts+'</select></label>'+
-'<label>'+esc(t('chSelB'))+' <select id="edcChStatusB" style="background:#111;color:#fff;border:1px solid #444;border-radius:10px;padding:7px 10px;font-size:0.82rem;">'+chOpts+'</select></label></div>'+
+'<label>'+esc(t('stA'))+' <input id="edcStackA" class="cat-in" style="width:250px;text-transform:uppercase;" maxlength="44" spellcheck="false" autocomplete="off" placeholder="'+esc(t('stPh'))+'"></label>'+
+'<label>'+esc(t('stB'))+' <input id="edcStackB" class="cat-in" style="width:250px;text-transform:uppercase;" maxlength="44" spellcheck="false" autocomplete="off" placeholder="'+esc(t('stPh'))+'"></label></div>'+
 '<div id="edcUf6Out" style="margin-top:10px;"></div></div>';
 cp.appendChild(box);
 var chk=box.querySelector('#edcUf6Chk');
 chk.addEventListener('change',function(){
 box.querySelector('#edcUf6Body').style.display=chk.checked?'block':'none';
-if(chk.checked){
-var sa=box.querySelector('#edcStackA');if(sa&&!sa.value&&window.QFTM_EDC_STACK)sa.value=window.QFTM_EDC_STACK.join('/');
-var myCh=LSg('edc2_chstatus')||'und';
-var sa2=box.querySelector('#edcChStatusA');if(sa2)sa2.value=myCh;
-}
+if(chk.checked){var sa=box.querySelector('#edcStackA');if(sa&&!sa.value&&window.QFTM_EDC_STACK)sa.value=window.QFTM_EDC_STACK.join('/');}
 renderUf6();
 });
 box.querySelector('#edcStackA').addEventListener('input',renderUf6);
 box.querySelector('#edcStackB').addEventListener('input',renderUf6);
-box.querySelector('#edcChStatusA').addEventListener('change',renderUf6);
-box.querySelector('#edcChStatusB').addEventListener('change',renderUf6);
 ['btnCompatCalc','btnCompatSwap'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('click',function(){setTimeout(renderUf6,60);});});
 ['compatAInput','compatBInput'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',function(){setTimeout(renderUf6,120);});});
 }
@@ -7514,9 +7466,7 @@ var cA=String(inA?inA.value:'').toUpperCase().trim(),cB=String(inB?inB.value:'')
 var validCodes=/^[IDAE][SMHN][TLCF][WPUJ]-[BRZV]$/.test(cA)&&/^[IDAE][SMHN][TLCF][WPUJ]-[BRZV]$/.test(cB);
 var nLa=validCodes?cA.split('-')[1]:'R';
 var nLb=validCodes?cB.split('-')[1]:'R';
-var selA=box.querySelector('#edcChStatusA'),selB=box.querySelector('#edcChStatusB');
-var chA=selA?selA.value:'und',chB=selB?selB.value:'und';
-var r=uf6(oa,ob,nLa,nLb,chA,chB);
+var r=uf6(oa,ob,nLa,nLb);
 var col=barColor(r.score);
 var card=document.createElement('div');
 card.className='uf-card';card.id='edcUf6Card';
@@ -7526,10 +7476,13 @@ var cs=row.c>0?'#6bcb77':row.c<0?'#ff6b6b':'#888';
 tbl+='<tr><td style="color:'+TIERCOL[row.ta]+';font-weight:800;">● '+esc(ds(row.d))+'</td><td>'+row.x.toFixed(1)+'</td><td>'+row.y.toFixed(1)+'</td><td style="color:'+cs+';font-weight:800;">'+(row.c>0?'+':'')+row.c.toFixed(3)+'</td></tr>';
 });
 tbl+='</table>';
+var bonusLine='';
+if(r.spCore)bonusLine+='<div style="color:#6bcb77;font-weight:800;font-size:0.78rem;margin-top:6px;">💚 '+esc(t('spWarn'))+' (+'+SP_CORE_BONUS+')</div>';
+if(r.chCore)bonusLine+='<div style="color:#6bcb77;font-weight:800;font-size:0.78rem;margin-top:4px;">👶 +'+CH_CORE_BONUS+' '+esc(t('z1'))+' CH</div>';
 card.innerHTML='<div class="uf-head"><span class="uf-name">'+esc(t('uf6name'))+'</span><span class="uf-score" style="color:'+col+';">'+r.score.toFixed(3)+'</span></div>'+
 '<div class="uf-bar"><div class="uf-fill" style="width:'+r.score.toFixed(3)+'%;background:'+col+';"></div></div>'+
 '<div class="uf-ref">'+esc(t('v'+r.vi))+' • '+r.overlap+'/3 • S = '+r.S.toFixed(3)+' • N: '+esc(nLa)+'+'+esc(nLb)+' → nTerm '+r.nT.toFixed(1)+' ('+(r.nPair>0?'+':'')+r.nPair.toFixed(3)+') • '+esc(t('tblZone'))+'</div>'+tbl+
-(r.chStClash?'<div style="color:#ff6b6b;font-weight:800;font-size:0.78rem;margin-top:6px;">⛔ '+esc(t('chStatusWarn'))+'</div>':'')+
+bonusLine+
 (r.chClash?'<div style="color:#ff6b6b;font-weight:800;font-size:0.78rem;margin-top:6px;">⛔ '+esc(t('chWarn'))+'</div>':'')+
 '<div class="uf-ref">'+esc(t('uf6ref'))+'</div>';
 if(ufBox)ufBox.appendChild(card);
