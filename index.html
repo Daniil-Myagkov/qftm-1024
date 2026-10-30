@@ -6964,10 +6964,13 @@ box.innerHTML = html;
 </script>
 <script>
 /* ============================================================
-QFTM-1024 :: EDC-3 (10 domains) — HUMAN-READABLE, CHILD-STATUS AWARE, v10
-Changes: rich domain explanations, dynamics warning, childfree/traditional
-child handling, detailed "what is EDC" intro, no Class A/B, 4 options,
-equal-score sacrifice. Neuroticism handled globally by nTerm.
+QFTM-1024 :: EDC-3 (11 domains) — SX ADDED, GR/ST/PA FIXED, ROUND 2 CLARIFIED
+11 domains: BD CA MN SP PA CH FR ST HO GR SX
+Round 1: 55 pairs × 2 = 110 forced choices (4 options each)
+Round 2: 11 commitment questions with plain-language explanations
+Round 3: sacrifice on equal scores
+No Class A/B. Similarity adds, opposition subtracts. Children ×2.5.
+Child-status aware. Dynamics warning. Detailed legend.
 © 2026 Daniil Vasilievich Myagkov. Heuristic, not clinical.
 ============================================================ */
 (function(){
@@ -6977,7 +6980,7 @@ function LSs(k,v){try{localStorage.setItem('qftm1024_'+k,v);}catch(e){}}
 function LSd(k){try{localStorage.removeItem('qftm1024_'+k);}catch(e){}}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 var WK=[[25,-25],[12,-12],[-12,12],[-25,25]];
-var DOMS=['BD','CA','MN','SP','PA','CH','FR','ST','HO','GR'];
+var DOMS=['BD','CA','MN','SP','PA','CH','FR','ST','HO','GR','SX'];
 var MIDN={B:15,R:40,Z:60,V:85};
 var CHSTATUSES=['has','want','free','und'];
 var SHORT={
@@ -6990,18 +6993,19 @@ CH:{en:'Children',ru:'Дети',es:'Hijos',fr:'Enfants',zh:'孩子'},
 FR:{en:'Friends',ru:'Друзья',es:'Amigos',fr:'Amis',zh:'朋友'},
 ST:{en:'Social',ru:'Социум',es:'Social',fr:'Social',zh:'社交'},
 HO:{en:'Hobby',ru:'Хобби',es:'Aficiones',fr:'Loisirs',zh:'爱好'},
-GR:{en:'Growth',ru:'Рост',es:'Crecimiento',fr:'Croissance',zh:'成长'}};
-/* Rich, concrete essences used inside the forced-choice questions */
+GR:{en:'Growth',ru:'Рост',es:'Crecimiento',fr:'Croissance',zh:'成长'},
+SX:{en:'Sex',ru:'Секс',es:'Sexo',fr:'Sexe',zh:'性'}};
 var ESS={
 BD:{en:'Body — health, sleep, energy, sport, feeling good',ru:'Тело — здоровье, сон, энергия, спорт, самочувствие',es:'Cuerpo — salud, sueño, energía, deporte, bienestar',fr:'Corps — santé, sommeil, énergie, sport, forme',zh:'身体——健康、睡眠、能量、运动、状态'},
 CA:{en:'Career — work, profession, growth, status, recognition',ru:'Карьера — работа, профессия, рост, статус, признание',es:'Carrera — trabajo, profesión, crecimiento, estatus, reconocimiento',fr:'Carrière — travail, profession, croissance, statut, reconnaissance',zh:'事业——工作、职业、成长、地位、认可'},
 MN:{en:'Money — income, safety cushion, comfort, financial freedom',ru:'Деньги — доход, подушка безопасности, комфорт, финансовая свобода',es:'Dinero — ingresos, colchón de seguridad, confort, libertad financiera',fr:'Argent — revenus, matelas de sécurité, confort, liberté financière',zh:'金钱——收入、安全垫、舒适、财务自由'},
 SP:{en:'Partner — love, romance, intimacy, closeness with one person',ru:'Партнёр — любовь, романтика, интимность, близость с одним человеком',es:'Pareja — amor, romance, intimidad, cercanía con una persona',fr:'Partenaire — amour, romance, intimité, proximité avec une personne',zh:'伴侣——爱、浪漫、亲密、与一个人的亲近'},
-PA:{en:'Parents — family of origin, roots, respect for elders',ru:'Родители — семья происхождения, корни, уважение к старшим',es:'Padres — familia de origen, raíces, respeto a los mayores',fr:'Parents — famille d’origine, racines, respect des aînés',zh:'父母——原生家庭、根、对长辈的尊重'},
+PA:{en:'Parents — bond with parents, roots, family traditions, duty to elders',ru:'Родители — связь с родителями, корни, семейные традиции, долг перед старшими',es:'Padres — vínculo con padres, raíces, tradiciones familiares, deber hacia los mayores',fr:'Parents — lien avec les parents, racines, traditions familiales, devoir envers les aînés',zh:'父母——与父母的联结、根、家庭传统、对长辈的责任'},
 FR:{en:'Friends — close people you trust, shared history, support',ru:'Друзья — близкие люди, которым доверяешь, общая история, поддержка',es:'Amigos — personas cercanas de confianza, historia común, apoyo',fr:'Amis — proches de confiance, histoire commune, soutien',zh:'朋友——信任的亲近之人、共同经历、支持'},
-ST:{en:'Social — new people, networking, parties, community',ru:'Социум — новые люди, нетворкинг, вечеринки, сообщество',es:'Social — gente nueva, networking, fiestas, comunidad',fr:'Social — nouvelles personnes, réseau, soirées, communauté',zh:'社交——新人、人脉、聚会、社群'},
+ST:{en:'Social — networking, new acquaintances, parties, being part of the scene',ru:'Социум — нетворкинг, новые знакомства, тусовки, быть «в теме»',es:'Social — networking, nuevos conocidos, fiestas, estar en el ambiente',fr:'Social — réseau, nouvelles connaissances, soirées, être dans le milieu',zh:'社交——人脉、新认识的人、聚会、融入圈子'},
 HO:{en:'Hobby — rest, joy, personal time, doing what you love',ru:'Хобби — отдых, радость, личное время, любимые занятия',es:'Aficiones — descanso, alegría, tiempo personal, pasatiempos',fr:'Loisirs — repos, joie, temps personnel, passions',zh:'爱好——休息、快乐、个人时间、喜爱之事'},
-GR:{en:'Growth — self-knowledge, therapy, learning, mental development',ru:'Рост — самопознание, терапия, обучение, ментальное развитие',es:'Crecimiento — autoconocimiento, terapia, aprendizaje, desarrollo mental',fr:'Croissance — connaissance de soi, thérapie, apprentissage, développement mental',zh:'成长——自我认识、疗愈、学习、心智发展'}};
+GR:{en:'Growth — self-knowledge, therapy, learning, mental development',ru:'Рост — самопознание, терапия, обучение новому, ментальное развитие',es:'Crecimiento — autoconocimiento, terapia, aprendizaje, desarrollo mental',fr:'Croissance — connaissance de soi, thérapie, apprentissage, développement mental',zh:'成长——自我认识、疗愈、学习、心智发展'},
+SX:{en:'Sex — physical desire, passion, frequency, sexual satisfaction',ru:'Секс — физическое желание, страсть, частота, сексуальное удовлетворение',es:'Sexo — deseo físico, pasión, frecuencia, satisfacción sexual',fr:'Sexe — désir physique, passion, fréquence, satisfaction sexuelle',zh:'性——身体欲望、激情、频率、性满足'}};
 var JOY={
 BD:{en:'lightness, stamina, clear head',ru:'лёгкость в теле, выносливость, ясная голова',es:'ligereza, resistencia, mente clara',fr:'légèreté, endurance, tête claire',zh:'轻盈、耐力、头脑清晰'},
 CA:{en:'growth, recognition, power of your work',ru:'рост, признание, ощущение силы своего дела',es:'crecimiento, reconocimiento, fuerza de tu obra',fr:'croissance, reconnaissance, force de ton œuvre',zh:'成长、认可、事业的力量'},
@@ -7012,21 +7016,23 @@ CH:{en:'meaning, continuation, unconditional love',ru:'смысл, продол�
 FR:{en:'trust, shared history, safety to be yourself',ru:'доверие, общая история, можно быть собой',es:'confianza, historia compartida, ser tú mismo',fr:'confiance, histoire commune, être soi',zh:'信任、共同经历、做自己'},
 ST:{en:'new faces, novelty adrenaline, wide network',ru:'новые лица, адреналин новизны, широкая сеть',es:'caras nuevas, adrenalina, red amplia',fr:'visages nouveaux, adrénaline, large réseau',zh:'新面孔、新奇肾上腺素、广网'},
 HO:{en:'flow, thrill, freedom of your world',ru:'поток, кайф, свобода своего мира',es:'flujo, placer, libertad de tu mundo',fr:'flux, plaisir, liberté de ton monde',zh:'心流、快感、自己世界的自由'},
-GR:{en:'clarity about yourself, inner peace, wisdom',ru:'ясность о себе, мир с собой, мудрость',es:'claridad sobre ti, paz interior, sabiduría',fr:'clarté sur toi, paix intérieure, sagesse',zh:'自我清晰、内在和平、智慧'}};
+GR:{en:'clarity about yourself, inner peace, wisdom',ru:'ясность о себе, мир с собой, мудрость',es:'claridad sobre ti, paz interior, sabiduría',fr:'clarté sur toi, paix intérieure, sagesse',zh:'自我清晰、内在和平、智慧'},
+SX:{en:'pleasure, release, vitality, deep connection through body',ru:'удовольствие, разрядка, витальность, глубокая связь через тело',es:'placer, liberación, vitalidad, conexión profunda a través del cuerpo',fr:'plaisir, libération, vitalité, connexion profonde par le corps',zh:'愉悦、释放、活力、通过身体的深度联结'}};
 var GRIEF={
 BD:{en:'pain, fatigue, illness, fear of losing shape',ru:'боль, усталость, болезни и страх потерять форму',es:'dolor, fatiga, enfermedad, miedo a perder forma',fr:'douleur, fatigue, maladie, peur de perdre la forme',zh:'疼痛、疲劳、疾病、怕失去状态'},
 CA:{en:'burnout, deadlines, life passing by the office',ru:'выгорание, дедлайны, жизнь мимо офиса',es:'burnout, plazos, vida junto a la oficina',fr:'burnout, échéances, vie à côté du bureau',zh:'倦怠、截止日、错过生活'},
 MN:{en:'fear of loss, inflation, endless income race',ru:'страх потери, инфляция, вечная гонка за доходом',es:'miedo a perder, inflación, carrera sin fin',fr:'peur de perdre, inflation, course sans fin',zh:'失去的恐惧、通胀、无尽收入赛跑'},
 SP:{en:'night calls for help and price of shared time; loyalty dramas; quarrels will come',ru:'ночные просьбы о помощи и цена общего времени; драмы верности; ссоры будут',es:'llamadas nocturnas y precio del tiempo compartido; dramas de lealtad; llegarán peleas',fr:'appels nocturnes et prix du temps partagé ; drames de loyauté ; disputes à venir',zh:'深夜求助与共处时间代价；忠诚剧码；争吵难免'},
-PA:{en:'pressure, criticism, old wounds',ru:'давление, критика, старые обиды',es:'presión, crítica, heridas viejas',fr:'pression, critique, vieilles blessures',zh:'压力、批评、旧伤'},
+PA:{en:'pressure, criticism, old wounds, guilt over boundaries',ru:'давление, критика, старые обиды, вина за границы',es:'presión, crítica, heridas viejas, culpa por límites',fr:'pression, critique, vieilles blessures, culpabilité des limites',zh:'压力、批评、旧伤、设立边界的内疚'},
 CH:{en:'years of fatigue, lost freedom, constant worry',ru:'годы усталости, потеря свободы, постоянное беспокойство',es:'años de fatiga, libertad perdida, preocupación constante',fr:'années de fatigue, liberté perdue, inquiétude constante',zh:'多年疲惫、失去自由、持续担忧'},
 FR:{en:'betrayal hits harder the closer the person; carrying friends’ crises to burnout; blurred boundaries',ru:'риск предательства: чем ближе человек, тем больнее бьёт обман; груз чужих проблем до выгорания; потеря границ',es:'la traición duele más cuanto más cerca; cargar crisis ajenas hasta el burnout; límites difusos',fr:'la trahison blesse d’autant plus que la personne est proche ; fardeaux d’autrui jusqu’au burnout ; frontières floues',zh:'越亲近的人背叛越痛；承载朋友危机直到倦怠；边界模糊'},
-ST:{en:'small-talk hangover, crowd fatigue, shallow ties',ru:'болтовня ни о чём, толпа выматывает, поверхностные связи',es:'charla trivial, fatiga de multitudes, lazos superficiales',fr:'small talk, fatigue des foules, liens superficiels',zh:'闲聊宿醉、人群疲劳、浅层关系'},
+ST:{en:'small-talk hangover, crowd fatigue, shallow ties, performance pressure',ru:'болтовня ни о чём, толпа выматывает, поверхностные связи, давление «быть на виду»',es:'charla trivial, fatiga de multitudes, lazos superficiales, presión de aparecer',fr:'small talk, fatigue des foules, liens superficiels, pression de paraître',zh:'闲聊宿醉、人群疲劳、浅层关系、“被看见”的压力'},
 HO:{en:'guilt over rest, procrastination, “useless” doubts',ru:'вина за отдых, прокрастинация, сомнения «это бесполезно»',es:'culpa por descansar, procrastinación, dudas',fr:'culpabilité du repos, procrastination, doutes',zh:'休息内疚、拖延、“无用”怀疑'},
-GR:{en:'painful insights, long trauma work, loneliness of the path',ru:'больные инсайты, долгая работа с травмами, одиночество пути',es:'insights dolorosos, trabajo largo con heridas, soledad',fr:'insights douloureux, long travail des blessures, solitude',zh:'痛苦洞察、漫长创伤工作、孤独'}};
-/* Detailed legend: what each letter means + what high/low means */
+GR:{en:'painful insights, long trauma work, loneliness of the path',ru:'больные инсайты, долгая работа с травмами, одиночество пути',es:'insights dolorosos, trabajo largo con heridas, soledad',fr:'insights douloureux, long travail des blessures, solitude',zh:'痛苦洞察、漫长创伤工作、孤独'},
+SX:{en:'rejection, mismatched desire, performance anxiety, routine killing spark',ru:'отказ, несовпадение желаний, тревога «не справиться», рутина убивает искру',es:'rechazo, deseo desincronizado, ansiedad de rendimiento, rutina mata la chispa',fr:'rejet, désir désynchronisé, anxiété de performance, routine tue l’étincelle',zh:'拒绝、欲望不同步、表现焦虑、例行公事扼杀火花'}};
+/* Detailed legend for all 11 domains */
 var DETAIL={
-BD:{what:{en:'Your physical self: health, sleep, energy, sport, how you feel in your body.',ru:'Ваше физическое «я»: здоровье, сон, энергия, спорт, то, как вы ощущаете себя в теле.',es:'Tu yo físico: salud, sueño, energía, deporte, cómo te sientes en tu cuerpo.',fr:'Votre « moi » physique : santé, sommeil, énergie, sport, comment vous vous sentez dans votre corps.',zh:'你的身体自我：健康、睡眠、能量、运动、身体感受。'},
+BD:{what:{en:'Your physical self: health, sleep, energy, sport, how you feel in your body.',ru:'Ваше физическое «я»: здоровье, сон, энергия, спорт, то, как вы ощущаете себя в теле.',es:'Tu yo físico: salud, sueño, energía, deporte, cómo te sientes en tu cuerpo.',fr:'Votre « moi » physique : santé, sommeil, énergie, sport, comment vous vous sentez.',zh:'你的身体自我：健康、睡眠、能量、运动、身体感受。'},
 hi:{en:'High = you invest in your body and feel alive when it’s strong.',ru:'Высоко = вы вкладываетесь в тело и чувствуете себя живым, когда оно сильное.',es:'Alto = inviertes en tu cuerpo y te sientes vivo cuando está fuerte.',fr:'Haut = vous investissez dans votre corps et vous sentez vivant quand il est fort.',zh:'高 = 你投资身体，身体强健时感到有活力。'},
 lo:{en:'Low = body is background noise; you spend energy elsewhere.',ru:'Низко = тело для вас фон; энергию вы тратите на другое.',es:'Bajo = el cuerpo es ruido de fondo; gastas energía en otra cosa.',fr:'Bas = le corps est un bruit de fond ; vous dépensez l’énergie ailleurs.',zh:'低 = 身体是背景；你把能量花在别处。'}},
 CA:{what:{en:'Your work, profession, career ladder, status and recognition.',ru:'Ваша работа, профессия, карьерная лестница, статус и признание.',es:'Tu trabajo, profesión, escalera laboral, estatus y reconocimiento.',fr:'Votre travail, profession, échelle de carrière, statut et reconnaissance.',zh:'你的工作、职业、职业阶梯、地位与认可。'},
@@ -7038,37 +7044,40 @@ lo:{en:'Low = money matters less than other values right now.',ru:'Низко = 
 SP:{what:{en:'Romantic love and deep closeness with one partner.',ru:'Романтическая любовь и глубокая близость с одним партнёром.',es:'Amor romántico y cercanía profunda con una pareja.',fr:'Amour romantique et proximité profonde avec un partenaire.',zh:'与一位伴侣的浪漫之爱与深度亲密。'},
 hi:{en:'High = a loving partnership is central to your happiness.',ru:'Высоко = любящее партнёрство — центр вашего счастья.',es:'Alto = una pareja amorosa es central para tu felicidad.',fr:'Haut = un partenariat aimant est central pour votre bonheur.',zh:'高 = 有爱的伴侣关系是你幸福的核心。'},
 lo:{en:'Low = romance is not the main thing in your life right now.',ru:'Низко = романтика сейчас не главное в вашей жизни.',es:'Bajo = el romance no es lo principal en tu vida ahora.',fr:'Bas = la romance n’est pas l’essentiel de votre vie en ce moment.',zh:'低 = 眼下浪漫不是你生活的主轴。'}},
-PA:{what:{en:'Your parents, family of origin, roots and respect for elders.',ru:'Ваши родители, семья происхождения, корни и уважение к старшим.',es:'Tus padres, familia de origen, raíces y respeto a los mayores.',fr:'Vos parents, famille d’origine, racines et respect des aînés.',zh:'你的父母、原生家庭、根与对长辈的尊重。'},
-hi:{en:'High = family roots and parents matter deeply to you.',ru:'Высоко = семейные корни и родители для вас очень важны.',es:'Alto = las raíces familiares y los padres te importan mucho.',fr:'Haut = les racines familiales et les parents comptent beaucoup pour vous.',zh:'高 = 家庭根基与父母对你非常重要。'},
-lo:{en:'Low = you live your own life, separate from your family of origin.',ru:'Низко = вы живёте своей жизнью, отдельно от семьи происхождения.',es:'Bajo = vives tu propia vida, separado de tu familia de origen.',fr:'Bas = vous vivez votre propre vie, séparé de votre famille d’origine.',zh:'低 = 你过自己的生活，独立于原生家庭。'}},
+PA:{what:{en:'Bond with parents, roots, family traditions and duty to elders.',ru:'Связь с родителями, корни, семейные традиции и долг перед старшими.',es:'Vínculo con padres, raíces, tradiciones familiares y deber hacia los mayores.',fr:'Lien avec les parents, racines, traditions familiales et devoir envers les aînés.',zh:'与父母的联结、根、家庭传统与对长辈的责任。'},
+hi:{en:'High = parents’ opinion and family roots matter deeply to you.',ru:'Высоко = мнение родителей и семейные корни для вас очень важны.',es:'Alto = la opinión de los padres y las raíces te importan mucho.',fr:'Haut = l’avis des parents et les racines comptent beaucoup pour vous.',zh:'高 = 父母的意见和家庭根基对你非常重要。'},
+lo:{en:'Low = you live your own separate life; parents are part of the past, not current decisions.',ru:'Низко = вы живёте своей отдельной жизнью; родители — часть прошлого, а не центр текущих решений.',es:'Bajo = vives tu propia vida; los padres son parte del pasado, no el centro de decisiones actuales.',fr:'Bas = vous vivez votre propre vie ; les parents font partie du passé, pas des décisions actuelles.',zh:'低 = 你过自己独立的生活；父母是过去的一部分，不是当下决策的中心。'}},
 CH:{what:{en:'The theme of children — see the child-situation you chose above.',ru:'Тема детей — см. выбранную вами ситуацию с детьми выше.',es:'El tema de los hijos — mira la situación elegida arriba.',fr:'Le thème des enfants — voir la situation choisie ci-dessus.',zh:'孩子主题——见上方你选择的儿童状况。'},
 hi:{en:'High = children (existing, wanted, or the idea) hold big meaning for you.',ru:'Высоко = дети (имеющиеся, желанные или сама идея) для вас очень значимы.',es:'Alto = los hijos (existentes, deseados o la idea) tienen gran significado.',fr:'Haut = les enfants (existants, voulus ou l’idée) ont une grande importance.',zh:'高 = 孩子（已有、想要或这个想法）对你意义重大。'},
 lo:{en:'Low = children are not a priority for you right now (e.g. childfree).',ru:'Низко = дети для вас сейчас не приоритет (например, чайлдфри).',es:'Bajo = los hijos no son prioridad ahora (p. ej. childfree).',fr:'Bas = les enfants ne sont pas une priorité pour vous (p. ex. childfree).',zh:'低 = 眼下孩子不是你的优先（如丁克）。'}},
 FR:{what:{en:'Close friends you trust deeply, shared history and mutual support.',ru:'Близкие друзья, которым вы глубоко доверяете, общая история и взаимная поддержка.',es:'Amigos cercanos de confianza, historia común y apoyo mutuo.',fr:'Amis proches de confiance, histoire commune et soutien mutuel.',zh:'深度信任的密友、共同经历与相互支持。'},
 hi:{en:'High = your close circle is a pillar of your life.',ru:'Высоко = ваш близкий круг — опора вашей жизни.',es:'Alto = tu círculo cercano es un pilar de tu vida.',fr:'Haut = votre cercle proche est un pilier de votre vie.',zh:'高 = 你的亲密圈子是人生的支柱。'},
 lo:{en:'Low = you need few close people or rely mainly on yourself.',ru:'Низко = вам нужно мало близких или вы опираетесь в основном на себя.',es:'Bajo = necesitas pocos cercanos o te apoyas sobre todo en ti.',fr:'Bas = vous avez besoin de peu de proches ou comptez surtout sur vous.',zh:'低 = 你只需要少数亲近者，或主要靠自己。'}},
-ST:{what:{en:'Wider social life: new people, networking, parties, community.',ru:'Широкая социальная жизнь: новые люди, нетворкинг, вечеринки, сообщество.',es:'Vida social amplia: gente nueva, networking, fiestas, comunidad.',fr:'Vie sociale large : nouvelles personnes, réseau, soirées, communauté.',zh:'更广的社交生活：新人、人脉、聚会、社群。'},
-hi:{en:'High = you gain energy from meeting people and being around.',ru:'Высоко = вы получаете энергию от встреч с людьми и пребывания среди них.',es:'Alto = ganas energía al conocer gente y estar en sociedad.',fr:'Haut = vous gagnez de l’énergie en rencontrant des gens.',zh:'高 = 你从见人和社交中获得能量。'},
-lo:{en:'Low = you prefer a small circle over wide socializing.',ru:'Низко = вы предпочитаете узкий круг широкому общению.',es:'Bajo = prefieres un círculo pequeño a socializar ampliamente.',fr:'Bas = vous préférez un petit cercle à une large sociabilité.',zh:'低 = 你偏好小圈子，不爱广社交。'}},
+ST:{what:{en:'Wider social life: networking, new acquaintances, parties, being part of the scene.',ru:'Широкая социальная жизнь: нетворкинг, новые знакомства, тусовки, быть «в теме».',es:'Vida social amplia: networking, nuevos conocidos, fiestas, estar en el ambiente.',fr:'Vie sociale large : réseau, nouvelles connaissances, soirées, être dans le milieu.',zh:'更广的社交生活：人脉、新认识的人、聚会、融入圈子。'},
+hi:{en:'High = you gain energy from meeting new people and being around; being part of a community matters.',ru:'Высоко = вы заряжаетесь от новых людей и движухи; важно быть частью сообщества.',es:'Alto = ganas energía al conocer gente nueva; importa ser parte de una comunidad.',fr:'Haut = vous gagnez de l’énergie en rencontrant des gens ; faire partie d’une communauté compte.',zh:'高 = 你从结识新人中获得能量；成为社群一部分很重要。'},
+lo:{en:'Low = a small circle or solitude is enough; noisy crowds drain you rather than energize.',ru:'Низко = достаточно узкого круга или одиночества; шумные компании истощают, а не радуют.',es:'Bajo = un círculo pequeño o la soledad bastan; las multitudes te agotan.',fr:'Bas = un petit cercle ou la solitude suffisent ; les foules vous épuisent.',zh:'低 = 小圈子或独处就够了；喧闹人群让你耗尽而非充电。'}},
 HO:{what:{en:'Rest, joy and personal time: hobbies and doing what you love.',ru:'Отдых, радость и личное время: хобби и любимые занятия.',es:'Descanso, alegría y tiempo personal: aficiones y lo que amas.',fr:'Repos, joie et temps personnel : loisirs et ce que vous aimez.',zh:'休息、快乐与个人时间：爱好与喜爱之事。'},
 hi:{en:'High = personal joy and free time are essential to you.',ru:'Высоко = личная радость и свободное время для вас необходимы.',es:'Alto = la alegría personal y el tiempo libre te son esenciales.',fr:'Haut = la joie personnelle et le temps libre vous sont essentiels.',zh:'高 = 个人快乐与空闲时间对你不可或缺。'},
 lo:{en:'Low = you put duties or other domains before leisure.',ru:'Низко = вы ставите дела или другие сферы выше отдыха.',es:'Bajo = pones deberes u otros dominios antes del ocio.',fr:'Bas = vous placez les devoirs ou d’autres domaines avant les loisirs.',zh:'低 = 你把责任或其他领域置于休闲之前。'}},
-GR:{what:{en:'Self-knowledge, therapy, learning and mental development.',ru:'Самопознание, терапия, обучение и ментальное развитие.',es:'Autoconocimiento, terapia, aprendizaje y desarrollo mental.',fr:'Connaissance de soi, thérapie, apprentissage et développement mental.',zh:'自我认识、疗愈、学习与心智发展。'},
-hi:{en:'High = understanding yourself and growing is a priority.',ru:'Высоко = понимать себя и расти для вас приоритет.',es:'Alto = comprenderte y crecer es una prioridad.',fr:'Haut = vous comprendre et grandir est une priorité.',zh:'高 = 理解自己与成长是你的优先。'},
-lo:{en:'Low = you focus outward rather than on inner work right now.',ru:'Низко = сейчас вы направлены вовне, а не на внутреннюю работу.',es:'Bajo = te enfocas hacia afuera más que en el trabajo interno.',fr:'Bas = vous vous tournez vers l’extérieur plutôt que le travail intérieur.',zh:'低 = 眼下你向外关注，而非内在功课。'}}};
+GR:{what:{en:'Self-knowledge, therapy, learning new things and mental development.',ru:'Самопознание, терапия, обучение новому и ментальное развитие.',es:'Autoconocimiento, terapia, aprendizaje y desarrollo mental.',fr:'Connaissance de soi, thérapie, apprentissage et développement mental.',zh:'自我认识、疗愈、学习与心智发展。'},
+hi:{en:'High = improving yourself is a priority. You analyze, learn, and consciously change your character.',ru:'Высоко = вам важно постоянно улучшать себя. Вы анализируете, учитесь и сознательно меняете характер.',es:'Alto = mejorar tú mismo es prioridad. Analizas, aprendes y cambias conscientemente.',fr:'Haut = vous améliorer est une priorité. Vous analysez, apprenez et changez consciemment.',zh:'高 = 提升自我是优先事项。你分析、学习并有意识地改变性格。'},
+lo:{en:'Low = you accept yourself as you are. No need to “fix” your head or seek deeper meaning. You prefer to live and act directly.',ru:'Низко = вы принимаете себя таким, какой есть. Не нужно «чинить» голову или искать глубинные смыслы. Предпочитаете жить и действовать напрямую.',es:'Bajo = te aceptas tal como eres. No necesitas “arreglar” tu cabeza ni buscar sentido profundo. Prefieres vivir y actuar directamente.',fr:'Bas = vous vous acceptez tel que vous êtes. Pas besoin de « réparer » votre tête ni de chercher un sens profond. Vous préférez vivre et agir directement.',zh:'低 = 你接受真实的自己。无需“修复”大脑或追寻深层意义。你偏好直接生活和行动。'}},
+SX:{what:{en:'Physical desire, passion, frequency and sexual satisfaction.',ru:'Физическое желание, страсть, частота и сексуальное удовлетворение.',es:'Deseo físico, pasión, frecuencia y satisfacción sexual.',fr:'Désir physique, passion, fréquence et satisfaction sexuelle.',zh:'身体欲望、激情、频率与性满足。'},
+hi:{en:'High = sex is a vital source of energy, connection and pleasure for you.',ru:'Высоко = секс для вас жизненно важный источник энергии, связи и удовольствия.',es:'Alto = el sexo es una fuente vital de energía, conexión y placer.',fr:'Haut = le sexe est une source vitale d’énergie, de connexion et de plaisir.',zh:'高 = 性对你而言是能量、联结与愉悦的重要来源。'},
+lo:{en:'Low = sex is not a priority right now; other forms of closeness matter more.',ru:'Низко = секс сейчас не приоритет; другие формы близости важнее.',es:'Bajo = el sexo no es prioridad ahora; otras formas de cercanía importan más.',fr:'Bas = le sexe n’est pas une priorité ; d’autres formes de proximité comptent davantage.',zh:'低 = 眼下性不是优先；其他形式的亲密更重要。'}}};
 var TPL={
 r1:{en:'Which of these is more important to you RIGHT NOW?',ru:'Что из этого для тебя важнее ПРЯМО СЕЙЧАС?',es:'¿Cuál de estos es más importante para ti AHORA?',fr:'Lequel est le plus important pour vous MAINTENANT ?',zh:'此刻哪个对你更重要？'},
 r2:{en:'Imagine your next year: which one will you put more energy into?',ru:'Представь свой следующий год: во что ты вложишь больше сил?',es:'Imagina tu próximo año: ¿en cuál pondrás más energía?',fr:'Imaginez votre prochaine année : auquel consacrerez-vous le plus d’énergie ?',zh:'想象你的下一年：你会把更多精力投入哪个？'}};
 var TK={ui:{
 btn:{en:'🧭 EDC',ru:'🧭 EDC',es:'🧭 EDC',fr:'🧭 EDC',zh:'🧭 EDC'},
-title:{en:'EDC-3 · Where your life energy goes (10 domains)',ru:'EDC-3 · Куда течёт твоя жизненная энергия (10 доменов)',es:'EDC-3 · A dónde va tu energía vital (10 dominios)',fr:'EDC-3 · Où va votre énergie vitale (10 domaines)',zh:'EDC-3 · 生命能量流向（10 领域）'},
-sub:{en:'90 forced choices · 10 domains · child-aware · 5 zone tiers · neuro-correct UF-6',ru:'90 принудительных выбора · 10 доменов · учёт детей · 5 ярусов зон · нейро-корректный UF-6',es:'90 elecciones forzadas · 10 dominios · consciente de hijos · UF-6 neuro-correcto',fr:'90 choix forcés · 10 domaines · sensible aux enfants · UF-6 neuro-correct',zh:'90 项强制选择 · 10 领域 · 儿童感知 · 5 区层 · 神经质修正 UF-6'},
+title:{en:'EDC-3 · Where your life energy goes (11 domains)',ru:'EDC-3 · Куда течёт твоя жизненная энергия (11 доменов)',es:'EDC-3 · A dónde va tu energía vital (11 dominios)',fr:'EDC-3 · Où va votre énergie vitale (11 domaines)',zh:'EDC-3 · 生命能量流向（11 领域）'},
+sub:{en:'110 forced choices · 11 domains · child-aware · 5 zone tiers · neuro-correct UF-6',ru:'110 принудительных выбора · 11 доменов · учёт детей · 5 ярусов зон · нейро-корректный UF-6',es:'110 elecciones forzadas · 11 dominios · consciente de hijos · UF-6 neuro-correcto',fr:'110 choix forcés · 11 domaines · sensible aux enfants · UF-6 neuro-correct',zh:'110 项强制选择 · 11 领域 · 儿童感知 · 5 区层 · 神经质修正 UF-6'},
 dynWarn:{en:'⚠️ Your priorities change with age and circumstances. This test captures your energy AS OF TODAY. It is not a life sentence — retake it whenever you feel you have changed.',ru:'⚠️ Ваши приоритеты меняются с возрастом и обстоятельствами. Этот тест фиксирует вашу энергию НА СЕГОДНЯ. Это не приговор на всю жизнь — проходите его заново, когда почувствуете, что изменились.',es:'⚠️ Tus prioridades cambian con la edad y las circunstancias. Este test captura tu energía A DÍA DE HOY. No es una sentencia — repítelo cuando sientas que has cambiado.',fr:'⚠️ Vos priorités changent avec l’âge et les circonstances. Ce test capture votre énergie À CE JOUR. Ce n’est pas une sentence — repassez-le quand vous sentez avoir changé.',zh:'⚠️ 你的优先级会随年龄和境遇改变。此测试捕捉的是你今天的能量。这不是判决——当你觉得自己变了就重测。'},
 whatEdcTitle:{en:'📖 What is EDC and why take it',ru:'📖 Что такое EDC и зачем его проходить',es:'📖 Qué es EDC y por qué hacerlo',fr:'📖 Qu’est-ce que l’EDC et pourquoi le passer',zh:'📖 什么是 EDC，为什么要测'},
-whatEdc1:{en:'EDC (Energy Domain Calculator) shows where your life energy goes right now, across 10 life domains — from your body and money to love, friends and growth.',ru:'EDC (Калькулятор Энергетических Доменов) показывает, куда уходит ваша жизненная энергия прямо сейчас, по 10 жизненным доменам — от тела и денег до любви, друзей и роста.',es:'EDC muestra a dónde va tu energía vital ahora, en 10 dominios: del cuerpo y el dinero al amor, amigos y crecimiento.',fr:'L’EDC montre où va votre énergie vitale en ce moment, à travers 10 domaines — du corps et l’argent à l’amour, les amis et la croissance.',zh:'EDC 显示你当下的生命能量流向 10 个生活领域——从身体、金钱到爱、朋友与成长。'},
+whatEdc1:{en:'EDC (Energy Domain Calculator) shows where your life energy goes right now, across 11 life domains — from your body and money to love, sex, friends and growth.',ru:'EDC (Калькулятор Энергетических Доменов) показывает, куда уходит ваша жизненная энергия прямо сейчас, по 11 жизненным доменам — от тела и денег до любви, секса, друзей и роста.',es:'EDC muestra a dónde va tu energía vital ahora, en 11 dominios: del cuerpo y el dinero al amor, sexo, amigos y crecimiento.',fr:'L’EDC montre où va votre énergie vitale en ce moment, à travers 11 domaines — du corps et l’argent à l’amour, le sexe, les amis et la croissance.',zh:'EDC 显示你当下的生命能量流向 11 个生活领域——从身体、金钱到爱、性、朋友与成长。'},
 whatEdc2:{en:'Why it matters: to honestly see your own priorities and compare them with a partner’s. Mismatched priorities are a hidden source of conflict; this test makes them visible.',ru:'Зачем это нужно: честно увидеть свои приоритеты и сравнить их с приоритетами партнёра. Несовпадение приоритетов — скрытый источник конфликтов; этот тест делает их видимыми.',es:'Por qué importa: ver tus prioridades y compararlas con las de tu pareja. Las prioridades desalineadas son una fuente oculta de conflicto; este test las hace visibles.',fr:'Pourquoi c’est important : voir honnêtement vos priorités et les comparer à celles d’un partenaire. Des priorités décalées sont une source cachée de conflit ; ce test les rend visibles.',zh:'为什么重要：诚实看见自己的优先级并与伴侣比较。优先级错位是冲突的隐形来源；本测试让它显形。'},
-whatEdc3:{en:'How it works. Round 1: you choose between two values (90 questions). Round 2: you rate how ready you are to carry each domain’s downsides for its joys. Round 3: when two domains score equal, you pick the one you keep.',ru:'Как это работает. Раунд 1: вы выбираете между двумя ценностями (90 вопросов). Раунд 2: оцениваете, готовы ли нести минусы каждого домена ради его радостей. Раунд 3: когда у двух доменов равные баллы, выбираете, какой оставить.',es:'Cómo funciona. Ronda 1: eliges entre dos valores (90 preguntas). Ronda 2: evalúas si cargarías las penas de cada dominio por sus alegrías. Ronda 3: si dos dominios empatan, eliges cuál mantener.',fr:'Comment ça marche. Tour 1 : vous choisissez entre deux valeurs (90 questions). Tour 2 : vous évaluez si vous porteriez les peines de chaque domaine pour ses joies. Tour 3 : si deux domaines sont à égalité, vous choisissez celui à garder.',zh:'如何进行。第 1 轮：在两个价值间选择（90 题）。第 2 轮：评估你愿为每个领域的喜而承担它的悲。第 3 轮：若两个领域同分，你选择保留哪个。'},
-whatEdc4:{en:'Result: a stack of 10 domains from most to least important. Top 3 = your core (dark green). The last one = your main “enemy” (red). The number is a direction, not a verdict.',ru:'Результат: стек из 10 доменов от самого важного к наименее. Топ-3 = ваше ядро (тёмно-зелёная зона). Последний = ваш главный «враг» (красная). Число — это направление, а не вердикт.',es:'Resultado: una pila de 10 dominios de más a menos importante. Top 3 = tu núcleo (verde oscuro). El último = tu «enemigo» principal (rojo). El número es una dirección, no un veredicto.',fr:'Résultat : une pile de 10 domaines du plus au moins important. Top 3 = votre noyau (vert foncé). Le dernier = votre « ennemi » principal (rouge). Le nombre est une direction, pas un verdict.',zh:'结果：一个 10 领域栈，从最重要到最不重要。前三 = 你的核心（深绿）。最后 = 你的主要「敌人」（红）。数字是方向，不是判决。'},
+whatEdc3:{en:'How it works. Round 1: you choose between two values (110 questions). Round 2: you rate how ready you are to carry each domain’s downsides for its joys. Round 3: when two domains score equal, you pick the one you keep.',ru:'Как это работает. Раунд 1: вы выбираете между двумя ценностями (110 вопросов). Раунд 2: оцениваете, готовы ли нести минусы каждого домена ради его радостей. Раунд 3: когда у двух доменов равные баллы, выбираете, какой оставить.',es:'Cómo funciona. Ronda 1: eliges entre dos valores (110 preguntas). Ronda 2: evalúas si cargarías las penas de cada dominio por sus alegrías. Ronda 3: si dos dominios empatan, eliges cuál mantener.',fr:'Comment ça marche. Tour 1 : vous choisissez entre deux valeurs (110 questions). Tour 2 : vous évaluez si vous porteriez les peines de chaque domaine pour ses joies. Tour 3 : si deux domaines sont à égalité, vous choisissez celui à garder.',zh:'如何进行。第 1 轮：在两个价值间选择（110 题）。第 2 轮：评估你愿为每个领域的喜而承担它的悲。第 3 轮：若两个领域同分，你选择保留哪个。'},
+whatEdc4:{en:'Result: a stack of 11 domains from most to least important. Top 3 = your core (dark green). The last one = your main “enemy” (red). The number is a direction, not a verdict.',ru:'Результат: стек из 11 доменов от самого важного к наименее. Топ-3 = ваше ядро (тёмно-зелёная зона). Последний = ваш главный «враг» (красная). Число — это направление, а не вердикт.',es:'Resultado: una pila de 11 dominios de más a menos importante. Top 3 = tu núcleo (verde oscuro). El último = tu «enemigo» principal (rojo). El número es una dirección, no un veredicto.',fr:'Résultat : une pile de 11 domaines du plus au moins important. Top 3 = votre noyau (vert foncé). Le dernier = votre « ennemi » principal (rouge). Le nombre est une direction, pas un verdict.',zh:'结果：一个 11 领域栈，从最重要到最不重要。前三 = 你的核心（深绿）。最后 = 你的主要「敌人」（红）。数字是方向，不是判决。'},
 lettersTitle:{en:'🔎 What each letter means (tap to expand)',ru:'🔎 Что значит каждая буква (нажми, чтобы раскрыть)',es:'🔎 Qué significa cada letra (toca para abrir)',fr:'🔎 Que signifie chaque lettre (touchez pour ouvrir)',zh:'🔎 每个字母的含义（点击展开）'},
 lettersHint:{en:'Read this before answering — it makes every question clear.',ru:'Прочтите это перед ответами — так каждый вопрос станет понятным.',es:'Lee esto antes de responder: hará clara cada pregunta.',fr:'Lisez ceci avant de répondre : chaque question deviendra claire.',zh:'作答前阅读——这会让每个问题都清晰。'},
 chSitTitle:{en:'👶 Your situation with children — this shapes how we read the “Children” domain',ru:'👶 Ваша ситуация с детьми — это влияет на то, как мы читаем домен «Дети»',es:'👶 Tu situación con los hijos: esto define cómo leemos el dominio «Hijos»',fr:'👶 Votre situation avec les enfants : cela définit comment nous lisons le domaine « Enfants »',zh:'👶 你的儿童状况——决定我们如何解读「孩子」领域'},
@@ -7078,9 +7087,10 @@ chFree:{en:'No children and I do not want them (childfree)',ru:'Детей не�
 chUnd:{en:'I haven’t decided yet',ru:'Я ещё не решил(а)',es:'Aún no lo he decidido',fr:'Je n’ai pas encore décidé',zh:'我还没决定'},
 warn:{en:'Answer instinctively, as you ARE now — not as you wish you were. Each pair is asked twice; contradictions raise the Lie-Index. Points are hidden on purpose.',ru:'Отвечай инстинктивно, как ты ЕСТЬ сейчас, — а не каким хотел бы быть. Каждая пара спрашивается дважды; противоречия поднимают Индекс Лжи. Очки скрыты намеренно.',es:'Responde por instinto, como ERES ahora. Cada par se pregunta dos veces; las contradicciones suben el Índice de Mentira. Puntos ocultos a propósito.',fr:'Répondez par instinct, tel que vous ÊTES. Chaque paire est posée deux fois ; les contradictions montent l’Indice de Mensonge. Points cachés exprès.',zh:'凭直觉按当下的你作答。每对问两次；矛盾抬高谎言指数。分数故意隐藏。'},
 gg:{en:'Joys & griefs of each path (read before Round 2)',ru:'Радости и горести каждого пути (прочти перед Раундом 2)',es:'Alegrías y penas de cada camino (lee antes de la Ronda 2)',fr:'Joies et peines de chaque voie (lisez avant le Tour 2)',zh:'每条路的喜与悲（第 2 轮前阅读）'},
-s1:{en:'Round 1 · Forced choices (90)',ru:'Раунд 1 · Принудительный выбор (90)',es:'Ronda 1 · Elecciones forzadas (90)',fr:'Tour 1 · Choix forcés (90)',zh:'第 1 轮 · 强制选择（90）'},
+s1:{en:'Round 1 · Forced choices (110)',ru:'Раунд 1 · Принудительный выбор (110)',es:'Ronda 1 · Elecciones forzadas (110)',fr:'Tour 1 · Choix forcés (110)',zh:'第 1 轮 · 强制选择（110）'},
 s2:{en:'Round 2 · Commitment: joys vs griefs',ru:'Раунд 2 · Преданность: радости против горестей',es:'Ronda 2 · Compromiso: alegrías contra penas',fr:'Tour 2 · Engagement : joies contre peines',zh:'第 2 轮 · 承诺：喜与悲'},
 commitQ:{en:'I agree to carry these griefs for the sake of those joys.',ru:'Я согласен нести эти горести ради этих радостей.',es:'Acepto cargar estas penas por esas alegrías.',fr:'J’accepte de porter ces peines pour ces joies.',zh:'我愿意为这些喜承受这些悲。'},
+commitHint:{en:'This means: you are ready to endure the downsides listed above for the sake of the upsides.',ru:'Это значит: вы готовы терпеть перечисленные выше минусы ради плюсов.',es:'Esto significa: estás listo para soportar las penas listadas arriba por las alegrías.',fr:'Cela signifie : vous êtes prêt à endurer les peines ci-dessus pour les joies.',zh:'这意味着：你愿意为了上述好处而忍受上述坏处。'},
 s3:{en:'Round 3 · Sacrifice: equal scores detected',ru:'Раунд 3 · Жертва: обнаружены равные баллы',es:'Ronda 3 · Sacrificio: puntajes iguales',fr:'Tour 3 · Sacrifice : scores égaux',zh:'第 3 轮 · 牺牲：发现同分'},
 s3i:{en:'Some domains got equal preference scores. Pick the one you KEEP if only one survives.',ru:'Некоторые домены получили одинаковые баллы. Выбери, какой ОСТАВИШЬ, если выживет только один.',es:'Algunos dominios obtuvieron puntajes iguales. Elige cuál MANTIENES si solo uno sobrevive.',fr:'Certains domaines ont des scores égaux. Choisissez lequel vous GARDEZ si un seul survit.',zh:'某些领域偏好分相同。若只能留一个，你保留哪个？'},
 s3none:{en:'No equal scores — nothing to sacrifice.',ru:'Нет равных баллов — жертвовать нечем.',es:'Sin puntajes iguales — nada que sacrificar.',fr:'Aucun score égal — rien à sacrifier.',zh:'没有同分——无需牺牲。'},
@@ -7109,14 +7119,14 @@ z3:{en:'Mid (yellow, neutral)',ru:'Середина (жёлтая, нейтра�
 z4:{en:'Far (orange, friction)',ru:'Дальнее (оранжевая, трение)',es:'Lejano (naranja, fricción)',fr:'Lointain (orange, friction)',zh:'遥远（橙，摩擦）'},
 z5:{en:'Main enemy (red)',ru:'Главный враг (красная)',es:'Enemigo principal (rojo)',fr:'Ennemi principal (rouge)',zh:'主要敌人（红）'},
 chk:{en:'🧪 UF-6 · Energy alignment (experimental, weight = 2× a standard UF)',ru:'🧪 UF-6 · Согласование энергии (эксперимент, вес = 2× обычной UF)',es:'🧪 UF-6 · Alineación energética (experimental, peso = 2× UF estándar)',fr:'🧪 UF-6 · Alignement énergétique (expérimental, poids = 2× UF standard)',zh:'🧪 UF-6 · 能量对齐（实验，权重 = 2× 标准 UF）'},
-chkNote:{en:'Off by default. When on: full 10-code stacks A/B are compared with similarity/opposition math plus a GLOBAL neuroticism pairing term and a CHILD-STATUS clash check; UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental, 3 decimals.',ru:'По умолчанию выкл. Когда вкл: полные стеки A/B из 10 кодов сравниваются по математике сходства/разрыва плюс ГЛОБАЛЬНЫЙ член пары по нейротизму и проверка КОНФЛИКТА ПО ДЕТЯМ; UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально», 3 знака.',es:'Desactivado por defecto. Al activar: pilas completas A/B con similitud/oposición, término GLOBAL de neuroticismo y chequeo de CHOQUE por hijos; UF-6 se une a las cinco UF y el QCI se recalcula (QCI + 0.5·UF-6)/1.5, experimental, 3 decimales.',fr:'Désactivé par défaut. Activé : piles complètes A/B avec similarité/opposition, terme GLOBAL de névrosisme et vérification du CONFLIT Enfants ; UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, expérimental, 3 décimales.',zh:'默认关闭。开启后：A/B 完整 10 码栈按相似/相反数学加全局神经质配对项与儿童状况冲突检查；UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算，实验性，3 位小数。'},
+chkNote:{en:'Off by default. When on: full 11-code stacks A/B are compared with similarity/opposition math plus a GLOBAL neuroticism pairing term and a CHILD-STATUS clash check; UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental, 3 decimals.',ru:'По умолчанию выкл. Когда вкл: полные стеки A/B из 11 кодов сравниваются по математике сходства/разрыва плюс ГЛОБАЛЬНЫЙ член пары по нейротизму и проверка КОНФЛИКТА ПО ДЕТЯМ; UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально», 3 знака.',es:'Desactivado por defecto. Al activar: pilas completas A/B de 11 códigos con similitud/oposición, término GLOBAL de neuroticismo y chequeo de CHOQUE por hijos; UF-6 se une a las cinco UF y el QCI se recalcula (QCI + 0.5·UF-6)/1.5, experimental, 3 decimales.',fr:'Désactivé par défaut. Activé : piles complètes A/B de 11 codes avec similarité/opposition, terme GLOBAL de névrosisme et vérification du CONFLIT Enfants ; UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, expérimental, 3 décimales.',zh:'默认关闭。开启后：A/B 完整 11 码栈按相似/相反数学加全局神经质配对项与儿童状况冲突检查；UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算，实验性，3 位小数。'},
 chSelA:{en:'Children A',ru:'Дети A',es:'Hijos A',fr:'Enfants A',zh:'孩子 A'},
 chSelB:{en:'Children B',ru:'Дети B',es:'Hijos B',fr:'Enfants B',zh:'孩子 B'},
 chStatusWarn:{en:'CHILDREN STATUS CLASH: one partner is childfree, the other wants or has children. This is one of the hardest incompatibilities and heavily lowers the score.',ru:'КОНФЛИКТ ПО ДЕТЯМ: один партнёр чайлдфри, другой хочет или имеет детей. Это одна из самых тяжёлых несовместимостей, сильно снижающая балл.',es:'CHOQUE POR HIJOS: una pareja es childfree, la otra quiere o tiene hijos. Es una de las incompatibilidades más duras y baja mucho la puntuación.',fr:'CONFLIT ENFANTS : un partenaire est childfree, l’autre veut ou a des enfants. C’est l’une des incompatibilités les plus dures et fait beaucoup baisser le score.',zh:'儿童状况冲突：一方丁克，另一方想要或已有孩子。这是最难的不兼容之一，大幅拉低分数。'},
-stA:{en:'Stack A (all 10, in order)',ru:'Стек A (все 10, по порядку)',es:'Pila A (las 10, en orden)',fr:'Pile A (les 10, en ordre)',zh:'栈 A（全 10，按序）'},
-stB:{en:'Stack B (all 10, in order)',ru:'Стек B (все 10, по порядку)',es:'Pila B (las 10, en orden)',fr:'Pile B (les 10, en ordre)',zh:'栈 B（全 10，按序）'},
-stPh:{en:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',ru:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',es:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',fr:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH',zh:'SP/HO/GR/CA/MN/BD/FR/ST/PA/CH'},
-stErr:{en:'Enter exactly 10 unique codes: BD CA MN SP PA CH FR ST HO GR',ru:'Введи ровно 10 уникальных кодов: BD CA MN SP PA CH FR ST HO GR',es:'Introduce exactamente 10 códigos únicos: BD CA MN SP PA CH FR ST HO GR',fr:'Saisis exactement 10 codes uniques : BD CA MN SP PA CH FR ST HO GR',zh:'请输入 10 个唯一代码：BD CA MN SP PA CH FR ST HO GR'},
+stA:{en:'Stack A (all 11, in order)',ru:'Стек A (все 11, по порядку)',es:'Pila A (las 11, en orden)',fr:'Pile A (les 11, en ordre)',zh:'栈 A（全 11，按序）'},
+stB:{en:'Stack B (all 11, in order)',ru:'Стек B (все 11, по порядку)',es:'Pila B (las 11, en orden)',fr:'Pile B (les 11, en ordre)',zh:'栈 B（全 11，按序）'},
+stPh:{en:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',ru:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',es:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',fr:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',zh:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH'},
+stErr:{en:'Enter exactly 11 unique codes: BD CA MN SP PA CH FR ST HO GR SX',ru:'Введи ровно 11 уникальных кодов: BD CA MN SP PA CH FR ST HO GR SX',es:'Introduce exactamente 11 códigos únicos: BD CA MN SP PA CH FR ST HO GR SX',fr:'Saisis exactement 11 codes uniques : BD CA MN SP PA CH FR ST HO GR SX',zh:'请输入 11 个唯一代码：BD CA MN SP PA CH FR ST HO GR SX'},
 need:{en:'Calculate compatibility first (Calculate button above).',ru:'Сначала рассчитай совместимость (кнопка «Рассчитать» выше).',es:'Calcula primero la compatibilidad (botón Calcular arriba).',fr:'Calcule d’abord la compatibilité (bouton Calculer ci-dessus).',zh:'先计算兼容性（上方“计算”按钮）。'},
 uf6name:{en:'UF-6 — Energy alignment (similarity/opposition + global neuro + child status)',ru:'UF-6 — Согласование энергии (сходство/разрыв + глобальный нейро-член + статус детей)',es:'UF-6 — Alineación energética (similitud/oposición + neuro global + estatus de hijos)',fr:'UF-6 — Alignement énergétique (similarité/opposition + neuro global + statut enfants)',zh:'UF-6 — 能量对齐（相似/相反 + 全局神经项 + 儿童状况）'},
 uf6ref:{en:'Every domain: similarity adds, opposition subtracts (Children ×2.5). GLOBAL neuro term nTerm added once: calm+calm > anxious+calm > anxious+anxious. Child-status clash subtracts heavily; matching child goals add. Every position shift moves the score.',ru:'Каждый домен: сходство плюсует, разрыв минусует (Дети ×2.5). ГЛОБАЛЬНЫЙ нейро-член nTerm добавляется один раз: спокойный+спокойный > тревожный+спокойный > тревожный+тревожный. Конфликт по детям сильно вычитает; совпадение целей по детям добавляет. Любой сдвиг позиции двигает счёт.',es:'Cada dominio: similitud suma, oposición resta (Hijos ×2.5). Término neuro GLOBAL nTerm una vez. Choque por hijos resta mucho; metas de hijos coincidentes suman. Cada cambio de posición mueve el score.',fr:'Chaque domaine : similarité ajoute, opposition soustrait (Enfants ×2.5). Terme neuro GLOBAL nTerm une fois. Le conflit enfants soustrait beaucoup ; des objectifs d’enfants alignés ajoutent. Chaque décalage bouge le score.',zh:'每个领域：相似加分、相反减分（孩子 ×2.5）。全局神经项 nTerm 加一次。儿童状况冲突大幅减分；儿童目标一致加分。任何位置变动都移动分数。'},
@@ -7161,8 +7171,8 @@ var sacrShown=false,currentEqPairs=[];
 try{var ra=JSON.parse(LSg('edc2_answers')||'null');if(Array.isArray(ra)&&ra.length===NITEMS){answers=ra;for(var i=0;i<NITEMS;i++){if(answers[i]!==null&&(answers[i]<0||answers[i]>3))answers[i]=null;}}}catch(e){}
 while(answers.length<NITEMS)answers.push(null);
 try{var rs=JSON.parse(LSg('edc2_sacr')||'{}');if(rs&&typeof rs==='object'){sacr={};for(var k in rs){var parts=k.split('|');if(parts.length===2&&DOMS.indexOf(parts[0])>=0&&DOMS.indexOf(parts[1])>=0&&(rs[k]===0||rs[k]===1))sacr[k]=rs[k];}}}catch(e){sacr={};}
-try{var rc=JSON.parse(LSg('edc2_commit')||'null');if(Array.isArray(rc)&&rc.length===10)commit=rc;}catch(e){}
-while(commit.length<10)commit.push(null);
+try{var rc=JSON.parse(LSg('edc2_commit')||'null');if(Array.isArray(rc)&&rc.length===DOMS.length)commit=rc;}catch(e){}
+while(commit.length<DOMS.length)commit.push(null);
 var order=[];for(var i0=0;i0<NITEMS;i0++)order.push(i0);
 function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
 shuffle(order);
@@ -7192,10 +7202,10 @@ return {sc:sc,fin:fin,stack:stack,lie:lie};
 }
 function tierOf(rank){return rank<3?1:rank===3?2:rank<6?3:rank<9?4:5;}
 var TIERCOL={1:'#2e9e4f',2:'#6bcb77',3:'#ffd93d',4:'#ff9f43',5:'#ff6b6b'};
-function parseStack10(s){
+function parseStack(s){
 var toks=String(s||'').toUpperCase().split(/[^A-Z]+/).filter(function(x){return DOMS.indexOf(x)>=0;});
 var seen={},ord=[];toks.forEach(function(x){if(!seen[x]){seen[x]=1;ord.push(x);}});
-return ord.length===10?ord:null;
+return ord.length===DOMS.length?ord:null;
 }
 function clamp100(x){return Math.max(0,Math.min(100,x));}
 function neuroTerm(aN,bN){
@@ -7293,13 +7303,11 @@ sacrShown=false;currentEqPairs=[];
 var L=lang(),h='';
 h+='<div style="color:#888;font-size:0.8rem;margin-bottom:8px;">'+esc(t('sub'))+'</div>';
 h+='<div class="t120-warn">'+esc(t('dynWarn'))+'</div>';
-/* What is EDC — detailed intro, open by default */
 h+='<details open style="background:var(--surface);border:1px solid #8b5cff44;border-radius:12px;padding:12px 16px;margin-bottom:12px;"><summary style="cursor:pointer;color:#c9b6ff;font-weight:800;font-size:0.9rem;">'+esc(t('whatEdcTitle'))+'</summary><div style="margin-top:8px;font-size:0.8rem;color:#bbb;line-height:1.65;">';
 h+='<p style="margin-bottom:6px;">'+esc(t('whatEdc1'))+'</p>';
 h+='<p style="margin-bottom:6px;">'+esc(t('whatEdc2'))+'</p>';
 h+='<p style="margin-bottom:6px;">'+esc(t('whatEdc3'))+'</p>';
 h+='<p>'+esc(t('whatEdc4'))+'</p></div></details>';
-/* Child status selector */
 var curCh=LSg('edc2_chstatus')||'und';
 h+='<div style="background:#12210f;border:1px solid #4a9a3a55;border-radius:12px;padding:12px 16px;margin-bottom:12px;">';
 h+='<div style="font-weight:800;color:#9be08a;font-size:0.86rem;margin-bottom:8px;">'+esc(t('chSitTitle'))+'</div>';
@@ -7312,7 +7320,6 @@ h+='<input type="radio" name="edcChStatus" value="'+st+'"'+(curCh===st?' checked
 h+=esc(t(lblKey))+'</label>';
 }
 h+='</div></div>';
-/* Letters legend */
 h+='<details style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;"><summary style="cursor:pointer;color:#ffd93d;font-weight:700;font-size:0.86rem;">'+esc(t('lettersTitle'))+'</summary><div style="margin-top:8px;font-size:0.76rem;color:#bbb;line-height:1.6;">'+esc(t('lettersHint'));
 DOMS.forEach(function(d){
 var D=DETAIL[d];
@@ -7325,31 +7332,26 @@ h+='</div>';
 });
 h+='</div></details>';
 h+='<div class="t120-warn">⚠️ '+esc(t('warn'))+'</div>';
-/* Joys/griefs */
 h+='<details style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:12px;"><summary style="cursor:pointer;color:#fff;font-weight:700;font-size:0.86rem;">💡 '+esc(t('gg'))+'</summary><div style="margin-top:8px;">';
 DOMS.forEach(function(d){h+='<div style="font-size:0.78rem;line-height:1.55;margin-bottom:6px;"><strong style="color:#fff;">'+esc(ds(d))+'</strong><br><span style="color:#6bcb77;">+ '+esc(JOY[d][L]||JOY[d].en)+'</span><br><span style="color:#ff9f43;">− '+esc(GRIEF[d][L]||GRIEF[d].en)+'</span></div>';});
 h+='</div></details>';
-/* Round 1 */
 h+='<h3 style="color:#fff;font-size:0.95rem;margin:10px 0 8px;">'+esc(t('s1'))+'</h3>';
 order.forEach(function(idx,pos){
 var it=itemOf(idx),labs=optLabels(ds(it.a),ds(it.b));
-h+='<div class="t120-row" id="edcRow'+idx+'"><div class="t120-q"><span class="t120-num">'+(pos+1)+'.</span>'+esc(itemText(it))+'<br><span style="color:#8f86a8;font-size:0.74rem;">'+esc(t(it.r===0?'optP1':'optP1'))+'</span></div><div class="t120-opts">';
+h+='<div class="t120-row" id="edcRow'+idx+'"><div class="t120-q"><span class="t120-num">'+(pos+1)+'.</span>'+esc(itemText(it))+'</div><div class="t120-opts">';
 for(var v=0;v<4;v++)h+='<button type="button" class="t120-opt'+(answers[idx]===v?' sel':'')+'" data-edc="'+idx+'" data-v="'+v+'">'+esc(labs[v])+'</button>';
 h+='</div></div>';
 });
-/* Round 2 */
 h+='<h3 style="color:#fff;font-size:0.95rem;margin:14px 0 8px;">'+esc(t('s2'))+'</h3>';
 DOMS.forEach(function(d,i){
-h+='<div class="t120-row" id="edcCom'+i+'"><div class="t120-q"><strong style="color:#fff;">'+esc(ds(d))+'</strong><br><span style="color:#6bcb77;font-size:0.78rem;">+ '+esc(JOY[d][L]||JOY[d].en)+'</span><br><span style="color:#ff9f43;font-size:0.78rem;">− '+esc(GRIEF[d][L]||GRIEF[d].en)+'</span><br>'+esc(t('commitQ'))+'</div><div class="t120-opts">';
+h+='<div class="t120-row" id="edcCom'+i+'"><div class="t120-q"><strong style="color:#fff;">'+esc(ds(d))+'</strong><br><span style="color:#6bcb77;font-size:0.78rem;">+ '+esc(JOY[d][L]||JOY[d].en)+'</span><br><span style="color:#ff9f43;font-size:0.78rem;">− '+esc(GRIEF[d][L]||GRIEF[d].en)+'</span><br>'+esc(t('commitQ'))+'<br><span style="color:#8f86a8;font-size:0.72rem;font-style:italic;">'+esc(t('commitHint'))+'</span></div><div class="t120-opts">';
 for(var v2=0;v2<5;v2++)h+='<button type="button" class="t120-opt'+(commit[i]===v2?' sel':'')+'" data-com="'+i+'" data-v="'+v2+'">'+esc(TK.ui.cl[lang()][v2])+'</button>';
 h+='</div></div>';
 });
-/* Round 3 placeholder */
 h+='<h3 style="color:#fff;font-size:0.95rem;margin:14px 0 6px;">'+esc(t('s3'))+'</h3><div id="edcSacrBlock"></div>';
 h+='<div style="text-align:center;margin:16px 0;"><button class="btn" id="edcCalc">'+esc(t('calc'))+'</button><button class="btn btn-outline" id="edcReset">'+esc(t('reset'))+'</button></div>';
 h+='<div id="edcResult"></div>';
 document.getElementById('edcBody').innerHTML=h;
-/* Child status radio listeners */
 document.getElementById('edcBody').querySelectorAll('input[name="edcChStatus"]').forEach(function(r){
 r.addEventListener('change',function(){LSs('edc2_chstatus',r.value);render();});
 });
@@ -7370,7 +7372,7 @@ document.getElementById('edcCom'+i).querySelectorAll('[data-com]').forEach(funct
 document.getElementById('edcCalc').addEventListener('click',function(){
 var m1=[],m2=[];
 for(var i=0;i<NITEMS;i++)if(answers[i]==null)m1.push(i+1);
-for(var c=0;c<10;c++)if(commit[c]==null)m2.push(c+1);
+for(var c=0;c<DOMS.length;c++)if(commit[c]==null)m2.push(c+1);
 if(m1.length||m2.length){
 var msg=t('inc');
 if(m1.length)msg+=t('incS1')+' ('+m1.length+'); ';
@@ -7397,7 +7399,7 @@ showResult(r);renderUf6();
 });
 document.getElementById('edcReset').addEventListener('click',function(){
 answers=[];while(answers.length<NITEMS)answers.push(null);
-sacr={};commit=[];while(commit.length<10)commit.push(null);
+sacr={};commit=[];while(commit.length<DOMS.length)commit.push(null);
 sacrShown=false;currentEqPairs=[];
 LSd('edc2_answers');LSd('edc2_sacr');LSd('edc2_commit');LSd('edc2_stack');LSd('edc2_fin');LSd('edc2_lie');
 window.QFTM_EDC_STACK=null;shuffle(order);render();renderUf6();
@@ -7410,7 +7412,7 @@ var lieC=r.lie<15?'#6bcb77':(r.lie<35?'#ffd93d':'#ff6b6b');
 var lieT=r.lie<15?t('lieL'):(r.lie<35?t('lieM'):t('lieH'));
 var h='<div class="compat-overall"><div style="color:#888;font-size:0.8rem;">'+esc(t('res'))+'</div>'+
 '<div class="qci" style="color:#fff;text-shadow:0 0 14px #8b5cff;font-size:clamp(1.1rem,4vw,2rem);">'+esc(r.stack.join('/'))+'</div>'+
-'<div style="font-size:0.78rem;color:#888;margin-top:4px;">'+esc(t('stack'))+' • '+esc(t('enemy'))+': <strong style="color:#ff6b6b;">'+esc(r.stack[9])+'</strong></div>'+
+'<div style="font-size:0.78rem;color:#888;margin-top:4px;">'+esc(t('stack'))+' • '+esc(t('enemy'))+': <strong style="color:#ff6b6b;">'+esc(r.stack[r.stack.length-1])+'</strong></div>'+
 '<div style="font-size:0.74rem;margin-top:6px;">'+
 '<span style="color:#2e9e4f;">●</span> '+esc(t('z1'))+' • <span style="color:#6bcb77;">●</span> '+esc(t('z2'))+' • <span style="color:#ffd93d;">●</span> '+esc(t('z3'))+' • <span style="color:#ff9f43;">●</span> '+esc(t('z4'))+' • <span style="color:#ff6b6b;">●</span> '+esc(t('z5'))+'</div>'+
 '<table class="compat-table" style="margin-top:12px;"><tr><th>'+esc(t('cDom'))+'</th><th>'+esc(t('cPref'))+'</th><th>'+esc(t('cCom'))+'</th><th>'+esc(t('cFin'))+'</th></tr>';
@@ -7424,7 +7426,6 @@ h+='</table><div style="font-size:0.8rem;color:'+lieC+';font-weight:800;margin-t
 document.getElementById('edcResult').innerHTML=h;
 document.getElementById('edcResult').scrollIntoView({behavior:'smooth',block:'start'});
 }
-/* Compatibility integration: add UF-6 block + child-status selectors */
 var cp=document.getElementById('panel-compat');
 if(cp){
 var box=document.createElement('div');
@@ -7439,8 +7440,8 @@ chOpts+='<option value="'+st2+'">'+esc(t(lk))+'</option>';
 box.innerHTML='<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;color:#c9b6ff;"><input type="checkbox" id="edcUf6Chk" style="width:18px;height:18px;accent-color:#8b5cff;"> '+esc(t('chk'))+'</label>'+
 '<div id="edcUf6Body" style="display:none;margin-top:10px;"><div style="color:#8f86a8;font-size:0.74rem;">'+esc(t('chkNote'))+'</div>'+
 '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px;">'+
-'<label>'+esc(t('stA'))+' <input id="edcStackA" class="cat-in" style="width:230px;text-transform:uppercase;" maxlength="40" spellcheck="false" autocomplete="off" placeholder="'+esc(t('stPh'))+'"></label>'+
-'<label>'+esc(t('stB'))+' <input id="edcStackB" class="cat-in" style="width:230px;text-transform:uppercase;" maxlength="40" spellcheck="false" autocomplete="off" placeholder="'+esc(t('stPh'))+'"></label></div>'+
+'<label>'+esc(t('stA'))+' <input id="edcStackA" class="cat-in" style="width:230px;text-transform:uppercase;" maxlength="44" spellcheck="false" autocomplete="off" placeholder="'+esc(t('stPh'))+'"></label>'+
+'<label>'+esc(t('stB'))+' <input id="edcStackB" class="cat-in" style="width:230px;text-transform:uppercase;" maxlength="44" spellcheck="false" autocomplete="off" placeholder="'+esc(t('stPh'))+'"></label></div>'+
 '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px;">'+
 '<label>'+esc(t('chSelA'))+' <select id="edcChStatusA" style="background:#111;color:#fff;border:1px solid #444;border-radius:10px;padding:7px 10px;font-size:0.82rem;">'+chOpts+'</select></label>'+
 '<label>'+esc(t('chSelB'))+' <select id="edcChStatusB" style="background:#111;color:#fff;border:1px solid #444;border-radius:10px;padding:7px 10px;font-size:0.82rem;">'+chOpts+'</select></label></div>'+
@@ -7470,8 +7471,8 @@ var ufBox=document.getElementById('compatUfs');var ovBox=document.getElementById
 var oldCard=document.getElementById('edcUf6Card');if(oldCard)oldCard.remove();
 out.innerHTML='';
 if(!chk.checked){if(ovBox&&ovBox.dataset.edcExp){delete ovBox.dataset.edcExp;setTimeout(function(){var bc=document.getElementById('btnCompatCalc');if(bc)bc.click();},0);}return;}
-var oa=parseStack10(box.querySelector('#edcStackA').value);
-var ob=parseStack10(box.querySelector('#edcStackB').value);
+var oa=parseStack(box.querySelector('#edcStackA').value);
+var ob=parseStack(box.querySelector('#edcStackB').value);
 if(!oa||!ob){out.innerHTML='<span style="color:#ff6b6b;">'+esc(t('stErr'))+'</span>';return;}
 var inA=document.getElementById('compatAInput'),inB=document.getElementById('compatBInput');
 var cA=String(inA?inA.value:'').toUpperCase().trim(),cB=String(inB?inB.value:'').toUpperCase().trim();
