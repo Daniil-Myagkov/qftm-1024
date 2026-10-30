@@ -7221,30 +7221,65 @@ return (free(a)&&par(b))||(free(b)&&par(a));
 }
 function uf6(oa,ob,nLa,nLb,chA,chB){
 chA=chA||'und';chB=chB||'und';
-function contribDomain(d,x,y){var c=x*y;if(d==='CH')c*=2.5;return c;}
+
+// 1. Проверка статусного конфликта детей
+var chStClash = (function(a,b){
+  var free=function(s){return s==='free';};
+  var par=function(s){return s==='want'||s==='has';};
+  return (free(a)&&par(b))||(free(b)&&par(a));
+})(chA, chB);
+
+function contribDomain(d,x,y){
+  // ЕСЛИ ЭТО ДЕТИ И ЕСТЬ СТАТУСНЫЙ КОНФЛИКТ -> ОГРОМНЫЙ МИНУС
+  if(d==='CH' && chStClash) return -35.0; 
+  
+  var c=x*y;
+  if(d==='CH') c*=2.5; // Вес детей
+  return c;
+}
+
 var rows=[],S=0,D=0,chClash=false;
 DOMS.forEach(function(d){
-var ra=oa.indexOf(d),rb=ob.indexOf(d);
-var x=4.5-ra,y=4.5-rb;
-var c=contribDomain(d,x,y);
-var dd=Math.abs(x-y);
-var w=(Math.abs(x)+Math.abs(y))/2+0.5;
-var pen=dd*w*0.35;
-S+=c-pen; D+=dd*w;
-var ta=tierOf(ra),tb=tierOf(rb);
-if(d==='CH'&&((ta<=2&&tb===5)||(tb<=2&&ta===5)))chClash=true;
-rows.push({d:d,ta:ta,tb:tb,x:x,y:y,c:c-pen});
+  var ra=oa.indexOf(d),rb=ob.indexOf(d);
+  var x=4.5-ra,y=4.5-rb;
+  
+  // Базовый вклад
+  var c=contribDomain(d,x,y);
+  
+  // 2. УСИЛЕННЫЙ ШТРАФ ЗА РАЗРЫВ ЗОН
+  var dd=Math.abs(x-y); 
+  var w=(Math.abs(x)+Math.abs(y))/2+0.5; 
+  var pen=dd*w*0.65; // Было 0.35, стало 0.65 (почти в 2 раза жестче)
+  
+  // Если зоны совсем разные (один в топе, другой в низу), штраф должен быть еще больше
+  if((x>2 && y<-2) || (x<-2 && y>2)) pen *= 1.5; 
+
+  S+=c-pen; 
+  D+=dd*w;
+  
+  var ta=tierOf(ra),tb=tierOf(rb);
+  if(d==='CH'&&((ta<=2&&tb===5)||(tb<=2&&ta===5)))chClash=true;
+  
+  // В таблицу пишем итоговый вклад (с учетом штрафа)
+  rows.push({d:d,ta:ta,tb:tb,x:x,y:y,c:c-pen});
 });
+
 var aN=MIDN[nLa]||40,bN=MIDN[nLb]||40;
 var nT=neuroTerm(aN,bN);
 var nPair=(nT-50)*0.5;
 S+=nPair;
-var chStClash=chStatClash(chA,chB);
-if(chStClash)S-=28;
-else if(chA===chB&&chA!=='und')S+=6;
-var score=50+0.6*S;
+
+// Статусный конфликт уже учтен внутри contribDomain для CH, 
+// но добавим небольшой глобальный штраф за диссонанс ценностей
+if(chStClash) S -= 15; 
+
+// 3. СНИЖАЕМ ОБЩИЙ МНОЖИТЕЛЬ (было 0.6, стало 0.45)
+// Это сделает оценки более реалистичными. 90+ будет только у идеальных пар.
+var score=50+0.45*S; 
+
 var vi=score>100?8:score<0?9:score>=93?7:score>=84?6:score>=74?5:score>=64?4:score>=52?3:score>=40?2:score>=25?1:0;
 var ov=oa.slice(0,3).filter(function(q){return ob.indexOf(q)>=0&&ob.indexOf(q)<3;}).length;
+
 return {score:score,rows:rows,chClash:chClash,chStClash:chStClash,vi:vi,overlap:ov,S:S,D:D,nT:nT,nPair:nPair};
 }
 function barColor(s){
