@@ -4402,124 +4402,177 @@ return '#ff5c5c';
   });
   }
 async function exportCoupleCard() {
-if (!lastCompat) {
-alert(ui('compatExportFail'));
-return;
-}
-const codeA = lastCompat.codeA;
-const codeB = lastCompat.codeB;
-const nameA = lastCompat.nameA;
-const nameB = lastCompat.nameB;
-let res = lastCompat.res;
+    if (!lastCompat) {
+        alert(ui('compatExportFail'));
+        return;
+    }
+    
+    const codeA = lastCompat.codeA;
+    const codeB = lastCompat.codeB;
+    const nameA = lastCompat.nameA;
+    const nameB = lastCompat.nameB;
+    let res = lastCompat.res;
 
-// === SYNC WITH UF-6 CHECKBOX STATE ===
-const chkBox = document.querySelector('#edcCompatBox #edcUf6Chk');
-const uf6On = !!(chkBox && chkBox.checked);
-const uf6score = (uf6On && typeof window.QFTM_UF6 === 'number') ? window.QFTM_UF6 : null;
-const hasUf6 = uf6score !== null;
+    // === SYNC WITH UF-6 CHECKBOX STATE ===
+    const chkBox = document.querySelector('#edcCompatBox #edcUf6Chk');
+    const uf6On = !!(chkBox && chkBox.checked);
+    const uf6score = (uf6On && typeof window.QFTM_UF6 === 'number') ? window.QFTM_UF6 : null;
+    const hasUf6 = uf6score !== null;
 
-// If UF-6 is active, recompute overall & verdict to match the live UI
-if (hasUf6) {
-const expOverall = (res.overall + 0.50 * uf6score) / 1.5;
-let vi;
-if (expOverall > 100) vi = 8;
-else if (expOverall >= 93) vi = 7;
-else if (expOverall >= 84) vi = 6;
-else if (expOverall >= 74) vi = 5;
-else if (expOverall >= 64) vi = 4;
-else if (expOverall >= 52) vi = 3;
-else if (expOverall >= 40) vi = 2;
-else if (expOverall >= 25) vi = 1;
-else if (expOverall >= 0) vi = 0;
-else vi = 9;
-res = Object.assign({}, res, { overall: expOverall, verdictIndex: vi });
-}
+    // If UF-6 is active, recompute overall & verdict to match the live UI
+    if (hasUf6) {
+        const expOverall = (res.overall + 0.50 * uf6score) / 1.5;
+        let vi;
+        if (expOverall > 100) vi = 8;
+        else if (expOverall >= 93) vi = 7;
+        else if (expOverall >= 84) vi = 6;
+        else if (expOverall >= 74) vi = 5;
+        else if (expOverall >= 64) vi = 4;
+        else if (expOverall >= 52) vi = 3;
+        else if (expOverall >= 40) vi = 2;
+        else if (expOverall >= 25) vi = 1;
+        else if (expOverall >= 0) vi = 0;
+        else vi = 9;
+        res = Object.assign({}, res, { overall: expOverall, verdictIndex: vi });
+    }
 
-try {
-const imgA = await svgToImage(catSVG(codeA, 440, nameA), 440);
-const imgB = await svgToImage(catSVG(codeB, 440, nameB), 440);
-const W = 1000;
-const H = hasUf6 ? 1040 : 1000;
-const canvas = document.createElement('canvas');
-canvas.width = W;
-canvas.height = H;
-const ctx = canvas.getContext('2d');
-ctx.fillStyle = '#0a0a0a';
-ctx.fillRect(0, 0, W, H);
-ctx.textAlign = 'center';
-ctx.fillStyle = '#ffffff';
-ctx.font = '700 34px "Segoe UI", Inter, system-ui, sans-serif';
-ctx.fillText('QFTM-1024 • ' + ui('compatCardTitle'), W / 2, 56);
-ctx.drawImage(imgA, 40, 90, 440, 440);
-ctx.drawImage(imgB, 520, 90, 440, 440);
-ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
-ctx.fillStyle = getTypeColor(codeA).hslBright;
-ctx.fillText((nameA ? nameA + ' • ' : '') + codeA, 260, 570);
-ctx.fillStyle = getTypeColor(codeB).hslBright;
-ctx.fillText((nameB ? nameB + ' • ' : '') + codeB, 740, 570);
+    try {
+        const imgA = await svgToImage(catSVG(codeA, 440, nameA), 440);
+        const imgB = await svgToImage(catSVG(codeB, 440, nameB), 440);
+        
+        // Get Stacks from inputs or memory
+        const stackInputA = document.getElementById('edcStackA');
+        const stackInputB = document.getElementById('edcStackB');
+        const stackA = stackInputA ? stackInputA.value.trim() : '';
+        const stackB = stackInputB ? stackInputB.value.trim() : '';
+        
+        // Determine canvas height based on content
+        const W = 1000;
+        let H = 1000; // Base height
+        
+        // Extra space for stacks if they exist and are long
+        if ((stackA || stackB) && (stackA.length > 30 || stackB.length > 30)) {
+            H += 60; 
+        }
+        if (hasUf6) {
+            H += 40; // Space for UF-6 bar
+        }
 
-// Main score — now respects UF-6 state
-const oColor = ufBarColor(res.overall);
-ctx.fillStyle = oColor;
-ctx.font = '900 84px "Segoe UI", Inter, system-ui, sans-serif';
-ctx.fillText(hasUf6 ? res.overall.toFixed(3) : res.overall.toFixed(1), W / 2, 690);
-ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
-ctx.fillText(ui('compatVerdict') + ': ' + ui('verdict' + res.verdictIndex), W / 2, 730);
-
-// Sub-caption when experimental mode is on
-if (hasUf6) {
-ctx.font = '600 14px "Segoe UI", Inter, system-ui, sans-serif';
-ctx.fillStyle = '#c9b6ff';
-ctx.fillText('🧪 ' + ui('expTitle'), W / 2, 756);
-}
-
-let y = hasUf6 ? 800 : 790;
-for (let i = 0; i < 5; i++) {
-const s = res.uf[i];
-ctx.textAlign = 'left';
-ctx.fillStyle = '#bbbbbb';
-ctx.font = '600 18px "Segoe UI", Inter, system-ui, sans-serif';
-ctx.fillText('UF-' + (i + 1), 60, y);
-ctx.fillStyle = '#222222';
-ctx.fillRect(140, y - 15, 690, 15);
-ctx.fillStyle = ufBarColor(s);
-ctx.fillRect(140, y - 15, 690 * (Math.max(0, Math.min(100, s)) / 100), 15);
-ctx.textAlign = 'right';
-ctx.fillStyle = '#ffffff';
-ctx.fillText(s.toFixed(1), 940, y);
-y += 36;
-}
-if (hasUf6) {
-ctx.textAlign = 'left';
-ctx.fillStyle = '#c9b6ff';
-ctx.font = '600 18px "Segoe UI", Inter, system-ui, sans-serif';
-ctx.fillText('UF-6*', 60, y);
-ctx.fillStyle = '#222222';
-ctx.fillRect(140, y - 15, 690, 15);
-ctx.fillStyle = ufBarColor(uf6score);
-ctx.fillRect(140, y - 15, 690 * (Math.max(0, Math.min(100, uf6score)) / 100), 15);
-ctx.textAlign = 'right';
-ctx.fillStyle = '#ffffff';
-ctx.fillText(uf6score.toFixed(3), 940, y);
-y += 24;
-ctx.textAlign = 'center';
-ctx.fillStyle = '#8f86a8';
-ctx.font = '600 13px "Segoe UI", Inter, system-ui, sans-serif';
-ctx.fillText('* EDC-3 energy alignment — experimental', W / 2, y);
-}
-ctx.textAlign = 'center';
-ctx.fillStyle = '#666666';
-ctx.font = '600 16px "Segoe UI", Inter, system-ui, sans-serif';
-ctx.fillText('© ' + AUTHOR + ' • QFTM-1024 v' + VERSION, W / 2, H - 24);
-canvas.toBlob(function(blob) {
-if (blob) {
-downloadBlob(blob, 'QFTM-1024-couple-' + codeA + '-' + codeB + (hasUf6 ? '-withUF6' : '') + '.png');
-alert(ui('compatExported'));
-}
-}, 'image/png');
-} catch (e) {
-alert(ui('importError') + e.message);
-}
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+        
+        // Background
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(0, 0, W, H);
+        
+        // Title
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 34px "Segoe UI", Inter, system-ui, sans-serif';
+        ctx.fillText('QFTM-1024 • ' + ui('compatCardTitle'), W / 2, 56);
+        
+        // Cats
+        ctx.drawImage(imgA, 40, 90, 440, 440);
+        ctx.drawImage(imgB, 520, 90, 440, 440);
+        
+        // Names & Codes
+        ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
+        ctx.fillStyle = getTypeColor(codeA).hslBright;
+        ctx.fillText((nameA ? nameA + ' • ' : '') + codeA, 260, 570);
+        ctx.fillStyle = getTypeColor(codeB).hslBright;
+        ctx.fillText((nameB ? nameB + ' • ' : '') + codeB, 740, 570);
+        
+        // STACKS (New Feature)
+        let stackY = 600;
+        ctx.font = '600 18px monospace'; // Monospace for readability
+        ctx.fillStyle = '#aaaaaa';
+        
+        if (stackA) {
+             // Truncate if too long visually, though usually fits
+             ctx.fillText(stackA, 260, stackY);
+        }
+        if (stackB) {
+             ctx.fillText(stackB, 740, stackY);
+        }
+        
+        // Main Score
+        const oColor = ufBarColor(res.overall);
+        ctx.fillStyle = oColor;
+        ctx.font = '900 84px "Segoe UI", Inter, system-ui, sans-serif';
+        // Adjust Y position slightly down if stacks were added
+        ctx.fillText(hasUf6 ? res.overall.toFixed(3) : res.overall.toFixed(1), W / 2, stackY + 80); 
+        
+        ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
+        ctx.fillText(ui('compatVerdict') + ': ' + ui('verdict' + res.verdictIndex), W / 2, stackY + 120);
+        
+        // Sub-caption when experimental mode is on (Fixed: No "undefined")
+        if (hasUf6) {
+            ctx.font = '600 14px "Segoe UI", Inter, system-ui, sans-serif';
+            ctx.fillStyle = '#c9b6ff';
+            // Just the icon and title, no undefined variable
+            ctx.fillText('🧪 ' + ui('expTitle'), W / 2, stackY + 145);
+        }
+        
+        // Bars
+        let y = stackY + 180;
+        for (let i = 0; i < 5; i++) {
+            const s = res.uf[i];
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#bbbbbb';
+            ctx.font = '600 18px "Segoe UI", Inter, system-ui, sans-serif';
+            ctx.fillText('UF-' + (i + 1), 60, y);
+            
+            ctx.fillStyle = '#222222';
+            ctx.fillRect(140, y - 15, 690, 15);
+            
+            ctx.fillStyle = ufBarColor(s);
+            ctx.fillRect(140, y - 15, 690 * (Math.max(0, Math.min(100, s)) / 100), 15);
+            
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(s.toFixed(1), 940, y);
+            y += 36;
+        }
+        
+        // UF-6 Bar (Fixed: No asterisk *)
+        if (hasUf6) {
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#c9b6ff';
+            ctx.font = '600 18px "Segoe UI", Inter, system-ui, sans-serif';
+            ctx.fillText('UF-6', 60, y); // Removed *
+            
+            ctx.fillStyle = '#222222';
+            ctx.fillRect(140, y - 15, 690, 15);
+            
+            ctx.fillStyle = ufBarColor(uf6score);
+            ctx.fillRect(140, y - 15, 690 * (Math.max(0, Math.min(100, uf6score)) / 100), 15);
+            
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(uf6score.toFixed(3), 940, y);
+            y += 24;
+            
+            // REMOVED footnote about "* EDC-3..." completely to save space/copyright area
+        }
+        
+        // Copyright Footer
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#666666';
+        ctx.font = '600 16px "Segoe UI", Inter, system-ui, sans-serif';
+        ctx.fillText('© ' + AUTHOR + ' • QFTM-1024 v' + VERSION, W / 2, H - 24);
+        
+        canvas.toBlob(function(blob) {
+            if (blob) {
+                downloadBlob(blob, 'QFTM-1024-couple-' + codeA + '-' + codeB + (hasUf6 ? '-withUF6' : '') + '.png');
+                alert(ui('compatExported'));
+            }
+        }, 'image/png');
+        
+    } catch (e) {
+        alert(ui('importError') + e.message);
+    }
 }
   function initCompat() {
     document.getElementById('btnCompatCalc').addEventListener('click', renderCompat);
