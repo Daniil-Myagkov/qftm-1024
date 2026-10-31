@@ -3,7 +3,7 @@
 **Quadrotomy Factor Typology Model** — a scientific personality typing system built on the Big Five (IPIP-NEO facets), producing **1024 unique profiles** instead of MBTI's 16.
 
 🌐 **Live demo:** https://Daniil-Myagkov.github.io/qftm-1024/
-🔖 **Current version: 6.2**
+🔖 **Current version: 6.4**
 
 ---
 
