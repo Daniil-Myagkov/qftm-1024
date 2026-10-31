@@ -7332,13 +7332,37 @@ var ra=oa.indexOf(d),rb=ob.indexOf(d);
 var ta=tierOf(ra),tb=tierOf(rb);
 var td=Math.abs(ta-tb);
 var st=STAKE[d]||0.5;
-var c=CURVE[td]*st;
-/* Bonus for exact Core Match (Tier 1 == Tier 1) */
-if(td===0&&ta===1)c+=8*st;
-/* Penalty reduction for MN/CA if one is low and other is high (Provider role) */
-if((d==='MN'||d==='CA')&&td>=3)c*=0.6; /* Soften the blow of financial/career mismatch */
-/* Gap Warning for Critical Domains */
-if(td>=3&&(d==='SP'||d==='SX'||d==='CH')){c-=10;gapWarn.push(d);}
+    var c=CURVE[td]*st;
+    
+    /* === BONUS PHASE (before harshness multiplier) === */
+    /* Exact Core Match bonus stays generous, unaffected by penalty factor */
+    if(td===0 && ta===1) {
+        c += 8 * st;
+    }
+    
+    /* === HARSHNESS MULTIPLIER v6.3 === */
+    /* Negative contributions get amplified ×1.6 to reflect reality:
+       a single critical mismatch should outweigh multiple minor matches. */
+    if(c < 0) {
+        c *= 1.6;
+    }
+    
+    /* === SPECIFIC SOFTENING (after amplification) === */
+    /* Money/Career gaps are painful but survivable via provider/homemaker dynamic.
+       After the general ×1.6 boost, we pull them back down slightly so they remain
+       less catastrophic than SP/SX/CH mismatches. Net effect ≈ ×1.23 for MN/CA. */
+    if((d==='MN' || d==='CA') && td>=3) {
+        c /= 1.3;
+    }
+    
+    /* === CRITICAL DOMAIN GAP WARNING === */
+    /* Extra flat penalty when Partner/Sex/Children diverge by 3+ tiers.
+       This guarantees such pairs fall into "Friction Zone" or worse,
+       regardless of how well other domains align. */
+    if(td>=3 && (d==='SP' || d==='SX' || d==='CH')) {
+        c -= 10;
+        gapWarn.push(d);
+    }
 if(d==='CH'&&((ta<=2&&tb===5)||(tb<=2&&ta===5)))chClash=true;
 S+=c;D+=Math.abs(ra-rb);
 rows.push({d:d,ta:ta,tb:tb,x:5-ra,y:5-rb,c:c});
