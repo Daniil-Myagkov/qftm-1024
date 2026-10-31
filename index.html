@@ -1928,7 +1928,7 @@ canvas {
 (function() {
   const AUTHOR = 'Daniil Vasilievich Myagkov';
   const AUTHOR_RU = 'Мягков Даниил Васильевич';
-  const VERSION = '5.0';
+  const VERSION = '6.0';
   const RIGHTS_YEAR = '2026';
 
   // ===== Storage with migration from old fftm1024_* keys =====
@@ -4402,73 +4402,93 @@ return '#ff5c5c';
   });
   }
   async function exportCoupleCard() {
-  if (!lastCompat) {
-  alert(ui('compatExportFail'));
-  return;
-  }
-  const codeA = lastCompat.codeA;
-  const codeB = lastCompat.codeB;
-  const nameA = lastCompat.nameA;
-  const nameB = lastCompat.nameB;
-  const res = lastCompat.res;
-  try {
-  const imgA = await svgToImage(catSVG(codeA, 440, nameA), 440);
-  const imgB = await svgToImage(catSVG(codeB, 440, nameB), 440);
-  const W = 1000;
-  const H = 1000;
-  const canvas = document.createElement('canvas');
-  canvas.width = W;
-  canvas.height = H;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#0a0a0a';
-  ctx.fillRect(0, 0, W, H);
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '700 34px "Segoe UI", Inter, system-ui, sans-serif';
-  ctx.fillText('QFTM-1024 • ' + ui('compatCardTitle'), W / 2, 56);
-  ctx.drawImage(imgA, 40, 90, 440, 440);
-  ctx.drawImage(imgB, 520, 90, 440, 440);
-  ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
-  ctx.fillStyle = getTypeColor(codeA).hslBright;
-  ctx.fillText((nameA ? nameA + ' • ' : '') + codeA, 260, 570);
-  ctx.fillStyle = getTypeColor(codeB).hslBright;
-  ctx.fillText((nameB ? nameB + ' • ' : '') + codeB, 740, 570);
-  const oColor = ufBarColor(res.overall);
-  ctx.fillStyle = oColor;
-  ctx.font = '900 84px "Segoe UI", Inter, system-ui, sans-serif';
-  ctx.fillText(res.overall.toFixed(1), W / 2, 690);
-  ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
-  ctx.fillText(ui('compatVerdict') + ': ' + ui('verdict' + res.verdictIndex), W / 2, 730);
-  let y = 790;
-  for (let i = 0; i < 5; i++) {
-  const s = res.uf[i];
-  ctx.textAlign = 'left';
-  ctx.fillStyle = '#bbbbbb';
-  ctx.font = '600 18px "Segoe UI", Inter, system-ui, sans-serif';
-  ctx.fillText('UF-' + (i + 1), 60, y);
-  ctx.fillStyle = '#222222';
-  ctx.fillRect(140, y - 15, 690, 15);
-  ctx.fillStyle = ufBarColor(s);
-  ctx.fillRect(140, y - 15, 690 * (s / 100), 15);
-  ctx.textAlign = 'right';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(s.toFixed(1), 940, y);
-  y += 36;
-  }
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#666666';
-  ctx.font = '600 16px "Segoe UI", Inter, system-ui, sans-serif';
-  ctx.fillText('© ' + AUTHOR + ' • QFTM-1024 v' + VERSION, W / 2, H - 24);
-  canvas.toBlob(function(blob) {
-  if (blob) {
-  downloadBlob(blob, 'QFTM-1024-couple-' + codeA + '-' + codeB + '.png');
-  alert(ui('compatExported'));
-  }
-  }, 'image/png');
-  } catch (e) {
-  alert(ui('importError') + e.message);
-  }
-  }
+if (!lastCompat) {
+alert(ui('compatExportFail'));
+return;
+}
+const codeA = lastCompat.codeA;
+const codeB = lastCompat.codeB;
+const nameA = lastCompat.nameA;
+const nameB = lastCompat.nameB;
+const res = lastCompat.res;
+const uf6score = (typeof window.QFTM_UF6 === 'number') ? window.QFTM_UF6 : null;
+const hasUf6 = uf6score !== null;
+try {
+const imgA = await svgToImage(catSVG(codeA, 440, nameA), 440);
+const imgB = await svgToImage(catSVG(codeB, 440, nameB), 440);
+const W = 1000;
+const H = hasUf6 ? 1040 : 1000;
+const canvas = document.createElement('canvas');
+canvas.width = W;
+canvas.height = H;
+const ctx = canvas.getContext('2d');
+ctx.fillStyle = '#0a0a0a';
+ctx.fillRect(0, 0, W, H);
+ctx.textAlign = 'center';
+ctx.fillStyle = '#ffffff';
+ctx.font = '700 34px "Segoe UI", Inter, system-ui, sans-serif';
+ctx.fillText('QFTM-1024 • ' + ui('compatCardTitle'), W / 2, 56);
+ctx.drawImage(imgA, 40, 90, 440, 440);
+ctx.drawImage(imgB, 520, 90, 440, 440);
+ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
+ctx.fillStyle = getTypeColor(codeA).hslBright;
+ctx.fillText((nameA ? nameA + ' • ' : '') + codeA, 260, 570);
+ctx.fillStyle = getTypeColor(codeB).hslBright;
+ctx.fillText((nameB ? nameB + ' • ' : '') + codeB, 740, 570);
+const oColor = ufBarColor(res.overall);
+ctx.fillStyle = oColor;
+ctx.font = '900 84px "Segoe UI", Inter, system-ui, sans-serif';
+ctx.fillText(res.overall.toFixed(1), W / 2, 690);
+ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
+ctx.fillText(ui('compatVerdict') + ': ' + ui('verdict' + res.verdictIndex), W / 2, 730);
+let y = 790;
+for (let i = 0; i < 5; i++) {
+const s = res.uf[i];
+ctx.textAlign = 'left';
+ctx.fillStyle = '#bbbbbb';
+ctx.font = '600 18px "Segoe UI", Inter, system-ui, sans-serif';
+ctx.fillText('UF-' + (i + 1), 60, y);
+ctx.fillStyle = '#222222';
+ctx.fillRect(140, y - 15, 690, 15);
+ctx.fillStyle = ufBarColor(s);
+ctx.fillRect(140, y - 15, 690 * (Math.max(0, Math.min(100, s)) / 100), 15);
+ctx.textAlign = 'right';
+ctx.fillStyle = '#ffffff';
+ctx.fillText(s.toFixed(1), 940, y);
+y += 36;
+}
+if (hasUf6) {
+ctx.textAlign = 'left';
+ctx.fillStyle = '#c9b6ff';
+ctx.font = '600 18px "Segoe UI", Inter, system-ui, sans-serif';
+ctx.fillText('UF-6*', 60, y);
+ctx.fillStyle = '#222222';
+ctx.fillRect(140, y - 15, 690, 15);
+ctx.fillStyle = ufBarColor(uf6score);
+ctx.fillRect(140, y - 15, 690 * (Math.max(0, Math.min(100, uf6score)) / 100), 15);
+ctx.textAlign = 'right';
+ctx.fillStyle = '#ffffff';
+ctx.fillText(uf6score.toFixed(3), 940, y);
+y += 24;
+ctx.textAlign = 'center';
+ctx.fillStyle = '#8f86a8';
+ctx.font = '600 13px "Segoe UI", Inter, system-ui, sans-serif';
+ctx.fillText('* EDC-3 energy alignment — experimental', W / 2, y);
+}
+ctx.textAlign = 'center';
+ctx.fillStyle = '#666666';
+ctx.font = '600 16px "Segoe UI", Inter, system-ui, sans-serif';
+ctx.fillText('© ' + AUTHOR + ' • QFTM-1024 v' + VERSION, W / 2, H - 24);
+canvas.toBlob(function(blob) {
+if (blob) {
+downloadBlob(blob, 'QFTM-1024-couple-' + codeA + '-' + codeB + '.png');
+alert(ui('compatExported'));
+}
+}, 'image/png');
+} catch (e) {
+alert(ui('importError') + e.message);
+}
+}
   function initCompat() {
     document.getElementById('btnCompatCalc').addEventListener('click', renderCompat);
     document.getElementById('btnCompatSwap').addEventListener('click', function() {
@@ -7448,16 +7468,16 @@ var chk=box.querySelector('#edcUf6Chk');var out=box.querySelector('#edcUf6Out');
 var ufBox=document.getElementById('compatUfs');var ovBox=document.getElementById('compatOverall');
 var oldCard=document.getElementById('edcUf6Card');if(oldCard)oldCard.remove();
 out.innerHTML='';
-if(!chk.checked){if(ovBox&&ovBox.dataset.edcExp){delete ovBox.dataset.edcExp;setTimeout(function(){var bc=document.getElementById('btnCompatCalc');if(bc)bc.click();},0);}return;}
+if(!chk.checked){window.QFTM_UF6=null;if(ovBox&&ovBox.dataset.edcExp){delete ovBox.dataset.edcExp;setTimeout(function(){var bc=document.getElementById('btnCompatCalc');if(bc)bc.click();},0);}return;}
 var oa=parseStack(box.querySelector('#edcStackA').value);
 var ob=parseStack(box.querySelector('#edcStackB').value);
-if(!oa||!ob){out.innerHTML='<span style="color:#ff6b6b;">'+esc(t('stErr'))+'</span>';return;}
+if(!oa||!ob){window.QFTM_UF6=null;out.innerHTML='<span style="color:#ff6b6b;">'+esc(t('stErr'))+'</span>';return;}
 var inA=document.getElementById('compatAInput'),inB=document.getElementById('compatBInput');
 var cA=String(inA?inA.value:'').toUpperCase().trim(),cB=String(inB?inB.value:'').toUpperCase().trim();
 var validCodes=/^[IDAE][SMHN][TLCF][WPUJ]-[BRZV]$/.test(cA)&&/^[IDAE][SMHN][TLCF][WPUJ]-[BRZV]$/.test(cB);
 var nLa=validCodes?cA.split('-')[1]:'R';
 var nLb=validCodes?cB.split('-')[1]:'R';
-var r=uf6(oa,ob,nLa,nLb);
+var r=uf6(oa,ob,nLa,nLb);window.QFTM_UF6=r.score;
 var col=barColor(r.score);
 var card=document.createElement('div');
 card.className='uf-card';card.id='edcUf6Card';
@@ -7503,6 +7523,80 @@ var sel=document.getElementById('languageSelect');
 if(sel)sel.addEventListener('change',function(){hb.textContent=t('btn');if(ov.classList.contains('open'))render();renderUf6();});
 hb.textContent=(TK.ui.btn[lang()]||TK.ui.btn.en);
 try{var s0=JSON.parse(LSg('edc2_stack')||'null');if(s0)window.QFTM_EDC_STACK=s0;}catch(e){}
+})();
+</script>
+  <script>
+/* ============================================================
+QFTM-1024 v6.0 :: Schulte number-size slider
+Adds a manual 8–40 px font slider to the Schulte table.
+Effective size is auto-clamped to the cell footprint so digits
+never overflow the grid. Persists in localStorage.
+© 2026 Daniil Vasilievich Myagkov. All rights reserved.
+============================================================ */
+(function(){
+'use strict';
+function LSg(k){try{return localStorage.getItem('qftm1024_'+k);}catch(e){return null;}}
+function LSs(k,v){try{localStorage.setItem('qftm1024_'+k,v);}catch(e){}}
+var LBL={en:'Number size',ru:'Размер цифр',es:'Tamaño de números',fr:'Taille des chiffres',zh:'数字大小'};
+function lang(){var l=LSg('lang');return LBL[l]?l:'en';}
+var MIN=8,MAX=40;
+var desired=parseInt(LSg('schulte_font')||'16',10);
+if(isNaN(desired)||desired<MIN)desired=MIN;
+if(desired>MAX)desired=MAX;
+function tableEl(){return document.getElementById('schulteTable');}
+function currentN(){
+var sel=document.getElementById('schulteSizeSelect');
+if(sel&&sel.value){var n=parseInt(sel.value,10);if(!isNaN(n)&&n>=3)return n;}
+var t=tableEl();
+if(t){var c=t.querySelectorAll('.schulte-cell').length;var n2=Math.round(Math.sqrt(c));if(n2>=3)return n2;}
+return 5;
+}
+function applyFont(){
+var t=tableEl();
+if(!t)return;
+var w=t.clientWidth;
+if(!w)return;
+var n=currentN();
+var cell=(w-16-(n-1)*3)/n;
+var maxF=Math.max(MIN,Math.floor(cell*0.62));
+var f=Math.min(desired,maxF);
+var cells=t.querySelectorAll('.schulte-cell');
+for(var i=0;i<cells.length;i++){cells[i].style.fontSize=f+'px';}
+}
+function buildUI(){
+var anchor=document.getElementById('schulteDotSizeInput');
+if(!anchor||document.getElementById('schulteFontInput'))return;
+var label=document.createElement('label');
+label.id='schulteFontLabel';
+label.textContent=LBL[lang()];
+var inp=document.createElement('input');
+inp.type='range';inp.id='schulteFontInput';
+inp.min=String(MIN);inp.max=String(MAX);inp.value=String(desired);
+inp.title=LBL[lang()];
+inp.addEventListener('input',function(){
+desired=parseInt(inp.value,10);
+LSs('schulte_font',String(desired));
+applyFont();
+});
+anchor.insertAdjacentElement('afterend',inp);
+anchor.insertAdjacentElement('afterend',label);
+var sel=document.getElementById('languageSelect');
+if(sel)sel.addEventListener('change',function(){label.textContent=LBL[lang()];inp.title=LBL[lang()];});
+}
+function init(){
+buildUI();
+applyFont();
+var t=tableEl();
+if(t&&window.MutationObserver){
+new MutationObserver(function(){requestAnimationFrame(applyFont);}).observe(t,{childList:true});
+}
+window.addEventListener('resize',function(){requestAnimationFrame(applyFont);});
+var tab=document.querySelector('[data-tab="schulte"]');
+if(tab)tab.addEventListener('click',function(){setTimeout(applyFont,60);});
+var sizeSel=document.getElementById('schulteSizeSelect');
+if(sizeSel)sizeSel.addEventListener('change',function(){setTimeout(applyFont,40);});
+}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
 })();
 </script>
 </body>
