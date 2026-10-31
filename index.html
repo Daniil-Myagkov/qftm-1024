@@ -1928,7 +1928,7 @@ canvas {
 (function() {
   const AUTHOR = 'Daniil Vasilievich Myagkov';
   const AUTHOR_RU = 'Мягков Даниил Васильевич';
-  const VERSION = '6.2';
+  const VERSION = '6.3';
   const RIGHTS_YEAR = '2026';
 
   // ===== Storage with migration from old fftm1024_* keys =====
@@ -4287,8 +4287,24 @@ const strategy = 0.40*sim.C + 0.30*sim.O + 0.30*sim.E;
 const weakest = Math.min(sim.E, sim.O, sim.A, sim.C, 100-mean('N'));
 const uf5 = clamp100(0.70*strategy + 0.30*weakest);
 
-// === ИТОГ: UF-4 30% + UF-3 25% + UF-1 20% + UF-5 20% + UF-2 5% ===
-const overall = 0.30 * uf4 + 0.25 * uf3 + 0.20 * uf1 + 0.20 * uf5 + 0.05 * uf2;
+/* 
+   Revised Weights v6.3:
+   UF-4 (Repair): Highest weight. Relationships die without repair mechanisms.
+   UF-3 (Stress Buffer): Second highest. Survival under pressure.
+   UF-2 (Complementarity): Raised to 18%. Differences create spark and coverage.
+   UF-1 (Similarity): Lowered to 17%. Too much similarity leads to boredom/stagnation.
+   UF-5 (Niche Alignment): Moderate 17%. Shared life goals matter, but can be negotiated.
+   
+   Sum: 0.25 + 0.20 + 0.18 + 0.17 + 0.17 = 0.97 -> Normalize or adjust slightly.
+   Let's make it sum exactly to 1.0 for cleaner math:
+*/
+const wUf4 = 0.25; // Repair is king
+const wUf3 = 0.20; // Stress resilience
+const wUf2 = 0.20; // Complementarity (RESTORED to standard importance)
+const wUf1 = 0.18; // Similarity (slightly reduced as per your insight about clones being boring)
+const wUf5 = 0.17; // Niche alignment
+
+const overall = wUf1 * uf1 + wUf2 * uf2 + wUf3 * uf3 + wUf4 * uf4 + wUf5 * uf5;
 
 let verdictIndex;
 if (overall > 100) verdictIndex = 8;       // светлая фуксия
@@ -4505,15 +4521,25 @@ async function exportCoupleCard() {
         ctx.fillText(hasUf6 ? res.overall.toFixed(3) : res.overall.toFixed(1), W / 2, stackY + 80); 
         
         ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
-        ctx.fillText(ui('compatVerdict') + ': ' + ui('verdict' + res.verdictIndex), W / 2, stackY + 120);
+        // Безопасное получение названия вердикта
+var vKey = 'verdict' + res.verdictIndex;
+var vText = ui(vKey); 
+if (!vText || vText === undefined) {
+    // Если перевода нет, используем дефолтное описание диапазона
+    if (res.overall > 100) vText = 'Выше шкалы (>100)';
+    else if (res.overall < 0) vText = 'Ниже шкалы (<0)';
+    else vText = 'Неизвестно';
+}
+ctx.fillText(ui('compatVerdict') + ': ' + vText, W / 2, 730);
         
         // Sub-caption when experimental mode is on (Fixed: No "undefined")
         if (hasUf6) {
-            ctx.font = '600 14px "Segoe UI", Inter, system-ui, sans-serif';
-            ctx.fillStyle = '#c9b6ff';
-            // Just the icon and title, no undefined variable
-            ctx.fillText('🧪 ' + ui('expTitle'), W / 2, stackY + 145);
-        }
+    ctx.font = '600 14px "Segoe UI", Inter, system-ui, sans-serif';
+    ctx.fillStyle = '#c9b6ff';
+    var expTxt = ui('expTitle');
+    if(!expTxt || expTxt==='undefined') expTxt = 'Экспериментальный режим UF-6';
+    ctx.fillText('🧪 ' + expTxt, W / 2, stackY + 145);
+}
         
         // Bars
         let y = stackY + 180;
@@ -7650,7 +7676,7 @@ try{var s0=JSON.parse(LSg('edc2_stack')||'null');if(s0)window.QFTM_EDC_STACK=s0;
 </script>
 <script>
 /* ============================================================
-QFTM-1024 v6.2 :: Schulte number-size slider (FIXED)
+QFTM-1024 v6.3 :: Schulte number-size slider (FIXED)
 Measures actual text width via canvas to guarantee digits
 never overflow cell boundaries at any grid size (3–12).
 Persists in localStorage.
