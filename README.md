@@ -3,7 +3,7 @@
 **Quadrotomy Factor Typology Model** — a scientific personality typing system built on the Big Five (IPIP-NEO facets), producing **1024 unique profiles** instead of MBTI's 16.
 
 🌐 **Live demo:** https://Daniil-Myagkov.github.io/qftm-1024/
-🔖 **Current version: 6.1**
+🔖 **Current version: 6.2**
 
 ---
 
@@ -70,13 +70,6 @@ Each of the five factors is split into four zones — `0–30`, `31–50`, `51�
 
 ### v5.0 and earlier
 - Rebalanced UF weights, nTerm neuro-pair load, repair-floor math, multilingual test, games, calendar, cats, SEO meta bundle.
-
-## Known rough edges (v6.1)
-
-- Quick-tab sliders do not persist their draft positions across page reloads (only saved results persist). Draft autosave remains on the roadmap.
-- UF-6 and the recomputed QCI are explicitly labelled **experimental** in-app (3-decimal heuristic, not a clinical verdict); the partner's EDC stack must be entered manually — only your own last stack auto-fills.
-
-Everything else is production-ready.
 
 ## Architecture notes
 
