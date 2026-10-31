@@ -1928,7 +1928,7 @@ canvas {
 (function() {
   const AUTHOR = 'Daniil Vasilievich Myagkov';
   const AUTHOR_RU = 'Мягков Даниил Васильевич';
-  const VERSION = '6.3';
+  const VERSION = '6.4';
   const RIGHTS_YEAR = '2026';
 
   // ===== Storage with migration from old fftm1024_* keys =====
@@ -7095,12 +7095,22 @@ box.innerHTML = html;
 </script>
 <script>
 /* ============================================================
-QFTM-1024 :: EDC-3 (11 domains) — REBALANCED WEIGHTS v12
+QFTM-1024 :: EDC-3 (11 domains) — REBALANCED WEIGHTS v13 (version 6.4)
 Logic changes in uf6():
-- SP & CH core match = HUGE bonus (+25 / +18). They are the glue.
-- MN & CA mismatch penalty REDUCED significantly (provider/homemaker dynamic).
-- BD similarity bonus INCREASED (shared lifestyle marker).
-- General curve adjusted to favor emotional resonance over resource parity.
+- NEW 6-TIER SCALE (11 = 1+2+2+2+3+1):
+  rank 0      = tier 1 CYAN supercore
+  ranks 1-2   = tier 2 dark-green core
+  ranks 3-4   = tier 3 green
+  ranks 5-6   = tier 4 yellow
+  ranks 7-9   = tier 5 orange
+  rank 10     = tier 6 red enemy
+- POSITION FLEXIBILITY: a rank gradient is applied INSIDE a zone too,
+  so 1st place always contributes more than 3rd place even when both
+  sit in the same green zone.
+- CYAN supercore gives EXTRA match bonuses:
+  core bonus pair: cyan+cyan +14*st > cyan+core +8*st > core+core +4*st.
+- SP/CH global bonuses now reward a cyan slot: SP 30/25/12, CH 22/18/8.
+- CURVE extended to 6 tier-differences: [8, 6, -3, -10, -18, -26].
 © 2026 Daniil Vasilievich Myagkov. Heuristic, not clinical.
 ============================================================ */
 (function(){
@@ -7162,7 +7172,7 @@ GR:{en:'painful insights, long trauma work, loneliness of the path',ru:'боль
 SX:{en:'rejection, mismatched desire, performance anxiety, routine killing spark',ru:'отказ, несовпадение желаний, тревога «не справиться», рутина убивает искру',es:'rechazo, deseo desincronizado, ansiedad de rendimiento, rutina mata la chispa',fr:'rejet, désir désynchronisé, anxiété de performance, routine tue l’étincelle',zh:'拒绝、欲望不同步、表现焦虑、例行公事扼杀火花'}};
 var DETAIL={
 BD:{what:{en:'Your physical self: health, sleep, energy, sport, how you feel in your body.',ru:'Ваше физическое «я»: здоровье, сон, энергия, спорт, то, как вы ощущаете себя в теле.',es:'Tu yo físico: salud, sueño, energía, deporte, cómo te sientes en tu cuerpo.',fr:'Votre « moi » physique : santé, sommeil, énergie, sport, comment vous vous sentez.',zh:'你的身体自我：健康、睡眠、能量、运动、身体感受。'},hi:{en:'High = you invest in your body and feel alive when it’s strong.',ru:'Высоко = вы вкладываетесь в тело и чувствуете себя живым, когда оно сильное.',es:'Alto = inviertes en tu cuerpo y te sientes vivo cuando está fuerte.',fr:'Haut = vous investissez dans votre corps et vous sentez vivant quand il est fort.',zh:'高 = 你投资身体，身体强健时感到有活力。'},lo:{en:'Low = body is background noise; you spend energy elsewhere.',ru:'Низко = тело для вас фон; энергию вы тратите на другое.',es:'Bajo = el cuerpo es ruido de fondo; gastas energía en otra cosa.',fr:'Bas = le corps est un bruit de fond ; vous dépensez l’énergie ailleurs.',zh:'低 = 身体是背景；你把能量花在别处。'}},
-CA:{what:{en:'Your work, profession, career ladder, status and recognition.',ru:'Ваша работа, профессия, карьерная лестница, статус и признание.',es:'Tu trabajo, profesión, escalera laboral, estatus y reconocimiento.',fr:'Votre travail, profession, échelle de carrière, statut et reconnaissance.',zh:'你的工作、职业、职业阶梯、地位与认可。'},hi:{en:'High = your job is part of your identity and a source of pride.',ru:'Высоко = работа — часть вашей личности и предмет гордости.',es:'Alto = tu trabajo es parte de tu identidad y motivo de orgullo.',fr:'Haut = votre travail fait partie de votre identité et est une fierté.',zh:'高 = 工作是身份的一部分，是骄傲来源。'},lo:{en:'Low = work is just a way to earn, not who you are.',ru:'Низко = работа лишь способ заработать, а не то, кто вы есть.',es:'Bajo = el trabajo es solo un modo de ganar, no quién eres.',fr:'Bas = le travail est juste un moyen de gagner, pas qui vous êtes.',zh:'低 = 工作只是赚钱方式，不是你是谁。'}},
+CA:{what:{en:'Your work, profession, career ladder, status and recognition.',ru:'Ваша работа, профессия, карьерная лестница, статус и признание.',es:'Tu trabajo, profesión, escalera laboral, estatus y reconocimiento.',fr:'Votre travail, profession, échelle de carrière, statut et reconnaissance.',zh:'你的工作、职业、职业阶梯、地位与认可。'},hi:{en:'High = your job is part of your identity and a source of pride.',ru:'Высоко = работа — часть вашей личности и предмет гордости.',es:'Alto = tu trabajo es parte de tu identidad y motivo de orgullo.',fr:'Haut = votre travail fait partie de votre identité et est une fierté.',zh:'高 = 工作是身份的一部分，是骄傲来源。'},lo:{en:'Low = work is just a way to earn, not who you are.',ru:'Низко = работа лишь способ заработать, а не то, кто вы есть.',es:'Bajo = el trabajo es solo un modo de ganar, no quién eres.',fr:'Bas = le travail est juste un moyen de gagner, pas qui tu es.',zh:'低 = 工作只是赚钱方式，不是你是谁。'}},
 MN:{what:{en:'Money, income, financial safety, comfort and freedom of choice.',ru:'Деньги, доход, финансовая безопасность, комфорт и свобода выбора.',es:'Dinero, ingresos, seguridad financiera, confort y libertad de elección.',fr:'Argent, revenus, sécurité financière, confort et liberté de choix.',zh:'金钱、收入、财务安全、舒适与选择自由。'},hi:{en:'High = financial security is a top driver of your decisions.',ru:'Высоко = финансовая безопасность — главный двигатель ваших решений.',es:'Alto = la seguridad financiera es el principal motor de tus decisiones.',fr:'Haut = la sécurité financière est le moteur principal de vos décisions.',zh:'高 = 财务安全是你决策的主要驱动。'},lo:{en:'Low = money matters less than other values right now.',ru:'Низко = сейчас деньги важны меньше других ценностей.',es:'Bajo = el dinero importa menos que otros valores ahora.',fr:'Bas = l’argent compte moins que d’autres valeurs en ce moment.',zh:'低 = 眼下金钱不如其他价值重要。'}},
 SP:{what:{en:'Romantic love and deep closeness with one partner.',ru:'Романтическая любовь и глубокая близость с одним партнёром.',es:'Amor romántico y cercanía profunda con una pareja.',fr:'Amour romantique et proximité profonde avec un partenaire.',zh:'与一位伴侣的浪漫之爱与深度亲密。'},hi:{en:'High = a loving partnership is central to your happiness.',ru:'Высоко = любящее партнёрство — центр вашего счастья.',es:'Alto = una pareja amorosa es central para tu felicidad.',fr:'Haut = un partenariat aimant est central pour votre bonheur.',zh:'高 = 有爱的伴侣关系是你幸福的核心。'},lo:{en:'Low = romance is not the main thing in your life right now.',ru:'Низко = романтика сейчас не главное в вашей жизни.',es:'Bajo = el romance no es lo principal en tu vida ahora.',fr:'Bas = la romance n’est pas l’essentiel de votre vie en ce moment.',zh:'低 = 眼下浪漫不是你生活的主轴。'}},
 PA:{what:{en:'Bond with parents, roots, family traditions and duty to elders.',ru:'Связь с родителями, корни, семейные традиции и долг перед старшими.',es:'Vínculo con padres, raíces, tradiciones familiares y deber hacia los mayores.',fr:'Lien avec les parents, racines, traditions familiales et devoir envers les aînés.',zh:'与父母的联结、根、家庭传统与对长辈的责任。'},hi:{en:'High = parents’ opinion and family roots matter deeply to you.',ru:'Высоко = мнение родителей и семейные корни для вас очень важны.',es:'Alto = la opinión de los padres y las raíces te importan mucho.',fr:'Haut = l’avis des parents et les racines comptent beaucoup pour vous.',zh:'高 = 父母的意见和家庭根基对你非常重要。'},lo:{en:'Low = you live your own separate life; parents are part of the past, not current decisions.',ru:'Низко = вы живёте своей отдельной жизнью; родители — часть прошлого, а не центр текущих решений.',es:'Bajo = vives tu propia vida; los padres son parte del pasado, no el centro de decisiones actuales.',fr:'Bas = vous vivez votre propre vie ; les parents font partie du passé, pas des décisions actuelles.',zh:'低 = 你过自己独立的生活；父母是过去的一部分，不是当下决策的中心。'}},
@@ -7178,13 +7188,13 @@ r2:{en:'Imagine your next year: which one will you put more energy into?',ru:'П
 var TK={ui:{
 btn:{en:'🧭 EDC',ru:'🧭 EDC',es:'🧭 EDC',fr:'🧭 EDC',zh:'🧭 EDC'},
 title:{en:'EDC-3 · Where your life energy goes (11 domains)',ru:'EDC-3 · Куда течёт твоя жизненная энергия (11 доменов)',es:'EDC-3 · A dónde va tu energía vital (11 dominios)',fr:'EDC-3 · Où va votre énergie vitale (11 domaines)',zh:'EDC-3 · 生命能量流向（11 领域）'},
-sub:{en:'110 forced choices · 11 domains · rebalanced weights · honest UF-6',ru:'110 принудительных выбора · 11 доменов · пересмотренные веса · честный UF-6',es:'110 elecciones forzadas · 11 dominios · pesos reequilibrados · UF-6 honesto',fr:'110 choix forcés · 11 domaines · poids rééquilibrés · UF-6 honnête',zh:'110 项强制选择 · 11 领域 · 重新平衡权重 · 诚实 UF-6'},
+sub:{en:'110 forced choices · 11 domains · 6 zones with cyan supercore · position-flexible · honest UF-6',ru:'110 принудительных выбора · 11 доменов · 6 зон с циан-суперъядром · позиционная гибкость · честный UF-6',es:'110 elecciones forzadas · 11 dominios · 6 zonas con superncleo cian · flexible por posición · UF-6 honesto',fr:'110 choix forcés · 11 domaines · 6 zones avec super-noyau cyan · flexible par position · UF-6 honnête',zh:'110 项强制选择 · 11 领域 · 含青色超核心 6 区 · 位置灵活 · 诚实 UF-6'},
 dynWarn:{en:'⚠️ Your priorities change with age and circumstances. This test captures your energy AS OF TODAY. It is not a life sentence — retake it whenever you feel you have changed.',ru:'⚠️ Ваши приоритеты меняются с возрастом и обстоятельствами. Этот тест фиксирует вашу энергию НА СЕГОДНЯ. Это не приговор на всю жизнь — проходите его заново, когда почувствуете, что изменились.',es:'⚠️ Tus prioridades cambian con la edad y las circunstancias. Este test captura tu energía A DÍA DE HOY. No es una sentencia — repítelo cuando sientas que has cambiado.',fr:'⚠️ Vos priorités changent avec l’âge et les circonstances. Ce test capture votre énergie À CE JOUR. Ce n’est pas une sentence — repassez-le quand vous sentez avoir changé.',zh:'⚠️ 你的优先级会随年龄和境遇改变。此测试捕捉的是你今天的能量。这不是判决——当你觉得自己变了就重测。'},
 whatEdcTitle:{en:'📖 What is EDC and why take it',ru:'📖 Что такое EDC и зачем его проходить',es:'📖 Qué es EDC y por qué hacerlo',fr:'📖 Qu’est-ce que l’EDC et pourquoi le passer',zh:'📖 什么是 EDC，为什么要测'},
 whatEdc1:{en:'EDC (Energy Domain Calculator) shows where your life energy goes right now, across 11 life domains — from your body and money to love, sex, friends and growth.',ru:'EDC (Калькулятор Энергетических Доменов) показывает, куда уходит ваша жизненная энергия прямо сейчас, по 11 жизненным доменам — от тела и денег до любви, секса, друзей и роста.',es:'EDC muestra a dónde va tu energía vital ahora, en 11 dominios: del cuerpo y el dinero al amor, sexo, amigos y crecimiento.',fr:'L’EDC montre où va votre énergie vitale en ce moment, à travers 11 domaines — du corps et l’argent à l’amour, le sexe, les amis et la croissance.',zh:'EDC 显示你当下的生命能量流向 11 个生活领域——从身体、金钱到爱、性、朋友与成长。'},
 whatEdc2:{en:'Why it matters: to honestly see your own priorities and compare them with a partner’s. Mismatched priorities are a hidden source of conflict; this test makes them visible.',ru:'Зачем это нужно: честно увидеть свои приоритеты и сравнить их с приоритетами партнёра. Несовпадение приоритетов — скрытый источник конфликтов; этот тест делает их видимыми.',es:'Por qué importa: ver tus prioridades y compararlas con las de tu pareja. Las prioridades desalineadas son una fuente oculta de conflicto; este test las hace visibles.',fr:'Pourquoi c’est important : voir honnêtement vos priorités et les comparer à celles d’un partenaire. Des priorités décalées sont une source cachée de conflit ; ce test les rend visibles.',zh:'为什么重要：诚实看见自己的优先级并与伴侣比较。优先级错位是冲突的隐形来源；本测试让它显形。'},
 whatEdc3:{en:'How it works. Round 1: you choose between two values (110 questions). Round 2: you rate how ready you are to carry each domain’s downsides for its joys. Round 3: when two domains score equal, you pick the one you keep.',ru:'Как это работает. Раунд 1: вы выбираете между двумя ценностями (110 вопросов). Раунд 2: оцениваете, готовы ли нести минусы каждого домена ради его радостей. Раунд 3: когда у двух доменов равные баллы, выбираете, какой оставить.',es:'Cómo funciona. Ronda 1: eliges entre dos valores (110 preguntas). Ronda 2: evalúas si cargarías las penas de cada dominio por sus alegrías. Ronda 3: si dos dominios empatan, eliges cuál mantener.',fr:'Comment ça marche. Tour 1 : vous choisissez entre deux valeurs (110 questions). Tour 2 : vous évaluez si vous porteriez les peines de chaque domaine pour ses joies. Tour 3 : si deux domaines sont à égalité, vous choisissez celui à garder.',zh:'如何进行。第 1 轮：在两个价值间选择（110 题）。第 2 轮：评估你愿为每个领域的喜而承担它的悲。第 3 轮：若两个领域同分，你选择保留哪个。'},
-whatEdc4:{en:'Result: a stack of 11 domains from most to least important. Top 3 = your core (dark green). The last one = your main “enemy” (red). The number is a direction, not a verdict.',ru:'Результат: стек из 11 доменов от самого важного к наименее. Топ-3 = ваше ядро (тёмно-зелёная зона). Последний = ваш главный «враг» (красная). Число — это направление, а не вердикт.',es:'Resultado: una pila de 11 dominios de más a menos importante. Top 3 = tu núcleo (verde oscuro). El último = tu «enemigo» principal (rojo). El número es una dirección, no un veredicto.',fr:'Résultat : une pile de 11 domaines du plus au moins important. Top 3 = votre noyau (vert foncé). Le dernier = votre « ennemi » principal (rouge). Le nombre est une direction, pas un verdict.',zh:'结果：一个 11 领域栈，从最重要到最不重要。前三 = 你的核心（深绿）。最后 = 你的主要「敌人」（红）。数字是方向，不是判决。'},
+whatEdc4:{en:'Result: a stack of 11 domains from most to least important. Rank 1 = supercore (cyan), ranks 2–3 = core (dark green), then green, yellow, orange, and rank 11 = your main “enemy” (red). The number is a direction, not a verdict.',ru:'Результат: стек из 11 доменов от самого важного к наименее. Место 1 = суперъядро (циан), места 2–3 = ядро (тёмно-зелёное), затем зелёная, жёлтая, оранжевая, и место 11 = ваш главный «враг» (красная). Число — это направление, а не вердикт.',es:'Resultado: una pila de 11 dominios de más a menos importante. Puesto 1 = supernúcleo (cian), puestos 2–3 = núcleo (verde oscuro), luego verde, amarillo, naranja y puesto 11 = tu «enemigo» principal (rojo). El número es una dirección, no un veredicto.',fr:'Résultat : une pile de 11 domaines du plus au moins important. Rang 1 = super-noyau (cyan), rangs 2–3 = noyau (vert foncé), puis vert, jaune, orange, et rang 11 = votre « ennemi » principal (rouge). Le nombre est une direction, pas un verdict.',zh:'结果：一个 11 领域栈，从最重要到最不重要。第 1 = 超核心（青），第 2–3 = 核心（深绿），然后绿、黄、橙，第 11 = 你的主要「敌人」（红）。数字是方向，不是判决。'},
 lettersTitle:{en:'🔎 What each letter means (tap to expand)',ru:'🔎 Что значит каждая буква (нажми, чтобы раскрыть)',es:'🔎 Qué significa cada letra (toca para abrir)',fr:'🔎 Que signifie chaque lettre (touchez pour ouvrir)',zh:'🔎 每个字母的含义（点击展开）'},
 lettersHint:{en:'Read this before answering — it makes every question clear.',ru:'Прочтите это перед ответами — так каждый вопрос станет понятным.',es:'Lee esto antes de responder: hará clara cada pregunta.',fr:'Lisez ceci avant de répondre : chaque question deviendra claire.',zh:'作答前阅读——这会让每个问题都清晰。'},
 chSitTitle:{en:'👶 Your situation with children — this shapes how we read the “Children” domain',ru:'👶 Ваша ситуация с детьми — это влияет на то, как мы читаем домен «Дети»',es:'👶 Tu situación con los hijos: esto define cómo leemos el dominio «Hijos»',fr:'👶 Votre situation avec les enfants : cela définit comment nous lisons le domaine « Enfants »',zh:'👶 你的儿童状况——决定我们如何解读「孩子」领域'},
@@ -7213,27 +7223,28 @@ cDom:{en:'Domain',ru:'Домен',es:'Dominio',fr:'Domaine',zh:'领域'},
 cPref:{en:'Preference pts',ru:'Очки предпочтения',es:'Pts de preferencia',fr:'Pts de préférence',zh:'偏好分'},
 cCom:{en:'Endurance %',ru:'Выносливость %',es:'Aguante %',fr:'Endurance %',zh:'承受 %'},
 cFin:{en:'Final',ru:'Итог',es:'Final',fr:'Final',zh:'最终'},
-stack:{en:'Stack (top-3 = dark-green core)',ru:'Стек (топ-3 = тёмно-зелёное ядро)',es:'Pila (top-3 = núcleo verde oscuro)',fr:'Pile (top-3 = noyau vert foncé)',zh:'栈（前三 = 深绿核心）'},
+stack:{en:'Stack (rank 1 = cyan supercore, ranks 2–3 = dark-green core)',ru:'Стек (место 1 = циан-суперъядро, места 2–3 = тёмно-зелёное ядро)',es:'Pila (puesto 1 = supernúcleo cian, puestos 2–3 = núcleo verde oscuro)',fr:'Pile (rang 1 = super-noyau cyan, rangs 2–3 = noyau vert foncé)',zh:'栈（第 1 = 青色超核心，第 2–3 = 深绿核心）'},
 enemy:{en:'Main enemy (red zone)',ru:'Главный враг (красная зона)',es:'Enemigo principal (zona roja)',fr:'Ennemi principal (zone rouge)',zh:'主要敌人（红区）'},
 lie:{en:'Lie-Index (round consistency)',ru:'Индекс Лжи (консистентность раундов)',es:'Índice de Mentira (consistencia)',fr:'Indice de Mensonge (cohérence)',zh:'谎言指数（轮次一致性）'},
 lieL:{en:'consistent — values are stable',ru:'консистентно — ценности устойчивы',es:'consistente — valores estables',fr:'cohérent — valeurs stables',zh:'一致——价值观稳定'},
 lieM:{en:'mixed — some declared values are not lived',ru:'смешанно — часть деклараций не проживается',es:'mixto — algunos valores declarados no se viven',fr:'mitigé — des valeurs déclarées ne sont pas vécues',zh:'混合——部分宣称未践行'},
 lieH:{en:'contradictory — retake when calm',ru:'противоречиво — перепройти в спокойствии',es:'contradictorio — repítelo en calma',fr:'contradictoire — repassez-le au calme',zh:'矛盾——平静时重测'},
 saved:{en:'Saved independently of IPIP-120.',ru:'Сохранено независимо от IPIP-120.',es:'Guardado independiente del IPIP-120.',fr:'Enregistré indépendamment de l’IPIP-120.',zh:'独立于 IPIP-120 保存。'},
-z1:{en:'Core (dark green)',ru:'Ядро (тёмно-зелёная)',es:'Núcleo (verde oscuro)',fr:'Noyau (vert foncé)',zh:'核心（深绿）'},
-z2:{en:'Near (green)',ru:'Близкое (зелёная)',es:'Cercano (verde)',fr:'Proche (vert)',zh:'接近（绿）'},
-z3:{en:'Mid (yellow, neutral)',ru:'Середина (жёлтая, нейтраль)',es:'Medio (amarillo, neutro)',fr:'Médian (jaune, neutre)',zh:'中间（黄，中性）'},
-z4:{en:'Far (orange, friction)',ru:'Дальнее (оранжевая, трение)',es:'Lejano (naranja, fricción)',fr:'Lointain (orange, friction)',zh:'遥远（橙，摩擦）'},
-z5:{en:'Main enemy (red)',ru:'Главный враг (красная)',es:'Enemigo principal (rojo)',fr:'Ennemi principal (rouge)',zh:'主要敌人（红）'},
+z1:{en:'Supercore (cyan)',ru:'Суперъядро (циан)',es:'Supernúcleo (cian)',fr:'Super-noyau (cyan)',zh:'超核心（青）'},
+z2:{en:'Core (dark green)',ru:'Ядро (тёмно-зелёная)',es:'Núcleo (verde oscuro)',fr:'Noyau (vert foncé)',zh:'核心（深绿）'},
+z3:{en:'Near (green)',ru:'Близкое (зелёная)',es:'Cercano (verde)',fr:'Proche (vert)',zh:'接近（绿）'},
+z4:{en:'Mid (yellow, neutral)',ru:'Середина (жёлтая, нейтраль)',es:'Medio (amarillo, neutro)',fr:'Médian (jaune, neutre)',zh:'中间（黄，中性）'},
+z5:{en:'Far (orange, friction)',ru:'Дальнее (оранжевая, трение)',es:'Lejano (naranja, fricción)',fr:'Lointain (orange, friction)',zh:'遥远（橙，摩擦）'},
+z6:{en:'Main enemy (red)',ru:'Главный враг (красная)',es:'Enemigo principal (rojo)',fr:'Ennemi principal (rouge)',zh:'主要敌人（红）'},
 chk:{en:'🧪 UF-6 · Energy alignment (experimental, weight = 2× a standard UF)',ru:'🧪 UF-6 · Согласование энергии (эксперимент, вес = 2× обычной UF)',es:'🧪 UF-6 · Alineación energética (experimental, peso = 2× UF estándar)',fr:'🧪 UF-6 · Alignement énergétique (expérimental, poids = 2× UF standard)',zh:'🧪 UF-6 · 能量对齐（实验，权重 = 2× 标准 UF）'},
-chkNote:{en:'Off by default. When on: the two full 11-code stacks are compared by similarity/opposition math (Children ×2.5) plus a GLOBAL neuroticism pairing term, with a HUGE bonus when BOTH put Partner in the core, a big bonus for Children, reduced penalties for Money/Career mismatches, and increased rewards for Body similarity. UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental, 3 decimals.',ru:'По умолчанию выкл. Когда вкл: два полных стека из 11 кодов сравниваются по математике сходства/разрыва (Дети ×2.5) плюс ГЛОБАЛЬНЫЙ член пары по нейротизму, с ОГРОМНЫМ бонусом, когда ОБОЕ ставят Партнёра в ядро, большим бонусом за Детей, сниженными штрафами за разрыв по Деньгам/Карьере и повышенными наградами за сходство по Телу. UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально», 3 знака.',es:'Desactivado por defecto. Al activar: las dos pilas completas de 11 códigos se comparan por similitud/oposición (Hijos ×2.5) más un término GLOBAL de neuroticismo, con un ENORME bono cuando AMBOS ponen Pareja en el núcleo, un gran bono por Hijos, penalizaciones reducidas por desacuerdo en Dinero/Carrera y recompensas aumentadas por similitud en Cuerpo. UF-6 se une a las cinco UF y el QCI se recalcula (QCI + 0.5·UF-6)/1.5, experimental, 3 decimales.',fr:'Désactivé par défaut. Activé : les deux piles complètes de 11 codes sont comparées par similarité/opposition (Enfants ×2.5) plus un terme GLOBAL de névrosisme, avec un ÉNORME bonus quand TOUS DEUX placent Partenaire dans le noyau, un gros bonus pour Enfants, des pénalités réduites pour les écarts Argent/Carrière et des récompenses accrues pour la similitude Corps. UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, expérimental, 3 décimales.',zh:'默认关闭。开启后：两个完整 11 码栈按相似/相反数学（孩子 ×2.5）加全局神经质配对项比较，当双方都把伴侣放入核心时有巨大奖金，为孩子有大奖金，减少金钱/职业不匹配的惩罚，增加身体相似的奖励。UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算，实验性，3 位小数。'},
+chkNote:{en:'Off by default. When on: the two full 11-code stacks are compared across 6 zones (cyan supercore → red enemy) by similarity/opposition math (Children ×2 stake) plus a GLOBAL neuroticism pairing term. Cyan supercore matches give the biggest bonuses (SP +30, CH +22); a rank gradient makes 1st place worth more than 3rd even inside the same zone. UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental, 3 decimals.',ru:'По умолчанию выкл. Когда вкл: два полных стека из 11 кодов сравниваются по 6 зонам (циан-суперъядро → красный враг) математикой сходства/разрыва (ставка Детей ×2) плюс ГЛОБАЛЬНЫЙ член пары по нейротизму. Совпадения циан-суперъядра дают наибольшие бонусы (SP +30, CH +22); ранговый градиент делает 1-е место дороже 3-го даже внутри одной зоны. UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально», 3 знака.',es:'Desactivado por defecto. Al activar: las dos pilas completas de 11 códigos se comparan en 6 zonas (cian → rojo) por similitud/oposición (Hijos ×2) más un término GLOBAL de neuroticismo. Los matches de supernúcleo cian dan los mayores bonos (SP +30, CH +22); un gradiente de puesto hace que el 1º valga más que el 3º incluso en la misma zona. UF-6 se une a las cinco UF y el QCI se recalcula (QCI + 0.5·UF-6)/1.5, experimental, 3 decimales.',fr:'Désactivé par défaut. Activé : les deux piles complètes de 11 codes sont comparées sur 6 zones (cyan → rouge) par similarité/opposition (Enfants ×2) plus un terme GLOBAL de névrosisme. Les correspondances de super-noyau cyan donnent les plus gros bonus (SP +30, CH +22) ; un gradient de rang rend la 1ʳ place plus forte que la 3ᵉ même dans la même zone. UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, expérimental, 3 décimales.',zh:'默认关闭。开启后：两个完整 11 码栈跨 6 区（青超核心 → 红敌）按相似/相反数学（孩子 ×2 权重）加全局神经质配对项比较。青色超核心匹配给出最大奖金（SP +30, CH +22）；名次梯度使第 1 名比第 3 名更值钱，即使同区。UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算，实验性，3 位小数。'},
 stA:{en:'Stack A (all 11, in order)',ru:'Стек A (все 11, по порядку)',es:'Pila A (las 11, en orden)',fr:'Pile A (les 11, en ordre)',zh:'栈 A（全 11，按序）'},
 stB:{en:'Stack B (all 11, in order)',ru:'Стек B (все 11, по порядку)',es:'Pila B (las 11, en orden)',fr:'Pile B (les 11, en ordre)',zh:'栈 B（全 11，按序）'},
 stPh:{en:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',ru:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',es:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',fr:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH',zh:'SP/SX/HO/GR/CA/MN/BD/FR/ST/PA/CH'},
 stErr:{en:'Enter exactly 11 unique codes: BD CA MN SP PA CH FR ST HO GR SX',ru:'Введи ровно 11 уникальных кодов: BD CA MN SP PA CH FR ST HO GR SX',es:'Introduce exactamente 11 códigos únicos: BD CA MN SP PA CH FR ST HO GR SX',fr:'Saisis exactement 11 codes uniques : BD CA MN SP PA CH FR ST HO GR SX',zh:'请输入 11 个唯一代码：BD CA MN SP PA CH FR ST HO GR SX'},
 need:{en:'Calculate compatibility first (Calculate button above).',ru:'Сначала рассчитай совместимость (кнопка «Рассчитать» выше).',es:'Calcula primero la compatibilidad (botón Calcular arriba).',fr:'Calcule d’abord la compatibilité (bouton Calculer ci-dessus).',zh:'先计算兼容性（上方“计算”按钮）。'},
-uf6name:{en:'UF-6 — Energy alignment (similarity/opposition + global neuro + core bonuses)',ru:'UF-6 — Согласование энергии (сходство/разрыв + глобальный нейро-член + бонусы ядра)',es:'UF-6 — Alineación energética (similitud/oposición + neuro global + bonos de núcleo)',fr:'UF-6 — Alignement énergétique (similarité/opposition + neuro global + bonus noyau)',zh:'UF-6 — 能量对齐（相似/相反 + 全局神经项 + 核心奖金）'},
-uf6ref:{en:'Every domain: similarity adds, opposition subtracts (Children ×2.5). GLOBAL neuro term nTerm added once: calm+calm > anxious+calm > anxious+anxious. BONUS +25 when BOTH put Partner in the dark-green core; BONUS +18 when BOTH put Children in the core. Reduced penalties for MN/CA gaps. Increased rewards for BD matches. Every position shift moves the score.',ru:'Каждый домен: сходство плюсует, разрыв минусует (Дети ×2.5). ГЛОБАЛЬНЫЙ нейро-член nTerm добавляется один раз: спокойный+спокойный > тревожный+спокойный > тревожный+тревожный. БОНУС +25, когда ОБОЕ ставят Партнёра в тёмно-зелёное ядро; БОНУС +18, когда ОБОЕ ставят Детей в ядро. Сниженные штрафы за разрыв по MN/CA. Повышенные награды за совпадение по BD. Любой сдвиг позиции двигает счёт.',es:'Cada dominio: similitud suma, oposición resta (Hijos ×2.5). Término neuro GLOBAL nTerm una vez. BONO +25 cuando AMBOS ponen Pareja en el núcleo verde oscuro; BONO +18 cuando AMBOS ponen Hijos en el núcleo. Penalizaciones reducidas por brechas MN/CA. Recompensas aumentadas por coincidencias BD. Cada cambio de posición mueve el score.',fr:'Chaque domaine : similarité ajoute, opposition soustrait (Enfants ×2.5). Terme neuro GLOBAL nTerm une fois. BONUS +25 quand TOUS DEUX placent Partenaire dans le noyau vert foncé ; BONUS +18 quand TOUS DEUX placent Enfants dans le noyau. Pénalités réduites pour les écarts MN/CA. Récompenses accrues pour les correspondances BD. Chaque décalage bouge le score.',zh:'每个领域：相似加分、相反减分（孩子 ×2.5）。全局神经项 nTerm 加一次。当双方都把伴侣放入深绿核心时奖金 +25；双方都把孩子放入核心时奖金 +18。减少 MN/CA 差距的惩罚。增加 BD 匹配的奖励。任何位置变动都移动分数。'},
+uf6name:{en:'UF-6 — Energy alignment (6 zones, cyan supercore bonuses, rank gradient, global neuro)',ru:'UF-6 — Согласование энергии (6 зон, бонусы циан-суперъядра, ранговый градиент, глобальный нейро-член)',es:'UF-6 — Alineación energética (6 zonas, bonos de supernúcleo cian, gradiente de puesto, neuro global)',fr:'UF-6 — Alignement énergétique (6 zones, bonus super-noyau cyan, gradient de rang, neuro global)',zh:'UF-6 — 能量对齐（6 区、青色超核心奖金、名次梯度、全局神经项）'},
+uf6ref:{en:'Every domain: 6-zone curve by tier difference [8, 6, −3, −10, −18, −26] × stake, minus a rank gradient (1.1/step inside a zone, 0.35/step across zones) so 1st place always beats 3rd even in the same zone. Core bonuses: cyan+cyan +14·st, cyan+core +8·st, core+core +4·st. GLOBAL neuro term nTerm added once. SP bonus +30/+25/+12 and CH bonus +22/+18/+8 by cyan/core pairing. Negative contributions ×1.6; MN/CA gaps ≥4 softened ÷1.3; SP/SX/CH gaps ≥3 tiers get −10 and a warning; Children core-vs-red is the heaviest clash.',ru:'Каждый домен: кривая 6 зон по разнице уровней [8, 6, −3, −10, −18, −26] × ставка, минус ранговый градиент (1.1/шаг внутри зоны, 0.35/шаг между зонами), поэтому 1-е место всегда выше 3-го даже в одной зоне. Бонусы ядра: циан+циан +14·st, циан+ядро +8·st, ядро+ядро +4·st. ГЛОБАЛЬНЫЙ нейро-член nTerm добавляется один раз. Бонус SP +30/+25/+12 и бонус CH +22/+18/+8 по паре циан/ядро. Отрицательные вклады ×1.6; разрывы MN/CA ≥4 смягчены ÷1.3; разрывы SP/SX/CH ≥3 уровня дают −10 и предупреждение; Дети ядро-против-красного — тяжелейший клаш.',es:'Cada dominio: curva de 6 zonas por diferencia de nivel [8, 6, −3, −10, −18, −26] × stake, menos un gradiente de puesto (1.1/paso dentro de zona, 0.35/paso entre zonas): el 1º siempre supera al 3º incluso en la misma zona. Bonos de núcleo: cian+cian +14·st, cian+núcleo +8·st, núcleo+núcleo +4·st. Término neuro GLOBAL nTerm una vez. Bono SP +30/+25/+12 y CH +22/+18/+8 según par cian/núcleo. Negativos ×1.6; brechas MN/CA ≥4 suavizadas ÷1.3; brechas SP/SX/CH ≥3 niveles: −10 y aviso; Hijos núcleo-vs-rojo es el choque más pesado.',fr:'Chaque domaine : courbe 6 zones par écart de niveau [8, 6, −3, −10, −18, −26] × stake, moins un gradient de rang (1,1/pas dans une zone, 0,35/pas entre zones) : la 1ʳᵉ place bat toujours la 3ᵉ même dans la même zone. Bonus noyau : cyan+cyan +14·st, cyan+noyau +8·st, noyau+noyau +4·st. Terme neuro GLOBAL nTerm une fois. Bonus SP +30/+25/+12 et CH +22/+18/+8 selon la paire cyan/noyau. Négatifs ×1,6 ; écarts MN/CA ≥4 adoucis ÷1,3 ; écarts SP/SX/CH ≥3 niveaux : −10 et alerte ; Enfants noyau-vs-rouge = choc le plus lourd.',zh:'每个领域：6 区曲线按层级差 [8, 6, −3, −10, −18, −26] × 权重，减去名次梯度（区内 1.1/步，跨区 0.35/步），因此第 1 名即使同区也高于第 3 名。核心奖金：青+青 +14·st，青+核 +8·st，核+核 +4·st。全局神经项 nTerm 加一次。SP 奖金 +30/+25/+12、CH 奖金 +22/+18/+8 按青/核配对。负贡献 ×1.6；MN/CA 差 ≥4 软化 ÷1.3；SP/SX/CH 差 ≥3 层 −10 并警告；孩子核心对红为最重冲突。'},
 v0:{en:'Elemental clash (0–24)',ru:'Столкновение стихий (0–24)',es:'Choque de elementos (0–24)',fr:'Choc élémentaire (0–24)',zh:'元素冲突（0–24）'},
 v1:{en:'Friction zone (25–39)',ru:'Зона трения (25–39)',es:'Zona de fricción (25–39)',fr:'Zone de friction (25–39)',zh:'摩擦区（25–39）'},
 v2:{en:'Fragile equilibrium (40–51)',ru:'Хрупкое равновесие (40–51)',es:'Equilibrio frágil (40–51)',fr:'Équilibre fragile (40–51)',zh:'脆弱平衡（40–51）'},
@@ -7244,12 +7255,12 @@ v6:{en:'Rare alignment (84–92)',ru:'Редкое совпадение (84–92
 v7:{en:'Absolute resonance (93–100)',ru:'Абсолютный резонанс (93–100)',es:'Resonancia absoluta (93–100)',fr:'Résonance absolue (93–100)',zh:'绝对共鸣（93–100）'},
 v8:{en:'above scale (>100)',ru:'выше шкалы (>100)',es:'sobre escala (>100)',fr:'hors échelle (>100)',zh:'超标（>100）'},
 v9:{en:'below scale (<0)',ru:'ниже шкалы (<0)',es:'bajo escala (<0)',fr:'sous échelle (<0)',zh:'负值（<0）'},
-chWarn:{en:'CHILDREN CLASH: one puts kids in core/green, the other in red — the heaviest minus of the model (×2.5).',ru:'КОНФЛИКТ ДЕТЕЙ: у одного дети в ядре/зелёной, у другого в красной — самый тяжёлый минус модели (×2.5).',es:'CHOQUE DE HIJOS: uno en núcleo/verde, el otro en rojo — el menos más pesado (×2.5).',fr:'CONFLIT ENFANTS : l’un en noyau/vert, l’autre en rouge — le minus le plus lourd (×2.5).',zh:'孩子冲突：一方核心/绿，另一方红——最重减分（×2.5）。'},
-spWarn:{en:'PARTNER CORE MATCH: both put Partner in the dark-green core — a strong bond that can outweigh other frictions.',ru:'ПАРТНЁР В ЯДРЕ У ОБОИХ: оба ставят Партнёра в тёмно-зелёное ядро — прочная связка, способная перевесить другие трения.',es:'PAREJA EN NÚCLEO AMBOS: ambos ponen Pareja en el núcleo verde oscuro — un vínculo fuerte que puede pesar más que otras fricciones.',fr:'PARTENAIRE NOYAU TOUS DEUX : tous deux placent Partenaire dans le noyau vert foncé — un lien fort qui peut l’emporter sur d’autres frictions.',zh:'双方伴侣皆入核心：都把伴侣放入深绿核心——强纽带，可压过其他摩擦。'},
-chCoreBonus:{en:'Both put Children in the core — shared life meaning.',ru:'ОБОЕ ставят Детей в ядро — общий смысл жизни.',es:'AMBOS ponen Hijos en el núcleo — sentido vital compartido.',fr:'TOUS DEUX placent Enfants dans le noyau — sens de vie partagé.',zh:'双方都把孩子放入核心——共同的生命意义。'},
+chWarn:{en:'CHILDREN CLASH: one puts kids in core/green, the other in red — the heaviest minus of the model.',ru:'КОНФЛИКТ ДЕТЕЙ: у одного дети в ядре/зелёной, у другого в красной — самый тяжёлый минус модели.',es:'CHOQUE DE HIJOS: uno en núcleo/verde, el otro en rojo — el menos más pesado.',fr:'CONFLIT ENFANTS : l’un en noyau/vert, l’autre en rouge — le minus le plus lourd.',zh:'孩子冲突：一方核心/绿，另一方红——最重减分。'},
+spWarn:{en:'PARTNER CORE MATCH: both keep Partner in the cyan supercore / dark-green core — a strong bond that can outweigh other frictions.',ru:'ПАРТНЁР В ЯДРЕ У ОБОИХ: оба держат Партнёра в циан-суперъядре / тёмно-зелёном ядре — прочная связка, способная перевесить другие трения.',es:'PAREJA EN NÚCLEO AMBOS: ambos ponen Pareja en el supernúcleo cian / núcleo verde oscuro — un vínculo fuerte que puede pesar más que otras fricciones.',fr:'PARTENAIRE NOYAU TOUS DEUX : tous deux placent Partenaire dans le super-noyau cyan / noyau vert foncé — un lien fort qui peut l’emporter sur d’autres frictions.',zh:'双方伴侣皆入核心：都把伴侣放入青色超核心/深绿核心——强纽带，可压过其他摩擦。'},
+chCoreBonus:{en:'Both put Children in the cyan supercore / core — shared life meaning.',ru:'ОБОЕ ставят Детей в циан-суперъядро / ядро — общий смысл жизни.',es:'AMBOS ponen Hijos en el supernúcleo cian / núcleo — sentido vital compartido.',fr:'TOUS DEUX placent Enfants dans le super-noyau cyan / noyau — sens de vie partagé.',zh:'双方都把孩子放入青色超核心/核心——共同的生命意义。'},
 zoneA:{en:'A zone',ru:'Зона A',es:'Zona A',fr:'Zone A',zh:'A 区'},
 zoneB:{en:'B zone',ru:'Зона B',es:'Zona B',fr:'Zone B',zh:'B 区'},
-gapWarnSP:{en:'PARTNER GAP: one keeps Partner in core/green, the other in orange/red — chronic neglect risk, −10.',ru:'РАЗРЫВ ПО ПАРТНЁРУ: у одного Партнёр в ядре/зелёной, у другого в оранжевой/красной — риск хронического обделения вниманием, −10.',es:'BRECHA DE PAREJA: uno en núcleo/verde, el otro en naranja/rojo — riesgo de negligencia crónica, −10.',fr:'ÉCART PARTENAIRE : l’un en noyau/vert, l’autre en orange/rouge — risque de négligence chronique, −10.',zh:'伴侣差距：一方核心/绿，另一方橙/红——长期忽视风险，−10。'},
+gapWarnSP:{en:'PARTNER GAP: one keeps Partner in supercore/core/green, the other in orange/red — chronic neglect risk, −10.',ru:'РАЗРЫВ ПО ПАРТНЁРУ: у одного Партнёр в суперъядре/ядре/зелёной, у другого в оранжевой/красной — риск хронического обделения вниманием, −10.',es:'BRECHA DE PAREJA: uno en supernúcleo/núcleo/verde, el otro en naranja/rojo — riesgo de negligencia crónica, −10.',fr:'ÉCART PARTENAIRE : l’un en super-noyau/noyau/vert, l’autre en orange/rouge — risque de négligence chronique, −10.',zh:'伴侣差距：一方超核心/核心/绿，另一方橙/红——长期忽视风险，−10。'},
 gapWarnSX:{en:'SEX GAP: desire priority differs by 3+ zones — intimate frustration risk, −10.',ru:'РАЗРЫВ ПО СЕКСУ: приоритет желания различается на 3+ зоны — риск интимной фрустрации, −10.',es:'BRECHA DE SEXO: la prioridad difiere 3+ zonas — riesgo de frustración íntima, −10.',fr:'ÉCART SEXE : priorité différant de 3+ zones — risque de frustration intime, −10.',zh:'性差距：优先级相差 3+ 区——亲密挫折风险，−10。'},
 gapWarnCH:{en:'CHILDREN GAP: child priority differs by 3+ zones — family-plan conflict, −10.',ru:'РАЗРЫВ ПО ДЕТЯМ: приоритет детей различается на 3+ зоны — конфликт семейных планов, −10.',es:'BRECHA DE HIJOS: la prioridad difiere 3+ zonas — conflicto de planes familiares, −10.',fr:'ÉCART ENFANTS : priorité différant de 3+ zones — conflit de plans familiaux, −10.',zh:'孩子差距：优先级相差 3+ 区——家庭计划冲突，−10。'},
 tblZone:{en:'Zone table (A vs B)',ru:'Таблица зон (A против B)',es:'Tabla de zonas (A vs B)',fr:'Table des zones (A vs B)',zh:'区域表（A 对 B）'},
@@ -7268,10 +7279,10 @@ function ds(d){return SHORT[d][lang()]||SHORT[d].en;}
 function chEssence(){
 var s=LSg('edc2_chstatus')||'und';
 var m={
- has:{en:'Children — your kids who already exist: care, upbringing, the bond with them',ru:'Дети — ваши уже рождённые дети: забота, воспитание, связь с ними',es:'Hijos — tus hijos que ya existen: cuidado, crianza, vínculo con ellos',fr:'Enfants — vos enfants déjà nés : soin, éducation, lien avec eux',zh:'孩子——你已有的孩子：照顾、养育、与他们的联结'},
- want:{en:'Children — future kids you want: family, parenthood, continuation of lineage',ru:'Дети — будущие дети, которых вы хотите: семья, родительство, продолжение рода',es:'Hijos — los hijos futuros que deseas: familia, paternidad, continuidad del linaje',fr:'Enfants — les enfants futurs que vous voulez : famille, parentalité, continuité de la lignée',zh:'孩子——你想要的未来孩子：家庭、为人父母、血脉延续'},
- free:{en:'Children — your choice to live without children (childfree): freedom, other priorities',ru:'Дети — ваш выбор жить без детей (чайлдфри): свобода, другие приоритеты',es:'Hijos — tu elección de vivir sin hijos (childfree): libertad, otras prioridades',fr:'Enfants — votre choix de vivre sans enfants (childfree) : liberté, autres priorités',zh:'孩子——你选择不要孩子（丁克）：自由、其他优先'},
- und:{en:'Children — the question of having kids, which you haven’t decided yet',ru:'Дети — вопрос о детях, который вы ещё не решили',es:'Hijos — la pregunta de tener hijos, aún sin decidir',fr:'Enfants — la question d’avoir des enfants, pas encore tranchée',zh:'孩子——是否要孩子的问题，尚未决定'}};
+has:{en:'Children — your kids who already exist: care, upbringing, the bond with them',ru:'Дети — ваши уже рождённые дети: забота, воспитание, связь с ними',es:'Hijos — tus hijos que ya existen: cuidado, crianza, vínculo con ellos',fr:'Enfants — vos enfants déjà nés : soin, éducation, lien avec eux',zh:'孩子——你已有的孩子：照顾、养育、与他们的联结'},
+want:{en:'Children — future kids you want: family, parenthood, continuation of lineage',ru:'Дети — будущие дети, которых вы хотите: семья, родительство, продолжение рода',es:'Hijos — los hijos futuros que deseas: familia, paternidad, continuidad del linaje',fr:'Enfants — les enfants futurs que vous voulez : famille, parentalité, continuité de la lignée',zh:'孩子——你想要的未来孩子：家庭、为人父母、血脉延续'},
+free:{en:'Children — your choice to live without children (childfree): freedom, other priorities',ru:'Дети — ваш выбор жить без детей (чайлдфри): свобода, другие приоритеты',es:'Hijos — tu elección de vivir sin hijos (childfree): libertad, otras prioridades',fr:'Enfants — votre choix de vivre sans enfants (childfree) : liberté, autres priorités',zh:'孩子——你选择不要孩子（丁克）：自由、其他优先'},
+und:{en:'Children — the question of having kids, which you haven’t decided yet',ru:'Дети — вопрос о детях, который вы ещё не решили',es:'Hijos — la pregunta de tener hijos, aún sin decidir',fr:'Enfants — la question d’avoir des enfants, pas encore tranchée',zh:'孩子——是否要孩子的问题，尚未决定'}};
 var o=m[s]||m.und;return o[lang()]||o.en;
 }
 function ess(d){if(d==='CH')return chEssence();return ESS[d][lang()]||ESS[d].en;}
@@ -7311,9 +7322,17 @@ var fin={};DOMS.forEach(function(d,i){fin[d]=Math.round(0.7*(sc[d]/mx*100)+0.6*(
 var stack=DOMS.slice().sort(function(x,y){return fin[y]-fin[x];});
 return {sc:sc,fin:fin,stack:stack,lie:lie};
 }
-/* NEW tier split for 11 domains: 3 / 2 / 2 / 3 / 1 */
-function tierOf(rank){return rank<3?1:rank<5?2:rank<7?3:rank<10?4:5;}
-var TIERCOL={1:'#2e9e4f',2:'#6bcb77',3:'#ffd93d',4:'#ff9f43',5:'#ff6b6b'};
+/* v6.4 tier split for 11 domains: 1 / 2 / 2 / 2 / 3 / 1 = 11
+   1 cyan supercore + 2 dark-green core + 2 green + 2 yellow + 3 orange + 1 red */
+function tierOf(rank){
+if(rank===0)return 1;   /* cyan supercore */
+if(rank<3)return 2;     /* dark-green core */
+if(rank<5)return 3;     /* green */
+if(rank<7)return 4;     /* yellow */
+if(rank<10)return 5;    /* orange */
+return 6;               /* red enemy */
+}
+var TIERCOL={1:'#22d3ee',2:'#2e9e4f',3:'#6bcb77',4:'#ffd93d',5:'#ff9f43',6:'#ff6b6b'};
 function parseStack(s){
 var toks=String(s||'').toUpperCase().split(/[^A-Z]+/).filter(function(x){return DOMS.indexOf(x)>=0;});
 var seen={},ord=[];toks.forEach(function(x){if(!seen[x]){seen[x]=1;ord.push(x);}});
@@ -7326,82 +7345,50 @@ var exA=Math.max(0,aN-50),exB=Math.max(0,bN-50);
 var interact=(exA*exB)/100;
 return clamp100(0.5*(100-meanN)+0.3*(100-maxN)-0.15*gap-interact);
 }
-/* UF-6 v12: Rebalanced Weights */
+/* UF-6 v13 (QFTM-1024 6.4): 6 zones, cyan supercore bonuses, rank gradient */
 function uf6(oa,ob,nLa,nLb){
-/* 
-   STAKE: How much does a gap in THIS domain hurt/help?
-   SP/CH: High stakes. If they don't match, relationship fails.
-   BD: Medium-High. Shared lifestyle.
-   MN/CA: Low-Medium. Provider/Homemaker dynamic allows gaps.
-*/
 var STAKE = {
-    SP: 2.6, // Partner: CRITICAL. If this breaks, everything breaks. Huge penalty for gap.
-    CH: 2.0, // Children: HIGH. Fundamental life plan conflict.
-    SX: 1.8, // Sex: HIGH. Physical incompatibility kills intimacy fast.
-    BD: 1.5, // Body/Lifestyle: MEDIUM-HIGH. Daily friction if rhythms differ too much.
-    GR: 1.3, // Growth/Mindset: MEDIUM. Intellectual divergence creates distance over time.
-
-    HO: 0.7,  // Hobby.
-    MN: 0.7, // Money: Provider dynamic allows gaps (softened further below).
-    PA: 0.7, // Parents: Lower stake directly, affects indirectly via stability.
-    CA: 0.5, // Career: Same as money.
-    FR: 0.4, // Friends: External factor.
-    ST: 0.3, // Social: Low impact on couple dyad.
+SP: 2.6, CH: 2.0, SX: 1.8, BD: 1.5, GR: 1.3,
+HO: 0.7, MN: 0.7, PA: 0.7, CA: 0.5, FR: 0.4, ST: 0.3
 };
-
-/* CURVE: Base contribution based on Zone Difference (0 to 4) */
-/* Adjusted curve to make high differences hurt MORE exponentially */
-var CURVE = [10, 4, -3, -12, -20]; 
+/* 6-zone curve by tier difference (0..5) */
+var CURVE = [8, 6, -3, -10, -18, -26];
 var rows=[],S=0,D=0,chClash=false,gapWarn=[];
 DOMS.forEach(function(d){
 var ra=oa.indexOf(d),rb=ob.indexOf(d);
 var ta=tierOf(ra),tb=tierOf(rb);
 var td=Math.abs(ta-tb);
+var rd=Math.abs(ra-rb);
 var st=STAKE[d]||0.5;
-    var c=CURVE[td]*st;
-    
-    /* === BONUS PHASE (before harshness multiplier) === */
-    /* Exact Core Match bonus stays generous, unaffected by penalty factor */
-    if(td===0 && ta===1) {
-        c += 8 * st;
-    }
-    
-    /* === HARSHNESS MULTIPLIER v6.3 === */
-    /* Negative contributions get amplified ×1.6 to reflect reality:
-       a single critical mismatch should outweigh multiple minor matches. */
-    if(c < 0) {
-        c *= 1.6;
-    }
-    
-    /* === SPECIFIC SOFTENING (after amplification) === */
-    /* Money/Career gaps are painful but survivable via provider/homemaker dynamic.
-       After the general ×1.6 boost, we pull them back down slightly so they remain
-       less catastrophic than SP/SX/CH mismatches. Net effect ≈ ×1.23 for MN/CA. */
-    if((d==='MN' || d==='CA') && td>=3) {
-        c /= 1.3;
-    }
-    
-    /* === CRITICAL DOMAIN GAP WARNING === */
-    /* Extra flat penalty when Partner/Sex/Children diverge by 3+ tiers.
-       This guarantees such pairs fall into "Friction Zone" or worse,
-       regardless of how well other domains align. */
-    if(td>=3 && (d==='SP' || d==='SX' || d==='CH')) {
-        c -= 10;
-        gapWarn.push(d);
-    }
-if(d==='CH'&&((ta<=2&&tb===5)||(tb<=2&&ta===5)))chClash=true;
-S+=c;D+=Math.abs(ra-rb);
-rows.push({d:d,ta:ta,tb:tb,x:5-ra,y:5-rb,c:c});
+var c=CURVE[td]*st;
+/* POSITION GRADIENT: inside one zone 1.1 per rank step,
+   across zones 0.35 per rank step — 1st place always beats 3rd */
+c-=(td===0?1.1:0.35)*rd*st;
+/* CORE / SUPERCORE MATCH BONUSES: cyan+cyan > cyan+core > core+core */
+if(td===0&&ta===1)c+=14*st;
+else if(td===1&&Math.min(ta,tb)===1&&Math.max(ta,tb)===2)c+=8*st;
+else if(td===0&&ta===2)c+=4*st;
+/* HARSHNESS MULTIPLIER: negatives ×1.6 */
+if(c<0)c*=1.6;
+/* MN/CA softening (provider/homemaker dynamic) */
+if((d==='MN'||d==='CA')&&td>=4)c/=1.3;
+/* CRITICAL DOMAIN GAP WARNING (SP/SX/CH, 3+ zones) */
+if(td>=3&&(d==='SP'||d==='SX'||d==='CH')){c-=10;gapWarn.push(d);}
+if(d==='CH'&&((ta<=3&&tb===6)||(tb<=3&&ta===6)))chClash=true;
+S+=c;D+=rd;
+rows.push({d:d,ta:ta,tb:tb,x:6-ra,y:6-rb,c:c});
 });
 var aN=MIDN[nLa]||40,bN=MIDN[nLb]||40;
 var nT=neuroTerm(aN,bN);
 var nPair=(nT-50)*0.5;
 S+=nPair;
-/* CORE BONUSES (Added ON TOP of the matrix calculation) */
+/* GLOBAL CORE BONUSES with cyan supercore emphasis */
 var tSpA=tierOf(oa.indexOf('SP')),tSpB=tierOf(ob.indexOf('SP'));
-var spBonus=(tSpA===1&&tSpB===1)?25:((tSpA<=2&&tSpB<=2)?10:0);
+var spSum=tSpA+tSpB;
+var spBonus=(spSum===2)?30:(spSum===3?25:(spSum===4?12:0));
 var tChA=tierOf(oa.indexOf('CH')),tChB=tierOf(ob.indexOf('CH'));
-var chBonus=(tChA===1&&tChB===1)?18:((tChA<=2&&tChB<=2)?8:0);
+var chSum=tChA+tChB;
+var chBonus=(chSum===2)?22:(chSum===3?18:(chSum===4?8:0));
 S+=spBonus+chBonus;
 var score=50+0.45*S;
 var vi=score>100?8:score<0?9:score>=93?7:score>=84?6:score>=74?5:score>=64?4:score>=52?3:score>=40?2:score>=25?1:0;
@@ -7575,7 +7562,7 @@ var h='<div class="compat-overall"><div style="color:#888;font-size:0.8rem;">'+e
 '<div class="qci" style="color:#fff;text-shadow:0 0 14px #8b5cff;font-size:clamp(1.1rem,4vw,2rem);">'+esc(r.stack.join('/'))+'</div>'+
 '<div style="font-size:0.78rem;color:#888;margin-top:4px;">'+esc(t('stack'))+' • '+esc(t('enemy'))+': <strong style="color:#ff6b6b;">'+esc(r.stack[r.stack.length-1])+'</strong></div>'+
 '<div style="font-size:0.74rem;margin-top:6px;">'+
-'<span style="color:#2e9e4f;">●</span> '+esc(t('z1'))+' • <span style="color:#6bcb77;">●</span> '+esc(t('z2'))+' • <span style="color:#ffd93d;">●</span> '+esc(t('z3'))+' • <span style="color:#ff9f43;">●</span> '+esc(t('z4'))+' • <span style="color:#ff6b6b;">●</span> '+esc(t('z5'))+'</div>'+
+'<span style="color:#22d3ee;">●</span> '+esc(t('z1'))+' • <span style="color:#2e9e4f;">●</span> '+esc(t('z2'))+' • <span style="color:#6bcb77;">●</span> '+esc(t('z3'))+' • <span style="color:#ffd93d;">●</span> '+esc(t('z4'))+' • <span style="color:#ff9f43;">●</span> '+esc(t('z5'))+' • <span style="color:#ff6b6b;">●</span> '+esc(t('z6'))+'</div>'+
 '<table class="compat-table" style="margin-top:12px;"><tr><th>'+esc(t('cDom'))+'</th><th>'+esc(t('cPref'))+'</th><th>'+esc(t('cCom'))+'</th><th>'+esc(t('cFin'))+'</th></tr>';
 r.stack.forEach(function(d,i){
 var cm=commit[DOMS.indexOf(d)];cm=(cm==null?50:cm*25);
@@ -7676,7 +7663,7 @@ try{var s0=JSON.parse(LSg('edc2_stack')||'null');if(s0)window.QFTM_EDC_STACK=s0;
 </script>
 <script>
 /* ============================================================
-QFTM-1024 v6.3 :: Schulte number-size slider (FIXED)
+QFTM-1024 v6.4 :: Schulte number-size slider (FIXED)
 Measures actual text width via canvas to guarantee digits
 never overflow cell boundaries at any grid size (3–12).
 Persists in localStorage.
