@@ -2163,6 +2163,8 @@ canvas {
          verdict5: 'Deep Resonance (74–83)',
          verdict6: 'Rare Alignment (84–92)',
          verdict7: 'Absolute Resonance (93–100)',
+         verdict8: 'Above scale (>100)',
+         verdict9: 'Below scale (<0)',
         uf1name: 'UF-1 — Assortative similarity / value congruence',
         uf1ref: 'Weighted mean axis similarity (A > E > C > O); the N slot is NOT similarity — it carries the neuro-pair load nTerm = 100 − (0.5·meanN + 0.35·maxN + 2·both-anxious interaction). Youyou et al., 2017; Malouff et al., 2010. High neuroticism is the strongest single divorce predictor (Karney & Bradbury, 1995), so it only subtracts.',
         uf2name: 'UF-2 — Complementarity & dominance reciprocity',
@@ -2526,6 +2528,8 @@ canvas {
           verdict5: 'Глубокий резонанс (74–83)',
           verdict6: 'Редкое совпадение (84–92)',
           verdict7: 'Абсолютный резонанс (93–100)',
+          verdict8: 'Выше шкалы (>100)',
+          verdict9: 'Ниже шкалы (<0)',
         uf1name: 'UF-1 — Ассортативное сходство / конгруэнтность ценностей',
         uf1ref: 'Взвешенное среднее похожести осей (A > E > C > O); слот N — НЕ сходство, он несёт нейро-нагрузку пары nTerm = 100 − (0.5·среднееN + 0.35·максN + 2·интеракция «оба тревожных»). Youyou et al., 2017; Malouff et al., 2010. Высокий нейротизм — сильнейший одиночный предиктор развода (Karney & Bradbury, 1995), поэтому он только вычитает.',
         uf2name: 'UF-2 — Комплементарность и реципрокность доминирования',
@@ -2889,6 +2893,8 @@ canvas {
         verdict5: 'Resonancia profunda (74–83)',
         verdict6: 'Alineación rara (84–92)',
         verdict7: 'Resonancia absoluta (93–100)',
+        verdict8: 'Sobre escala (>100)',
+        verdict9: 'Bajo escala (<0)',
         uf1name:'UF-1 — Similitud assortativa / congruencia de valores',
         uf1ref: 'Media ponderada de similitud de ejes (A > E > C > O); el hueco N NO es similitud: lleva la carga neuro nTerm = 100 − (0.5·mediaN + 0.35·máxN + 2·interacción ambos-ansiosos). Youyou et al., 2017; Malouff et al., 2010. El neuroticismo alto es el mejor predictor individual de divorcio (Karney & Bradbury, 1995): solo resta.',
         uf2name:'UF-2 — Complementariedad y reciprocidad de dominio',
@@ -3209,6 +3215,8 @@ canvas {
         verdict5: 'Résonance profonde (74–83)',
         verdict6: 'Alignement rare (84–92)',
         verdict7: 'Résonance absolue (93–100)',
+        verdict8: 'Hors échelle (>100)',
+        verdict9: 'Sous échelle (<0)',
         uf1name:'UF-1 — Similarité assortative / congruence de valeurs',
         uf1ref: 'Similarité moyenne pondérée des axes (A > E > C > O) ; la place N n’est PAS la similarité : elle porte la charge neuro nTerm = 100 − (0.5·moyenneN + 0.35·maxN + 2·interaction deux-anxieux). Youyou et al., 2017 ; Malouff et al., 2010. Le névrosisme élevé est le meilleur prédicteur unique de divorce (Karney & Bradbury, 1995) : il ne fait que soustraire.',
         uf2name:'UF-2 — Complémentarité et réciprocité de dominance',
@@ -3529,6 +3537,8 @@ canvas {
         verdict5: '深度共鸣 (74–83)',
         verdict6: '罕见契合 (84–92)',
         verdict7: '绝对共鸣 (93–100)',
+        verdict8: '超标（>100）',
+        verdict9: '负值（<0）',
         uf1name:'UF-1 — 选型相似 / 价值一致',
         uf1ref: '轴相似加权平均（A > E > C > O）；N 位不是相似性——它承载神经配对负荷 nTerm = 100 − (0.5·平均N + 0.35·最大N + 2·双焦虑交互)。Youyou et al., 2017; Malouff et al., 2010。高神经质是离婚最强单一预测因子（Karney & Bradbury, 1995），只减分。',
         uf2name:'UF-2 — 互补与支配互惠',
@@ -4521,25 +4531,11 @@ async function exportCoupleCard() {
         ctx.fillText(hasUf6 ? res.overall.toFixed(3) : res.overall.toFixed(1), W / 2, stackY + 80); 
         
         ctx.font = '700 26px "Segoe UI", Inter, system-ui, sans-serif';
-        // Безопасное получение названия вердикта
-var vKey = 'verdict' + res.verdictIndex;
-var vText = ui(vKey); 
-if (!vText || vText === undefined) {
-    // Если перевода нет, используем дефолтное описание диапазона
-    if (res.overall > 100) vText = 'Выше шкалы (>100)';
-    else if (res.overall < 0) vText = 'Ниже шкалы (<0)';
-    else vText = 'Неизвестно';
-}
+        // Verdict name is fully localized (verdict0..verdict9 exist in all 5 languages)
+        var vText = ui('verdict' + res.verdictIndex);
 ctx.fillText(ui('compatVerdict') + ': ' + vText, W / 2, 730);
         
-        // Sub-caption when experimental mode is on (Fixed: No "undefined")
-        if (hasUf6) {
-    ctx.font = '600 14px "Segoe UI", Inter, system-ui, sans-serif';
-    ctx.fillStyle = '#c9b6ff';
-    var expTxt = ui('expTitle');
-    if(!expTxt || expTxt==='undefined') expTxt = 'Экспериментальный режим UF-6';
-    ctx.fillText('🧪 ' + expTxt, W / 2, stackY + 145);
-}
+        
         
         // Bars
         let y = stackY + 180;
@@ -7236,7 +7232,7 @@ z3:{en:'Near (green)',ru:'Близкое (зелёная)',es:'Cercano (verde)',
 z4:{en:'Mid (yellow, neutral)',ru:'Середина (жёлтая, нейтраль)',es:'Medio (amarillo, neutro)',fr:'Médian (jaune, neutre)',zh:'中间（黄，中性）'},
 z5:{en:'Far (orange, friction)',ru:'Дальнее (оранжевая, трение)',es:'Lejano (naranja, fricción)',fr:'Lointain (orange, friction)',zh:'遥远（橙，摩擦）'},
 z6:{en:'Main enemy (red)',ru:'Главный враг (красная)',es:'Enemigo principal (rojo)',fr:'Ennemi principal (rouge)',zh:'主要敌人（红）'},
-chk:{en:'🧪 UF-6 · Energy alignment (experimental, weight = 2× a standard UF)',ru:'🧪 UF-6 · Согласование энергии (эксперимент, вес = 2× обычной UF)',es:'🧪 UF-6 · Alineación energética (experimental, peso = 2× UF estándar)',fr:'🧪 UF-6 · Alignement énergétique (expérimental, poids = 2× UF standard)',zh:'🧪 UF-6 · 能量对齐（实验，权重 = 2× 标准 UF）'},
+chk:{en:'🧪 UF-6 · Energy alignment (weight = 2× a standard UF)',ru:'🧪 UF-6 · Согласование энергии (вес = 2× обычной UF)',es:'🧪 UF-6 · Alineación energética (peso = 2× UF estándar)',fr:'🧪 UF-6 · Alignement énergétique (poids = 2× UF standard)',zh:'🧪 UF-6 · 能量对齐（权重 = 2× 标准 UF）'},
 chkNote:{en:'Off by default. When on: the two full 11-code stacks are compared across 6 zones (cyan supercore → red enemy) by similarity/opposition math (Children ×2 stake) plus a GLOBAL neuroticism pairing term. Cyan supercore matches give the biggest bonuses (SP +30, CH +22); a rank gradient makes 1st place worth more than 3rd even inside the same zone. UF-6 joins the five UF scales and QCI is recomputed as (QCI + 0.5·UF-6)/1.5, labelled experimental, 3 decimals.',ru:'По умолчанию выкл. Когда вкл: два полных стека из 11 кодов сравниваются по 6 зонам (циан-суперъядро → красный враг) математикой сходства/разрыва (ставка Детей ×2) плюс ГЛОБАЛЬНЫЙ член пары по нейротизму. Совпадения циан-суперъядра дают наибольшие бонусы (SP +30, CH +22); ранговый градиент делает 1-е место дороже 3-го даже внутри одной зоны. UF-6 встаёт рядом с пятью UF, и QCI пересчитывается как (QCI + 0.5·UF-6)/1.5 с пометкой «экспериментально», 3 знака.',es:'Desactivado por defecto. Al activar: las dos pilas completas de 11 códigos se comparan en 6 zonas (cian → rojo) por similitud/oposición (Hijos ×2) más un término GLOBAL de neuroticismo. Los matches de supernúcleo cian dan los mayores bonos (SP +30, CH +22); un gradiente de puesto hace que el 1º valga más que el 3º incluso en la misma zona. UF-6 se une a las cinco UF y el QCI se recalcula (QCI + 0.5·UF-6)/1.5, experimental, 3 decimales.',fr:'Désactivé par défaut. Activé : les deux piles complètes de 11 codes sont comparées sur 6 zones (cyan → rouge) par similarité/opposition (Enfants ×2) plus un terme GLOBAL de névrosisme. Les correspondances de super-noyau cyan donnent les plus gros bonus (SP +30, CH +22) ; un gradient de rang rend la 1ʳ place plus forte que la 3ᵉ même dans la même zone. UF-6 rejoint les cinq UF et le QCI est recalculé (QCI + 0.5·UF-6)/1.5, expérimental, 3 décimales.',zh:'默认关闭。开启后：两个完整 11 码栈跨 6 区（青超核心 → 红敌）按相似/相反数学（孩子 ×2 权重）加全局神经质配对项比较。青色超核心匹配给出最大奖金（SP +30, CH +22）；名次梯度使第 1 名比第 3 名更值钱，即使同区。UF-6 加入五个 UF，QCI 以 (QCI + 0.5·UF-6)/1.5 重算，实验性，3 位小数。'},
 stA:{en:'Stack A (all 11, in order)',ru:'Стек A (все 11, по порядку)',es:'Pila A (las 11, en orden)',fr:'Pile A (les 11, en ordre)',zh:'栈 A（全 11，按序）'},
 stB:{en:'Stack B (all 11, in order)',ru:'Стек B (все 11, по порядку)',es:'Pila B (las 11, en orden)',fr:'Pile B (les 11, en ordre)',zh:'栈 B（全 11，按序）'},
@@ -7265,7 +7261,7 @@ gapWarnSX:{en:'SEX GAP: desire priority differs by 3+ zones — intimate frustra
 gapWarnCH:{en:'CHILDREN GAP: child priority differs by 3+ zones — family-plan conflict, −10.',ru:'РАЗРЫВ ПО ДЕТЯМ: приоритет детей различается на 3+ зоны — конфликт семейных планов, −10.',es:'BRECHA DE HIJOS: la prioridad difiere 3+ zonas — conflicto de planes familiares, −10.',fr:'ÉCART ENFANTS : priorité différant de 3+ zones — conflit de plans familiaux, −10.',zh:'孩子差距：优先级相差 3+ 区——家庭计划冲突，−10。'},
 tblZone:{en:'Zone table (A vs B)',ru:'Таблица зон (A против B)',es:'Tabla de zonas (A vs B)',fr:'Table des zones (A vs B)',zh:'区域表（A 对 B）'},
 tblContrib:{en:'contribution',ru:'вклад',es:'aporte',fr:'contribution',zh:'贡献'},
-expTitle:{en:'Overall synthesis (QCI) — EXPERIMENTAL, includes UF-6',ru:'Общий синтез (QCI) — ЭКСПЕРИМЕНТАЛЬНО, с UF-6',es:'Síntesis global (QCI) — EXPERIMENTAL, con UF-6',fr:'Synthèse globale (QCI) — EXPÉRIMENTAL, avec UF-6',zh:'总体合成（QCI）——实验性，含 UF-6'},
+expTitle:{en:'Overall synthesis (QCI) — includes UF-6',ru:'Общий синтез (QCI) — с UF-6',es:'Síntesis global (QCI) — con UF-6',fr:'Synthèse globale (QCI) — avec UF-6',zh:'总体合成（QCI）——含 UF-6'},
 expBase:{en:'Base QCI without UF-6:',ru:'Базовый QCI без UF-6:',es:'QCI base sin UF-6:',fr:'QCI de base sans UF-6:',zh:'不含 UF-6 的基础 QCI：'},
 expNote:{en:'UF-6 weight = 0.50 (2× a standard UF). Experimental heuristic, not a clinical verdict. Precision: 3 decimals.',ru:'Вес UF-6 = 0.50 (2× обычной UF). Экспериментальная эвристика, не клинический вердикт. Точность: 3 знака.',es:'Peso UF-6 = 0.50 (2× UF estándar). Heurística experimental. Precisión: 3 decimales.',fr:'Poids UF-6 = 0.50 (2× UF standard). Heuristique expérimentale. Précision : 3 décimales.',zh:'UF-6 权重 = 0.50（2× 标准 UF）。实验性启发式。精度：3 位小数。'},
 verdict:{en:'Verdict',ru:'Вердикт',es:'Veredicto',fr:'Verdict',zh:'判定'},
