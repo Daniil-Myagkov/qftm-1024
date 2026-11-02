@@ -3,7 +3,7 @@
 **Quadrotomy Factor Typology Model** — a scientific personality typing system built on the Big Five (IPIP-NEO facets), producing **1024 unique profiles** instead of MBTI's 16.
 
 🌐 **Live demo:** https://Daniil-Myagkov.github.io/qftm-1024/
-🔖 **Current version: 6.4**
+🔖 **Current version: 6.5**
 
 ---
 
@@ -56,20 +56,6 @@ Each of the five factors is split into four zones — `0–30`, `31–50`, `51�
 4. In **❤️ Compatibility**, enter two QFTM codes and press **Calculate**. Optionally tick the **🧪 UF-6** checkbox and paste both 11-code stacks (yours auto-fills from the last EDC result) to see the experimental energy-alignment score and the recomputed QCI; use **📥 Couple card PNG** to export exactly what you see.
 5. Explore dynamics, the 1024-profile map, families, and the mini-games.
 
-## Changelog highlights
-
-### v6.1
-- **Schulte:** overflow-proof number sizing — the effective font size is now binary-searched against the measured cell box (canvas `measureText` on the widest label of the current grid), fixing digit overflow on 11×11/12×12 at high slider values. Slider range widened to 8–48 px, default 20.
-- **Couple card:** exported overall score and verdict now respect the UF-6 checkbox state at export time (previously the card always showed the base QCI while the UI could show the experimental one).
-
-### v6.0
-- **🧭 EDC-3 module** — 11 energy domains, 110 forced choices, commitment and sacrifice rounds, Lie-Index, tiered stack with core/enemy zones, child-status context; stored independently of IPIP-120.
-- **🧪 UF-6** experimental energy-alignment formula and experimental QCI recomputation in the Compatibility tab.
-- **📥 Couple card PNG** gains the UF-6 bar, experimental caption, adaptive canvas height and `-withUF6` filename suffix.
-- **🧠 Schulte** manual number-size slider with per-grid auto-clamping, persisted in `localStorage`.
-
-### v5.0 and earlier
-- Rebalanced UF weights, nTerm neuro-pair load, repair-floor math, multilingual test, games, calendar, cats, SEO meta bundle.
 
 ## Architecture notes
 
