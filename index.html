@@ -1615,6 +1615,7 @@ canvas {
     <div style="margin-top:12px;">
       <button class="hdr-btn" id="btnManifesto" data-i18n="btnTheory">📜 QFTM-1024 Theory</button>
       <button class="hdr-btn" id="btnAllTypes" data-i18n="btnAllTypes">▦ All 1024 profiles</button>
+      <button class="hdr-btn" id="btnShareCatHeader">🔗 Share cat</button>
       <button class="hdr-btn" id="btnFamilies" data-i18n="btnFamilies">🧬 16 families</button>
       <button class="hdr-btn" id="btnCat" data-i18n="btnCat">🐱 Cat avatar</button>
       <button class="hdr-btn" id="btnRights" data-i18n="btnRights">⚖️ Rights</button>
@@ -1852,6 +1853,14 @@ canvas {
   </div>
 </div>
 
+<div class="modal-overlay" id="modalOverlayShareCat">
+<div class="modal" style="max-width:640px;">
+<button class="modal-close" id="modalCloseShareCat">✕</button>
+<h2>🔗 Share your cat via link</h2>
+<div id="shareCatContent" style="color:#bbb;font-size:0.88rem;line-height:1.65;"></div>
+</div>
+</div>
+  
 <div class="modal-overlay" id="modalOverlayTypes">
   <div class="modal" id="modalTypesBox">
     <button class="modal-close" id="modalCloseTypes">✕</button>
@@ -1928,7 +1937,7 @@ canvas {
 (function() {
   const AUTHOR = 'Daniil Vasilievich Myagkov';
   const AUTHOR_RU = 'Мягков Даниил Васильевич';
-  const VERSION = '6.4';
+  const VERSION = '6.5';
   const RIGHTS_YEAR = '2026';
 
   // ===== Storage with migration from old fftm1024_* keys =====
@@ -2008,6 +2017,14 @@ canvas {
         btnFamilies: '🧬 16 families',
         btnCat: '🐱 Cat avatar',
         btnRights: '⚖️ Rights',
+        btnShareCat: '🔗 Share cat',
+        shareCatTitle: '🔗 Share your cat via link',
+        shareCatIntro: 'Your cat is encoded in the URL. Anyone who opens the link sees the exact same companion — no server, no tracking, fully client-side.',
+        shareCatHow: '<strong>How it works:</strong><br>1. Click "Copy link" below — the current URL with your cat code is copied.<br>2. Send it to a friend (chat, email, social).<br>3. When they open it, the site reads <code>#type=XXXX-X</code> from the address bar and redraws your cat automatically.',
+        shareCatCopied: '✅ Link copied to clipboard!',
+        shareCatFail: '❌ Could not copy. Select and copy manually:',
+        shareCatNoCat: '⚠️ No cat selected yet. Go to "Quick" or "Test 120", calculate a profile first, then return here.',
+        shareCatBtn: '📋 Copy share link',
         tabQuick: '⚡ Quick',
         test120Warn: 'Rate yourself as you are RIGHT NOW, not as you would like to be in the future. Honest answers about your current habits and reactions give a valid profile; aspirational ones distort all 30 facets at once.',
         tabTest: '📝 Test 120',
@@ -2373,6 +2390,14 @@ canvas {
         btnFamilies: '🧬 16 семейств',
         btnCat: '🐱 Котик профиля',
         btnRights: '⚖️ Права',
+        btnShareCat: '🔗 Поделиться котиком',
+        shareCatTitle: '🔗 Поделиться котиком по ссылке',
+        shareCatIntro: 'Твой котик закодирован в URL. Любой, кто откроет ссылку, увидит точно такого же компаньона — без сервера, без трекинга, полностью в браузере.',
+        shareCatHow: '<strong>Как это работает:</strong><br>1. Нажми «Скопировать ссылку» ниже — текущий URL с кодом котика скопируется.<br>2. Отправь другу (чат, почта, соцсети).<br>3. Когда он откроет, сайт прочитает <code>#type=XXXX-X</code> из адресной строки и автоматически перерисует твоего котика.',
+        shareCatCopied: '✅ Ссылка скопирована!',
+        shareCatFail: '❌ Не удалось скопировать. Выдели и скопируй вручную:',
+        shareCatNoCat: '⚠️ Котик ещё не выбран. Перейди в «Быстрый» или «Тест 120», рассчитай профиль, затем вернись сюда.',
+        shareCatBtn: '📋 Скопировать ссылку',
         tabQuick: '⚡ Быстрый',
         test120Warn: 'Оценивай себя таким, какой ты ЕСТЬ СЕЙЧАС, а не каким хотел бы быть в будущем. Честные ответы про текущие привычки и реакции дают валидный профиль; желаемые — искажают все 30 шкал сразу.',
         tabTest: '📝 Тест 120',
@@ -2739,6 +2764,14 @@ canvas {
         btnFamilies:'🧬 16 familias',
         btnCat:'🐱 Gato',
         btnRights:'⚖️ Derechos',
+        btnShareCat:'🔗 Compartir gato',
+        shareCatTitle:'🔗 Comparte tu gato por enlace',
+        shareCatIntro:'Tu gato está codificado en la URL. Cualquiera que abra el enlace verá exactamente el mismo compañero: sin servidor, sin rastreo, todo en el navegador.',
+        shareCatHow:'<strong>Cómo funciona:</strong><br>1. Haz clic en "Copiar enlace" abajo: se copiará la URL actual con el código de tu gato.<br>2. Envíalo a un amigo (chat, correo, redes).<br>3. Al abrirlo, el sitio leerá <code>#type=XXXX-X</code> de la barra de direcciones y redibujará tu gato automáticamente.',
+        shareCatCopied:'✅ ¡Enlace copiado al portapapeles!',
+        shareCatFail:'❌ No se pudo copiar. Selecciónalo y cópialo manualmente:',
+        shareCatNoCat:'⚠️ Aún no has seleccionado un gato. Ve a "Rápido" o "Test 120", calcula un perfil primero y vuelve aquí.',
+        shareCatBtn:'📋 Copiar enlace para compartir',
         tabQuick:'⚡ Rápido',
         test120Warn:'Evalúate como eres AHORA MISMO, no como te gustaría ser en el futuro. Las respuestas honestas sobre tus hábitos y reacciones actuales dan un perfil válido; las aspiracionales distorsionan las 30 facetas a la vez.',
         tabTest:'📝 Test 120',
@@ -3061,6 +3094,14 @@ canvas {
         btnFamilies:'🧬 16 familles',
         btnCat:'🐱 Chat',
         btnRights:'⚖️ Droits',
+        btnShareCat:'🔗 Partager le chat',
+        shareCatTitle:'🔗 Partagez votre chat par lien',
+        shareCatIntro:'Votre chat est encodé dans l’URL. Toute personne qui ouvre le lien verra exactement le même compagnon : pas de serveur, pas de suivi, tout se passe dans le navigateur.',
+        shareCatHow:'<strong>Comment ça marche :</strong><br>1. Cliquez sur "Copier le lien" ci-dessous : l’URL actuelle avec le code de votre chat sera copiée.<br>2. Envoyez-la à un ami (chat, e-mail, réseaux).<br>3. En l’ouvrant, le site lira <code>#type=XXXX-X</code> dans la barre d’adresse et redessinera votre chat automatiquement.',
+        shareCatCopied:'✅ Lien copié dans le presse-papiers !',
+        shareCatFail:'❌ Impossible de copier. Sélectionnez et copiez manuellement :',
+        shareCatNoCat:'⚠️ Aucun chat sélectionné. Allez dans "Rapide" ou "Test 120", calculez un profil, puis revenez ici.',
+        shareCatBtn:'📋 Copier le lien de partage',
         tabQuick:'⚡ Rapide',
         test120Warn:'Évaluez-vous tel que vous ÊTES MAINTENANT, pas tel que vous aimeriez être plus tard. Des réponses honnêtes sur vos habitudes et réactions actuelles donnent un profil valide ; des réponses idéalisées faussent les 30 facettes d’un coup.',
         tabTest:'📝 Test 120',
@@ -3383,6 +3424,14 @@ canvas {
         btnFamilies:'🧬 16 家族',
         btnCat:'🐱 猫咪',
         btnRights:'⚖️ 权利',
+        btnShareCat:'🔗 分享猫咪',
+        shareCatTitle:'🔗 通过链接分享你的猫咪',
+        shareCatIntro:'你的猫咪已编码在 URL 中。任何人打开链接都会看到完全相同的伙伴——无需服务器，无追踪，完全在浏览器端运行。',
+        shareCatHow:'<strong>工作原理：</strong><br>1. 点击下方“复制链接”——当前包含猫咪代码的 URL 将被复制。<br>2. 发送给朋友（聊天、邮件、社交网络）。<br>3. 对方打开时，网站会从地址栏读取 <code>#type=XXXX-X</code> 并自动重绘你的猫咪。',
+        shareCatCopied:'✅ 链接已复制到剪贴板！',
+        shareCatFail:'❌ 无法复制。请手动选择并复制：',
+        shareCatNoCat:'⚠️ 尚未选择猫咪。请先前往“快速”或“120 题测试”计算档案，然后返回此处。',
+        shareCatBtn:'📋 复制分享链接',
         tabQuick:'⚡ 快速',
         test120Warn:'请按您现在的样子评分，而非希望未来的样子。如实反映当下习惯与反应才能得到有效画像；理想化作答会同时扭曲全部 30 个层面。',
         tabTest:'📝 120 题测试',
@@ -6404,6 +6453,67 @@ renderCompat();
     }
     showCat(code);
   });
+
+  // ================= SHARE CAT VIA URL =================
+function getShareUrl() {
+let code = lastCatCode;
+if (!isValidType(code)) {
+const q = getQuickValues();
+code = getTypeCode(q.E, q.O, q.A, q.C, q.N);
+}
+if (!isValidType(code)) {
+return null;
+}
+const base = location.origin + location.pathname;
+return base + '#type=' + code;
+}
+
+function renderShareCatModal() {
+const url = getShareUrl();
+const content = document.getElementById('shareCatContent');
+if (!content) return;
+
+if (!url) {
+content.innerHTML = '<p style="color:#ff9f43;">' + ui('shareCatNoCat') + '</p>';
+return;
+}
+
+content.innerHTML =
+'<p>' + ui('shareCatIntro') + '</p>' +
+'<div style="background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:12px;margin:12px 0;font-family:ui-monospace,monospace;font-size:0.82rem;color:#fff;word-break:break-all;">' + escapeHtml(url) + '</div>' +
+'<p>' + ui('shareCatHow') + '</p>' +
+'<div style="text-align:center;margin:16px 0;">' +
+'<button class="btn" id="btnCopyShareLink">' + ui('shareCatBtn') + '</button>' +
+'</div>' +
+'<div id="shareCatStatus" style="text-align:center;font-size:0.84rem;margin-top:8px;"></div>';
+
+document.getElementById('btnCopyShareLink').addEventListener('click', async function() {
+const status = document.getElementById('shareCatStatus');
+try {
+await copyText(url);
+status.innerHTML = '<span style="color:#6bcb77;">' + ui('shareCatCopied') + '</span>';
+} catch(e) {
+status.innerHTML = '<span style="color:#ff6b6b;">' + ui('shareCatFail') + '</span>' +
+'<div style="background:#111;border:1px solid #444;border-radius:8px;padding:8px;margin-top:6px;font-family:monospace;font-size:0.78rem;color:#fff;user-select:all;">' + escapeHtml(url) + '</div>';
+}
+});
+}
+
+document.getElementById('btnShareCatHeader').addEventListener('click', function() {
+renderShareCatModal();
+openModal('modalOverlayShareCat');
+});
+
+document.getElementById('modalCloseShareCat').addEventListener('click', function() {
+closeModal('modalOverlayShareCat');
+});
+
+document.getElementById('modalOverlayShareCat').addEventListener('click', function(e) {
+if (e.target === this) {
+closeModal('modalOverlayShareCat');
+}
+});
+  
   document.getElementById('modalCloseCat').addEventListener('click', function() {
     closeModal('modalOverlayCat');
   });
@@ -6413,15 +6523,16 @@ renderCompat();
     }
   });
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      closeModal('modalGraph');
-      closeModal('modalOverlayTypes');
-      closeModal('modalOverlayManifesto');
-      closeModal('modalOverlayRights');
-      closeModal('modalOverlayFamilies');
-      closeModal('modalOverlayCat');
-    }
-  });
+if (e.key === 'Escape') {
+closeModal('modalGraph');
+closeModal('modalOverlayTypes');
+closeModal('modalOverlayManifesto');
+closeModal('modalOverlayRights');
+closeModal('modalOverlayFamilies');
+closeModal('modalOverlayCat');
+closeModal('modalOverlayShareCat');
+}
+});
 
   function showCat(code) {
     code = String(code || '').toUpperCase();
@@ -7095,7 +7206,7 @@ box.innerHTML = html;
 </script>
 <script>
 /* ============================================================
-QFTM-1024 :: EDC-3 (11 domains) — REBALANCED WEIGHTS v13 (version 6.4)
+QFTM-1024 :: EDC-3 (11 domains) — REBALANCED WEIGHTS v13 (version 6.5)
 Logic changes in uf6():
 - NEW 6-TIER SCALE (11 = 1+2+2+2+3+1):
   rank 0      = tier 1 CYAN supercore
@@ -7322,7 +7433,7 @@ var fin={};DOMS.forEach(function(d,i){fin[d]=Math.round(0.7*(sc[d]/mx*100)+0.6*(
 var stack=DOMS.slice().sort(function(x,y){return fin[y]-fin[x];});
 return {sc:sc,fin:fin,stack:stack,lie:lie};
 }
-/* v6.4 tier split for 11 domains: 1 / 2 / 2 / 2 / 3 / 1 = 11
+/* v6.5 tier split for 11 domains: 1 / 2 / 2 / 2 / 3 / 1 = 11
    1 cyan supercore + 2 dark-green core + 2 green + 2 yellow + 3 orange + 1 red */
 function tierOf(rank){
 if(rank===0)return 1;   /* cyan supercore */
@@ -7345,7 +7456,7 @@ var exA=Math.max(0,aN-50),exB=Math.max(0,bN-50);
 var interact=(exA*exB)/100;
 return clamp100(0.5*(100-meanN)+0.3*(100-maxN)-0.15*gap-interact);
 }
-/* UF-6 v13 (QFTM-1024 6.4): 6 zones, cyan supercore bonuses, rank gradient */
+/* UF-6 v13 (QFTM-1024 6.5): 6 zones, cyan supercore bonuses, rank gradient */
 function uf6(oa,ob,nLa,nLb){
 var STAKE = {
 SP: 2.6, CH: 2.0, SX: 1.8, BD: 1.5, GR: 1.3,
@@ -7663,7 +7774,7 @@ try{var s0=JSON.parse(LSg('edc2_stack')||'null');if(s0)window.QFTM_EDC_STACK=s0;
 </script>
 <script>
 /* ============================================================
-QFTM-1024 v6.4 :: Schulte number-size slider (FIXED)
+QFTM-1024 v6.5 :: Schulte number-size slider (FIXED)
 Measures actual text width via canvas to guarantee digits
 never overflow cell boundaries at any grid size (3–12).
 Persists in localStorage.
