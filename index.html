@@ -868,9 +868,34 @@ canvas {
 .t120-q{font-size:0.86rem;color:#e0e0e0;margin-bottom:8px;line-height:1.45;}
 .t120-q .t120-num{color:#888;font-weight:800;margin-right:6px;font-size:0.74rem;}
 .t120-opts{display:flex;gap:6px;flex-wrap:wrap;}
-.t120-opt{flex:1;min-width:52px;text-align:center;background:var(--surface2);border:1px solid var(--border);color:#bbb;border-radius:10px;padding:7px 4px;font-size:0.72rem;cursor:pointer;transition:all .15s;}
-.t120-opt:hover{border-color:#888;color:#fff;}
-.t120-opt.sel{background:#fff;color:#000;border-color:#fff;font-weight:800;}
+/* ===== ЦВЕТА ШКАЛЫ ЛИКЕРТА ДЛЯ ТЕСТА 120 ===== */
+.t120-opt {
+    flex: 1; min-width: 52px; text-align: center;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: #bbb; border-radius: 10px; padding: 7px 4px;
+    font-size: 0.72rem; cursor: pointer; transition: all 0.15s;
+}
+
+/* Цвета текста и рамок для каждой позиции (1-5) */
+.t120-opt:nth-child(1) { color: #de1300; border-color: rgba(222, 19, 0, 0.25); }
+.t120-opt:nth-child(2) { color: #ff6d69; border-color: rgba(255, 109, 105, 0.25); }
+.t120-opt:nth-child(3) { color: #787878; border-color: rgba(120, 120, 120, 0.25); }
+.t120-opt:nth-child(4) { color: #85ff93; border-color: rgba(133, 255, 147, 0.25); }
+.t120-opt:nth-child(5) { color: #00dc1a; border-color: rgba(0, 220, 26, 0.25); }
+
+/* Эффект при наведении: легкий фон своего цвета */
+.t120-opt:nth-child(1):hover { background: rgba(222, 19, 0, 0.1); }
+.t120-opt:nth-child(2):hover { background: rgba(255, 109, 105, 0.1); }
+.t120-opt:nth-child(3):hover { background: rgba(120, 120, 120, 0.1); }
+.t120-opt:nth-child(4):hover { background: rgba(133, 255, 147, 0.1); }
+.t120-opt:nth-child(5):hover { background: rgba(0, 220, 26, 0.1); }
+
+/* Состояние ВЫБРАННОЙ кнопки (.sel) — полный цвет + свечение */
+.t120-opt.sel:nth-child(1) { background: #de1300; color: #000; border-color: #de1300; box-shadow: 0 0 12px rgba(222, 19, 0, 0.4); }
+.t120-opt.sel:nth-child(2) { background: #ff6d69; color: #000; border-color: #ff6d69; box-shadow: 0 0 12px rgba(255, 109, 105, 0.4); }
+.t120-opt.sel:nth-child(3) { background: #787878; color: #fff; border-color: #787878; box-shadow: 0 0 12px rgba(120, 120, 120, 0.4); }
+.t120-opt.sel:nth-child(4) { background: #85ff93; color: #000; border-color: #85ff93; box-shadow: 0 0 12px rgba(133, 255, 147, 0.4); }
+.t120-opt.sel:nth-child(5) { background: #00dc1a; color: #000; border-color: #00dc1a; box-shadow: 0 0 12px rgba(0, 220, 26, 0.4); }
 .t120-warn{background:#2a1f0e;border:1px solid #8a6b1f;border-left:4px solid #ffb020;color:#ffd98a;padding:10px 14px;margin:10px 0;border-radius:10px;font-size:0.84rem;line-height:1.5;font-weight:600;}
   
 /* ===== SCHULTE ===== */
