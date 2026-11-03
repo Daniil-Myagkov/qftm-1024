@@ -6757,11 +6757,22 @@ closeModal('modalOverlayShareCat');
       '<div class="detail-footer">QFTM-1024 © ' + AUTHOR + '. All rights reserved.</div>';
   }
   function renderRights() {
+    var _EA = {
+  t:{en:'EDC-3 & UF-6 Authorship',ru:'Авторство EDC-3 & UF-6',es:'Autoría de EDC-3 y UF-6',fr:'Paternité EDC-3 & UF-6',zh:'EDC-3 与 UF-6 的归属'},
+  b:{
+    en:'The module <strong>EDC-3</strong> (Energy Domain Calculator) and the experimental compatibility formula <strong>UF-6</strong> are a fully original development by Daniil Vasilievich Myagkov.<br>These tools have NO analogues in existing psychometric systems (Big Five, MBTI, Enneagram).<br>Any copying of the energy-stack calculation algorithms or UF-6 weighting coefficients without crediting the author is prohibited.',
+    ru:'Модуль <strong>EDC-3</strong> (Energy Domain Calculator) и экспериментальная формула совместимости <strong>UF-6</strong> являются полностью оригинальной разработкой Даниила Васильевича Мягкова.<br>Эти инструменты не имеют аналогов в существующих психометрических системах (Big Five, MBTI, Enneagram).<br>Любое копирование алгоритмов расчёта стека энергии и весовых коэффициентов UF-6 без указания автора запрещено.',
+    es:'El módulo <strong>EDC-3</strong> (Energy Domain Calculator) y la fórmula experimental de compatibilidad <strong>UF-6</strong> son un desarrollo completamente original de Daniil Vasilievich Myagkov.<br>Estas herramientas NO tienen análogos en los sistemas psicométricos existentes (Big Five, MBTI, Enneagrama).<br>Cualquier copia de los algoritmos de cálculo de la pila energética o de los coeficientes ponderales de UF-6 sin acreditar al autor está prohibida.',
+    fr:'Le module <strong>EDC-3</strong> (Energy Domain Calculator) et la formule expérimentale de compatibilité <strong>UF-6</strong> sont un développement entièrement original de Daniil Vasilievich Myagkov.<br>Ces outils n\'ont AUCUN analogue dans les systèmes psychométriques existants (Big Five, MBTI, Ennéagramme).<br>Toute copie des algorithmes de calcul de la pile énergétique ou des coefficients pondéraux d\'UF-6 sans créditer l\'auteur est interdite.',
+    zh:'模块 <strong>EDC-3</strong>（能量领域计算器）和实验性兼容性公式 <strong>UF-6</strong> 是 Daniil Vasilievich Myagkov 完全原创的开发成果。<br>这些工具在现有的心理测量系统（大五人格、MBTI、九型人格）中没有同类物。<br>未经注明作者而复制能量栈计算算法或 UF-6 权重系数均属禁止行为。'
+  }
+};
+var _EL = lang();
     document.getElementById('rightsContent').innerHTML =
       '<p>' + ui('rightsIntro') + '</p>' +
 '<div class="fp-box" style="border-color:#8b5cff;background:rgba(139,92,255,0.1);margin-top:10px;">' +
-    '<div class="fp-label" style="color:#c9b6ff;">🛡️ ' + t('edcAuthor') + '</div>' +
-    '<div class="fp-value" style="font-size:0.9rem;line-height:1.4;">' + ui('edcAuthorBody') + '</div>' +
+    '<div class="fp-label" style="color:#c9b6ff;">🛡️ ' + (_EA.t[_EL]||_EA.t.en) + '</div>' +
+    '<div class="fp-value" style="font-size:0.9rem;line-height:1.4;">' + (_EA.b[_EL]||_EA.b.en) + '</div>' +
 '</div>' +
       '<div class="fp-box"><div class="fp-label">' + ui('author') + '</div><div class="fp-value">' + AUTHOR + ' / ' + AUTHOR_RU + '</div></div>' +
       '<div class="fp-box"><div class="fp-label">' + ui('version') + '</div><div class="fp-value">' + VERSION + ' • ' + RIGHTS_YEAR + '</div></div>' +
