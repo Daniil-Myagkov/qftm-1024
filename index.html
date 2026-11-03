@@ -3970,6 +3970,7 @@ canvas {
     'C=' + CONS_LETTERS.join(''),
     'N=' + NEURO_LETTERS.join(''),
     'facets=' + fullScales.map(function(s) { return s.id; }).join(','),
+    'modules=EDC-3_Original_By_Myagkov_DV,UF-6_Experimental_No_Analogues'
     'Quadrotomy Factor Typology Model; Big Five only; requires original IPIP-NEO 120/300 first; no cognitive functions; no enneagram; no instincts; cat avatars with name stamp; compatibility UF-1..UF-5 with zone midpoints 15/40/60/85; Schulte max 12x12 with red fixation dot and reset; ColorMemory 3 speeds level*speed per click; ColorShape 8 colors unique options; 5 languages en/ru/es/fr/zh; mobile-android adapted'
   ].join('|');
   currentFingerprint = cyrb53Hex(CANONICAL);
@@ -6758,6 +6759,14 @@ closeModal('modalOverlayShareCat');
   function renderRights() {
     document.getElementById('rightsContent').innerHTML =
       '<p>' + ui('rightsIntro') + '</p>' +
+'<div class="fp-box" style="border-color: #8b5cff; background: rgba(139, 92, 255, 0.1); margin-top: 10px;">' +
+    '<div class="fp-label" style="color: #c9b6ff;">🛡️ Авторство EDC-3 & UF-6</div>' +
+    '<div class="fp-value" style="font-size: 0.9rem; line-height: 1.4;">' +
+        'Модуль <strong>EDC-3</strong> (Energy Domain Calculator) и экспериментальная формула совместимости <strong>UF-6</strong> являются полностью оригинальной разработкой Даниила Васильевича Мягкова.<br>' +
+        'Эти инструменты не имеют аналогов в существующих психометрических системах (Big Five, MBTI, Enneagram).<br>' +
+        'Любое копирование алгоритмов расчёта стека энергии и весовых коэффициентов UF-6 без указания автора запрещено.' +
+    '</div>' +
+'</div>' +
       '<div class="fp-box"><div class="fp-label">' + ui('author') + '</div><div class="fp-value">' + AUTHOR + ' / ' + AUTHOR_RU + '</div></div>' +
       '<div class="fp-box"><div class="fp-label">' + ui('version') + '</div><div class="fp-value">' + VERSION + ' • ' + RIGHTS_YEAR + '</div></div>' +
       '<div class="fp-box"><div class="fp-label">' + ui('fingerprint') + '</div><div class="fp-value">' + currentFingerprint + '</div></div>' +
@@ -7248,6 +7257,33 @@ Logic changes in uf6():
 - CURVE extended to 6 tier-differences: [8, 6, -3, -10, -18, -26].
 © 2026 Daniil Vasilievich Myagkov. Heuristic, not clinical.
 ============================================================ */
+
+/* 
+ * ========================================================================
+ * COPYRIGHT & INTELLECTUAL PROPERTY NOTICE / УВЕДОМЛЕНИЕ ОБ АВТОРСКИХ ПРАВАХ
+ * ========================================================================
+ * Module: EDC-3 (Energy Domain Calculator) & Formula UF-6
+ * Author: Daniil Vasilievich Myagkov (Мягков Даниил Васильевич)
+ * Year:   2026
+ * 
+ * ENGLISH:
+ * This implementation of the life domain priority calculation (11 domains) 
+ * and the methodology for comparing them via formula UF-6 is a unique invention 
+ * of the author. It is NOT based on standard Big Five models or other typologies. 
+ * There are NO analogues to this mathematical model. 
+ * Any use, reverse-engineering, or commercial exploitation of this algorithm 
+ * requires WRITTEN PERMISSION from the author.
+ * 
+ * РУССКИЙ:
+ * Данная реализация расчета приоритетов жизненных доменов (11 шт.) 
+ * и методика их сравнения через формулу UF-6 является уникальным 
+ * изобретением автора. Она НЕ основана на стандартных моделях Big Five 
+ * или других типологиях. Аналогов данной математической модели нет. 
+ * Любое использование, реверс-инжиниринг или коммерческая эксплуатация 
+ * данного алгоритма требуют ПИСЬМЕННОГО РАЗРЕШЕНИЯ автора.
+ * ========================================================================
+ */
+  
 (function(){
 'use strict';
 function LSg(k){try{return localStorage.getItem('qftm1024_'+k);}catch(e){return null;}}
