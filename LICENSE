@@ -7,37 +7,61 @@ This software and its associated documentation files (the "Software") are
 the original work of the author named above. The Software is provided under
 the following terms:
 
-1. AUTHORSHIP. The authorship notice embedded in the Software (including the
-   leading HTML comment, metadata fields, and any in-file copyright headers)
-   identifies Daniil Vasilievich Myagkov as the sole original author. This
-   notice must not be removed, altered, obscured, or replaced in any copy or
-   substantial portion of the Software. Claiming authorship of the Software,
+1. GENERAL AUTHORSHIP. 
+   The authorship notice embedded in the Software (including the leading HTML 
+   comment, metadata fields, and any in-file copyright headers) identifies 
+   Daniil Vasilievich Myagkov as the sole original author of the entire system. 
+   This notice must not be removed, altered, obscured, or replaced in any copy 
+   or substantial portion of the Software. Claiming authorship of the Software, 
    in whole or in part, is strictly prohibited.
 
-2. PERMITTED USE. You may download, install, run, host, and share verbatim,
-   unmodified copies of the Software for personal, non-commercial use,
-   provided that the authorship notice from clause 1 remains intact in every
-   copy.
+2. SPECIFIC INTELLECTUAL PROPERTY: MODULE EDC-3 & FORMULA UF-6.
+   Within the general scope of clause 1, specific components known as 
+   "Energy Domain Calculator v3" (EDC-3) and the experimental compatibility 
+   formula "UF-6" constitute unique, proprietary methodologies developed 
+   exclusively by the author. These modules:
+   
+   a) Have NO analogues in existing psychological typologies (including but 
+      not limited to MBTI, Enneagram, DISC, or standard Big Five implementations).
+   b) Are NOT derived from public domain datasets like IPIP or NEO PI-R; 
+      they represent independent algorithmic inventions regarding life-domain 
+      prioritization and relationship stress-testing.
+   c) Are protected as distinct trade secrets and copyrighted algorithms within 
+      the broader Software structure.
+      
+   Any attempt to extract, reverse-engineer, reimplement, or replicate the 
+   logic, weighting coefficients, or mathematical structures of EDC-3 or UF-6 
+   in separate tools, papers, or products without explicit written consent is 
+   considered a severe violation of this license.
 
-3. RESTRICTED USE. Any commercial use, paid redistribution, sublicensing, or
-   creation of derivative works (including modification of source, renaming
-   of authorship, repackaging, or incorporation into another product) requires
-   the prior written permission of the author.
+3. PERMITTED USE. 
+   You may download, install, run, host, and share verbatim, unmodified copies 
+   of the Software for personal, non-commercial use, provided that the 
+   authorship notices from clauses 1 and 2 remain intact in every copy.
 
-4. NO WARRANTY. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
-   KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-   USE OR OTHER DEALINGS IN THE SOFTWARE. This includes any psychological,
-   relational, or decision-making outcomes derived from the Software's
-   personality-typology or compatibility features, which are heuristics and
-   not clinical instruments.
+4. RESTRICTED USE. 
+   Any commercial use, paid redistribution, sublicensing, or creation of 
+   derivative works (including modification of source code, renaming of 
+   authorship, repackaging, or incorporation into another product) requires 
+   the prior written permission of the author. This restriction applies 
+   especially strongly to the extraction of EDC-3/UF-6 algorithms described 
+   in clause 2.
 
-5. GOVERNING INTERPRETATION. In the event of any conflict between this file
-   and notices embedded elsewhere in the Software, the authorship and
-   restriction terms of clauses 1 and 3 shall prevail, as they express the
-   author's standing intent.
+5. NO WARRANTY. 
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+   THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, ARISING 
+   FROM, OR OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+   DEALINGS IN THE SOFTWARE. This includes any psychological, relational, or 
+   decision-making outcomes derived from the Software's personality-typology 
+   or compatibility features, which are heuristics and not clinical instruments.
+
+6. GOVERNING INTERPRETATION. 
+   In the event of any conflict between this file and notices embedded elsewhere 
+   in the Software, the authorship and restriction terms of clauses 1, 2, and 4 
+   shall prevail, as they express the author's standing intent to protect both 
+   the general system and its unique proprietary sub-modules.
 
 For permission requests, contact the author via the GitHub repository issues
 page or the contact details published alongside the Software.
