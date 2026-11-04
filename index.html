@@ -7919,5 +7919,88 @@ function init(){
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
 })();
 </script>
+<script>
+/* ============================================================
+QFTM-1024 v6.5 :: Bookmark / Install button (header, right of EDC)
+Browsers forbid adding a bookmark programmatically, so the
+button opens a platform-aware 1-second hint (Ctrl+D / ⌘+D /
+mobile menu). If a PWA manifest ever exists, the same button
+catches beforeinstallprompt and becomes a real "Install app".
+One-time golden pulse nudges first-time visitors.
+© 2026 Daniil Vasilievich Myagkov. All rights reserved.
+============================================================ */
+(function(){
+'use strict';
+function LSg(k){try{return localStorage.getItem('qftm1024_'+k);}catch(e){return null;}}
+function LSs(k,v){try{localStorage.setItem('qftm1024_'+k,v);}catch(e){}}
+var T={
+btn:{en:'⭐ Bookmark',ru:'⭐ В закладки',es:'⭐ Marcadores',fr:'⭐ Favoris',zh:'⭐ 收藏'},
+install:{en:'📲 Install app',ru:'📲 Установить',es:'📲 Instalar app',fr:'📲 Installer',zh:'📲 安装应用'},
+title:{en:'⭐ Save this site in 1 second',ru:'⭐ Сохранить сайт за 1 секунду',es:'⭐ Guarda este sitio en 1 segundo',fr:'⭐ Enregistrez ce site en 1 seconde',zh:'⭐ 1 秒保存本站'},
+lead:{en:'Browsers do not allow a website to add itself to bookmarks — but one key combo does it instantly:',ru:'Браузеры не дают сайту добавлять себя в закладки самостоятельно — но одна комбинация делает это мгновенно:',es:'Los navegadores no dejan que un sitio se añada solo a marcadores — pero un atajo lo hace al instante:',fr:'Les navigateurs n’autorisent pas un site à s’ajouter seul aux favoris — mais un raccourci le fait instantanément :',zh:'浏览器不允许网站自行加入书签——但一个快捷键可以瞬间完成：'},
+win:{en:'Windows / Linux',ru:'Windows / Linux',es:'Windows / Linux',fr:'Windows / Linux',zh:'Windows / Linux'},
+mac:{en:'macOS',ru:'macOS',es:'macOS',fr:'macOS',zh:'macOS'},
+other:{en:'other platform',ru:'другая платформа',es:'otra plataforma',fr:'autre plateforme',zh:'其他平台'},
+and:{en:'Android (Chrome): menu ⋮ → "Add to bookmarks" or "Add to Home screen".',ru:'Android (Chrome): меню ⋮ → «Добавить в закладки» или «На главный экран».',es:'Android (Chrome): menú ⋮ → "Añadir a marcadores" o "Pantalla de inicio".',fr:'Android (Chrome) : menu ⋮ → « Ajouter aux favoris » ou « Écran d’accueil ».',zh:'Android（Chrome）：菜单 ⋮ →「添加书签」或「添加到主屏幕」。'},
+ios:{en:'iOS (Safari): Share ▢↑ → "Add to Bookmarks" or "Add to Home Screen".',ru:'iOS (Safari): Поделиться ▢↑ → «В закладки» или «На главный экран».',es:'iOS (Safari): Compartir ▢↑ → "Añadir a favoritos" o "Pantalla de inicio".',fr:'iOS (Safari) : Partager ▢↑ → « Ajouter aux favoris » ou « Écran d’accueil ».',zh:'iOS（Safari）：分享 ▢↑ →「添加书签」或「添加到主屏幕」。'},
+why:{en:'Everything (profiles, records, cats) lives in THIS browser — a bookmark keeps your whole world one tap away.',ru:'Все данные (профили, рекорды, котики) живут в ЭТОМ браузере — закладка держит весь твой мир в одном клике.',es:'Todo (perfiles, récords, gatos) vive en ESTE navegador — un marcador mantiene tu mundo a un toque.',fr:'Tout (profils, records, chats) vit dans CE navigateur — un favori garde tout votre monde à un tap.',zh:'所有数据（档案、记录、猫咪）都在本浏览器中——书签让你的世界一键可达。'}
+};
+function lang(){var l=LSg('lang');return (l&&T.btn[l])?l:'en';}
+function t(k){var o=T[k];return (o&&o[lang()])||o.en;}
+var ua=navigator.userAgent||'';
+var isIOS=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+var isAndroid=/Android/.test(ua);
+var isMac=!isIOS&&/Mac OS X|Macintosh/.test(ua);
+var st=document.createElement('style');
+st.textContent='.bk-kbd{display:inline-block;background:#222;border:1px solid #555;border-bottom-width:3px;border-radius:8px;padding:6px 14px;margin:0 4px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:800;color:#fff;font-size:1.05rem;}'
++'@keyframes bkPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,217,61,.5);}50%{box-shadow:0 0 0 10px rgba(255,217,61,0);}}'
++'#btnBookmark.bk-pulse{border-color:#ffd93d;color:#ffe08a;animation:bkPulse 1.7s ease-out infinite;}';
+document.head.appendChild(st);
+var ov=document.createElement('div');ov.className='modal-overlay';ov.id='bkOverlay';
+ov.innerHTML='<div class="modal" style="max-width:520px;"><button class="modal-close" id="bkClose">✕</button><h2 id="bkTitle"></h2><div id="bkBody" style="color:#bbb;font-size:0.88rem;line-height:1.65;"></div></div>';
+document.body.appendChild(ov);
+function kbd(s){return '<span class="bk-kbd">'+s+'</span>';}
+function renderModal(){
+document.getElementById('bkTitle').textContent=t('title');
+var h='<p style="margin-bottom:10px;">'+t('lead')+'</p>';
+if(isIOS){h+='<p style="font-size:0.92rem;color:#fff;">📱 '+t('ios')+'</p>';}
+else if(isAndroid){h+='<p style="font-size:0.92rem;color:#fff;">📱 '+t('and')+'</p>';}
+else{
+h+='<div style="text-align:center;margin:16px 0;">';
+h+= isMac ? kbd('⌘')+'+'+kbd('D') : kbd('Ctrl')+'+'+kbd('D');
+h+='</div>';
+h+='<p style="color:#777;font-size:0.76rem;text-align:center;">'+(isMac?t('win'):t('mac'))+' • '+(isMac?'Ctrl + D':'⌘ + D')+' — '+t('other')+'</p>';
+}
+h+='<p style="margin-top:14px;color:#8f86a8;font-size:0.8rem;">💡 '+t('why')+'</p>';
+document.getElementById('bkBody').innerHTML=h;
+}
+function openBk(){ov.classList.add('open');document.body.style.overflow='hidden';renderModal();}
+function closeBk(){ov.classList.remove('open');document.body.style.overflow='';}
+ov.addEventListener('click',function(e){if(e.target===ov)closeBk();});
+document.getElementById('bkClose').addEventListener('click',closeBk);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ov.classList.contains('open'))closeBk();});
+var btn=document.createElement('button');
+btn.type='button';btn.className='hdr-btn';btn.id='btnBookmark';
+var anchor=document.getElementById('btnEdc')||document.getElementById('btnRights');
+if(anchor&&anchor.parentElement){anchor.insertAdjacentElement('afterend',btn);}
+var deferred=null;
+function label(){btn.textContent=deferred?t('install'):t('btn');}
+label();
+if(!LSg('bk_seen'))btn.classList.add('bk-pulse');
+btn.addEventListener('click',function(){
+LSs('bk_seen','1');btn.classList.remove('bk-pulse');
+if(deferred){deferred.prompt();if(deferred.userChoice)deferred.userChoice.then(function(){deferred=null;label();});return;}
+try{
+if(window.external&&window.external.AddFavorite){window.external.AddFavorite(location.href,document.title);return;}
+if(window.sidebar&&window.sidebar.addPanel){window.sidebar.addPanel(document.title,location.href,'');return;}
+}catch(e){}
+openBk();
+});
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;btn.classList.remove('bk-pulse');label();});
+window.addEventListener('appinstalled',function(){LSs('bk_seen','1');btn.classList.remove('bk-pulse');label();});
+var sel=document.getElementById('languageSelect');
+if(sel)sel.addEventListener('change',function(){label();if(ov.classList.contains('open'))renderModal();});
+})();
+</script>
 </body>
 </html>
