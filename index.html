@@ -7206,17 +7206,51 @@ box.innerHTML = html;
   setLanguage(currentLang);
   renderPlayground();
 
-  const hashMatch = location.hash.match(/type=([^&]+)/);
-  if (hashMatch) {
-    const hashCode = decodeURIComponent(hashMatch[1]).toUpperCase();
-    if (isValidType(hashCode)) {
+  // ================= SMART CAT LOADING (v6.5 fix) =================
+// Показываем котика автоматически ТОЛЬКО если пришли по внешней ссылке (шаринг).
+// Если открыли из закладок, истории или обновили страницу — модалка не лезет.
+const hashMatch = location.hash.match(/type=([^&]+)/);
+if (hashMatch) {
+  const hashCode = decodeURIComponent(hashMatch[1]).toUpperCase();
+  if (isValidType(hashCode)) {
+    let shouldAutoOpen = false;
+    try {
+      const ref = document.referrer;
+      // Если реферера нет (прямой ввод/закладка) ИЛИ это не наш домен — значит пришли извне
+      // Но для закладок referrer часто пустой, поэтому проверяем Performance API точнее
+      if (!ref) {
+        // Пустой реферер может быть и при шаринге из некоторых мессенджеров, 
+        // но чаще это закладки/прямой ввод. Проверим тип навигации.
+        const navEntry = performance.getEntriesByType('navigation')[0];
+        // 'navigate' = переход по ссылке/ввод URL. 'reload' = F5. 'back_forward' = история.
+        // Если это 'navigate' и мы не знаем откуда — считаем это потенциальным шарингом,
+        // НО чтобы не бесить пользователей с закладками, используем флаг сессии.
+        const sessionKey = 'qftm1024_cat_shown_' + hashCode;
+        if (!sessionStorage.getItem(sessionKey)) {
+           // Если в этой сессии (вкладке) мы еще не показывали этого котика по хэшу — покажем.
+           // Это защитит от повторного открытия при F5, но позволит открыть по новой ссылке.
+           shouldAutoOpen = true;
+           sessionStorage.setItem(sessionKey, '1');
+        }
+      } else if (ref.indexOf(location.hostname) === -1) {
+        // Явный переход с другого домена (Reddit, Telegram, друг прислал)
+        shouldAutoOpen = true;
+      }
+    } catch(e) {
+      // Если ошибка доступа к performance/referrer — лучше не показывать, чтобы не бесить
+      shouldAutoOpen = false;
+    }
+    
+    if (shouldAutoOpen) {
       showCat(hashCode);
     }
-  } else if (isValidType(lastCatCode)) {
-    try {
-      history.replaceState(null, '', '#type=' + lastCatCode);
-    } catch(e) {}
   }
+} else if (isValidType(lastCatCode)) {
+  // Просто обновляем URL без открытия модалки, чтобы ссылка была красивой
+  try {
+    history.replaceState(null, '', '#type=' + lastCatCode);
+  } catch(e) {}
+}
   window.addEventListener('hashchange', function() {
     const m = location.hash.match(/type=([^&]+)/);
     if (m) {
