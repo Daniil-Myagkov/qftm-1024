@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://Daniil-Myagkov.github.io/qftm-1024/sitemap.xml
