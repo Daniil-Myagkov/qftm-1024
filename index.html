@@ -2221,6 +2221,7 @@ canvas {
         uf2ref: 'Directed formula: E (0.30) and C (0.25) reward difference, O similarity (0.20) is the glue, plus the multiplicative dominance-balance term |Δ(E×(100−A))| (0.25) (Tiedens & Fragale, 2003). There is NO N slot and never sim(N) — two volatile partners get no bonus for matching.',
         uf3name: 'UF-3 — Vulnerability–Stress–Adaptation',
         uf3ref: 'Karney & Bradbury (1995), Vulnerability–Stress–Adaptation model: stress load = pair calm minus the N-gap penalty (100 − mean N − 0.30·|ΔN|, weight 0.30) vs the A buffer (min A, 0.15), the weaker partner’s A+C capacity (0.25), O growth (0.10) and repair cross-terms Aₐ·C_b + A_b·Cₐ (0.20).',
+        uf4name: 'UF-4 — Co-regulation & repair attempt floor',
         uf4ref: 'Gottman & Levenson (2000): positive affect pool mean E×(100−mean N) (0.20), weakest-link A floor (0.15), emotional climate = pair calm with a double penalty above mean N 60 (0.10), C follow-through (0.15) and the repair floor = the best directed repairer×acceptor pair (0.40); matching high neuroticism is a risk, not a bond.',
         uf5name: 'UF-5 — Niche construction & life-strategy alignment',
         uf5ref: 'Scarr & McCartney (1983): C/O/E congruence (0.40/0.30/0.30) with a weakest-axis penalty (0.30): the minimum across the four similarity axes and the pair-calm slot.',
@@ -7226,24 +7227,22 @@ if (hashMatch) {
       const ref = document.referrer;
       // Если реферера нет (прямой ввод/закладка) ИЛИ это не наш домен — значит пришли извне
       // Но для закладок referrer часто пустой, поэтому проверяем Performance API точнее
-      if (!ref) {
-        // Пустой реферер может быть и при шаринге из некоторых мессенджеров, 
+          if (!ref) {
+        // Пустой реферер может быть и при шаринге из некоторых мессенджеров,
         // но чаще это закладки/прямой ввод. Проверим тип навигации.
         const navEntry = performance.getEntriesByType('navigation')[0];
-        // 'navigate' = переход по ссылке/ввод URL. 'reload' = F5. 'back_forward' = история.
-        // Если это 'navigate' и мы не знаем откуда — считаем это потенциальным шарингом,
-        // НО чтобы не бесить пользователей с закладками, используем флаг сессии.
-        const sessionKey = 'qftm1024_cat_shown_' + hashCode;
-        if (!sessionStorage.getItem(sessionKey)) {
-           // Если в этой сессии (вкладке) мы еще не показывали этого котика по хэшу — покажем.
-           // Это защитит от повторного открытия при F5, но позволит открыть по новой ссылке.
-           shouldAutoOpen = true;
-           sessionStorage.setItem(sessionKey, '1');
+        
+        // Используем localStorage вместо sessionStorage, чтобы помнить пользователя навсегда
+        const storageKey = 'qftm1024_cat_auto_shown_' + hashCode; 
+        
+        if (!localStorage.getItem(storageKey)) {
+            shouldAutoOpen = true;
+            localStorage.setItem(storageKey, '1'); // Записываем в долгую память
         }
-      } else if (ref.indexOf(location.hostname) === -1) {
-        // Явный переход с другого домена (Reddit, Telegram, друг прислал)
-        shouldAutoOpen = true;
-      }
+    } else if (ref.indexOf(location.hostname) === -1) {
+         // Явный переход с другого домена (Reddit, Telegram, друг прислал)
+         shouldAutoOpen = true;
+    }
     } catch(e) {
       // Если ошибка доступа к performance/referrer — лучше не показывать, чтобы не бесить
       shouldAutoOpen = false;
