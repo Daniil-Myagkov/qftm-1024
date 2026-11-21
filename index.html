@@ -9,9 +9,10 @@ Sharing unmodified file is permitted.
 Commercial use and derivatives require written permission.
 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no" class="notranslate">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="author" content="Daniil Vasilievich Myagkov">
 <meta name="copyright" content="© 2026 Daniil Vasilievich Myagkov. All rights reserved.">
@@ -1625,21 +1626,72 @@ canvas {
     width: min(160px, 44vw);
   }
 }
+/* ===== LANGUAGE VISIBILITY PATCH v6.5.1 ===== */
+.lang-bar {
+background: linear-gradient(135deg,#101826,#0f1a12);
+border: 1px solid #4a90d9;
+border-radius: 16px;
+padding: 10px 16px;
+margin-bottom: 14px;
+box-shadow: 0 0 18px rgba(74,144,217,0.25);
+}
+.lang-bar .lang-globe { font-size: 1.35rem; }
+.lang-bar label { font-size: 0.95rem; color: #cfe2ff; font-weight: 700; }
+.lang-bar select {
+font-size: 1rem;
+padding: 10px 14px;
+border: 2px solid #4a90d9;
+border-radius: 12px;
+background: #0d1420;
+color: #fff;
+font-weight: 700;
+}
+.lang-bar select:hover { border-color: #8fd0f5; }
+.lang-current {
+background: #4a90d9;
+color: #000;
+font-weight: 900;
+font-size: 0.78rem;
+padding: 4px 10px;
+border-radius: 10px;
+letter-spacing: 0.06em;
+}
+@keyframes langPulse {
+0%,100% { box-shadow: 0 0 0 0 rgba(74,144,217,0.55); }
+50% { box-shadow: 0 0 0 12px rgba(74,144,217,0); }
+}
+.lang-bar.lang-attention { animation: langPulse 1.6s ease-out 5; border-color: #8fd0f5; }
+.lang-toast {
+background: #0f1d12;
+border: 1px solid #3ddc84;
+border-left: 4px solid #3ddc84;
+color: #c9f5d8;
+border-radius: 12px;
+padding: 10px 14px;
+margin: 0 0 14px;
+font-size: 0.86rem;
+line-height: 1.5;
+text-align: center;
+animation: fadeInUp 0.3s ease;
+}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <div class="lang-bar">
-      <label id="langLabel" data-i18n="language">Language</label>
-      <select id="languageSelect">
-        <option value="en">English</option>
-        <option value="ru">Русский</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
-        <option value="zh">中文</option>
-      </select>
-    </div>
+    <div class="lang-bar" id="langBar">
+<span class="lang-globe" aria-hidden="true">🌐</span>
+<label id="langLabel" data-i18n="language">Language</label>
+<select id="languageSelect" aria-label="Site language">
+<option value="en">English</option>
+<option value="ru">Русский</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
+<option value="zh">中文</option>
+</select>
+<span class="lang-current" id="langCurrentBadge">EN</span>
+</div>
+<div class="lang-toast" id="langToast" role="status" style="display:none;"></div>
 
     <h1>QFTM-1024</h1>
     <div class="subtitle" data-i18n="subtitle">Profile Calendar • Big Five Dynamics • 16 Families • Cat Avatars • Compatibility • Schulte • Games</div>
@@ -3777,10 +3829,25 @@ canvas {
     }
   };
 
-  let currentLang = LS.get('lang') || 'en';
-  if (!I18N[currentLang]) {
-    currentLang = 'en';
-  }
+  const SUPPORTED_LANGS = ['en','ru','es','fr','zh'];
+function detectBrowserLang() {
+const list = (navigator.languages && navigator.languages.length)
+? navigator.languages
+: [navigator.language || navigator.userLanguage || 'en'];
+for (let i = 0; i < list.length; i++) {
+const base = String(list[i] || '').toLowerCase().split('-')[0];
+if (SUPPORTED_LANGS.indexOf(base) !== -1) {
+return base;
+}
+}
+return 'en';
+}
+let langAutoDetected = false;
+let currentLang = LS.get('lang');
+if (!currentLang || !I18N[currentLang]) {
+currentLang = detectBrowserLang();
+langAutoDetected = true;
+}
 
   let calYear = 2026;
   let editingMonth = null;
@@ -6794,6 +6861,11 @@ closeModal('modalOverlayShareCat');
     currentLang = lang;
     LS.set('lang', lang);
     document.documentElement.lang = lang;
+    const langBadge = document.getElementById('langCurrentBadge');
+    if (langBadge) {
+    langBadge.textContent = lang.toUpperCase();
+    langBadge.title = LANG_NATIVE[lang] || lang;
+                   }
     document.documentElement.dir = ui('dir') || 'ltr';
     const sel = document.getElementById('languageSelect');
     if (sel) {
@@ -6827,9 +6899,32 @@ closeModal('modalOverlayShareCat');
       renderCompat();
     }
   }
-  document.getElementById('languageSelect').addEventListener('change', function() {
-    setLanguage(this.value);
-  });
+  // ===== LANGUAGE TOAST + NATIVE NAMES =====
+const LANG_NATIVE = { en: 'English', ru: 'Русский', es: 'Español', fr: 'Français', zh: '中文' };
+const LANG_MSG = {
+en: { auto: 'Language auto-detected from your browser:', manual: 'Language changed:', hint: 'You can switch it anytime in the selector above ↑' },
+ru: { auto: 'Язык определён по браузеру автоматически:', manual: 'Язык изменён:', hint: 'Сменить язык можно в селекторе выше ↑' },
+es: { auto: 'Idioma detectado automáticamente del navegador:', manual: 'Idioma cambiado:', hint: 'Puedes cambiarlo en el selector de arriba ↑' },
+fr: { auto: 'Langue détectée automatiquement depuis le navigateur :', manual: 'Langue changée :', hint: 'Vous pouvez la changer dans le sélecteur ci-dessus ↑' },
+zh: { auto: '已根据浏览器自动检测语言：', manual: '语言已更改：', hint: '可随时在上方选择器中切换 ↑' }
+};
+let langToastTimer = null;
+function showLangToast(kind, lang) {
+const el = document.getElementById('langToast');
+if (!el) return;
+const m = LANG_MSG[lang] || LANG_MSG.en;
+el.innerHTML = '🌐 ' + escapeHtml(m[kind]) + ' <strong>' + escapeHtml(LANG_NATIVE[lang] || lang) + '</strong>' +
+'<br><span style="color:#9ab89a;font-size:0.74rem;">' + escapeHtml(m.hint) + '</span>';
+el.style.display = 'block';
+clearTimeout(langToastTimer);
+langToastTimer = setTimeout(function() { el.style.display = 'none'; }, kind === 'auto' ? 9000 : 4500);
+}
+document.getElementById('languageSelect').addEventListener('change', function() {
+setLanguage(this.value);
+const bar = document.getElementById('langBar');
+if (bar) bar.classList.remove('lang-attention');
+showLangToast('manual', this.value);
+});
   // ================= TEST 120 (IPIP-NEO-120 adaptation, public domain) =================
 const T120_W = [0, 6, 12, 19, 25];
 const T120_REV = [9,19,24,30,40,48,51,53,54,60,62,67,68,69,70,73,74,75,78,79,80,81,83,84,85,88,89,90,92,94,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,113,114,115,116,118,119,120];
@@ -7209,11 +7304,16 @@ box.innerHTML = html;
 }
 
   initSchulte();
-  initGames();
-  initCompat();
-  initTest120();
-  setLanguage(currentLang);
-  renderPlayground();
+initGames();
+initCompat();
+initTest120();
+setLanguage(currentLang);
+if (langAutoDetected) {
+showLangToast('auto', currentLang);
+const lb = document.getElementById('langBar');
+if (lb) lb.classList.add('lang-attention');
+}
+renderPlayground();
 
   // ================= SMART CAT LOADING (v6.5 fix) =================
 // Показываем котика автоматически ТОЛЬКО если пришли по внешней ссылке (шаринг).
